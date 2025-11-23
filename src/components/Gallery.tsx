@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 
 import heroImage from "@/assets/hero-chalet.jpg";
 import exteriorWinter from "@/assets/exterior-winter.jpg";
+import exteriorFrontGarage from "@/assets/exterior-front-garage.jpg";
+import exteriorFrontView from "@/assets/exterior-front-view.jpg";
 import terrace from "@/assets/terrace.jpg";
 import balconyMountainView from "@/assets/balcony-mountain-view.jpg";
 import balconyTerrace from "@/assets/balcony-terrace.jpg";
 import balconyInteriorView from "@/assets/balcony-interior-view.jpg";
+import skiRoom from "@/assets/ski-room.jpg";
 
 // Real chalet images - Living & Dining
 import livingDiningOpen from "@/assets/living-dining-open.jpg";
@@ -41,6 +44,8 @@ const galleryImages = [
   // Außenbereich
   { src: heroImage, title: "Außenansicht Sommer", category: "Außenbereich" },
   { src: exteriorWinter, title: "Außenansicht Winter", category: "Außenbereich" },
+  { src: exteriorFrontGarage, title: "Chalet mit Garage", category: "Außenbereich" },
+  { src: exteriorFrontView, title: "Frontansicht des Chalets", category: "Außenbereich" },
   { src: terrace, title: "Terrasse mit Bergblick", category: "Außenbereich" },
   { src: balconyMountainView, title: "Balkon mit Bergpanorama", category: "Außenbereich" },
   { src: balconyTerrace, title: "Sonnenterrasse", category: "Außenbereich" },
@@ -71,6 +76,9 @@ const galleryImages = [
   
   // Wellness
   { src: saunaInterior, title: "Finnische Sauna", category: "Wellness" },
+  
+  // Ausstattung
+  { src: skiRoom, title: "Skiraum mit Ausrüstung", category: "Ausstattung" },
   
   // Eingangsbereich
   { src: hallwayStairs, title: "Eingangsbereich mit Treppe", category: "Eingangsbereich" },
