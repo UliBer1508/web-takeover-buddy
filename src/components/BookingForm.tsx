@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,8 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { externalSupabase } from "@/integrations/external-supabase/client";
+import { format } from "date-fns";
 
 // Chalet Venedigersiedlung house ID
 const HOUSE_ID = "f5b4588b-96cf-46f7-b84a-5f6750f7088e";
@@ -42,8 +44,15 @@ const bookingSchema = z.object({
   message: "Anreisedatum muss heute oder in der Zukunft liegen",
   path: ["checkIn"]
 });
+
 type BookingFormData = z.infer<typeof bookingSchema>;
-const BookingForm = () => {
+
+interface BookingFormProps {
+  initialCheckIn?: Date | null;
+  initialCheckOut?: Date | null;
+}
+
+const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
@@ -57,6 +66,17 @@ const BookingForm = () => {
       message: ""
     }
   });
+
+  // Auto-fill form when dates are selected from calendar
+  useEffect(() => {
+    if (initialCheckIn) {
+      form.setValue('checkIn', format(initialCheckIn, 'yyyy-MM-dd'));
+    }
+    if (initialCheckOut) {
+      form.setValue('checkOut', format(initialCheckOut, 'yyyy-MM-dd'));
+    }
+  }, [initialCheckIn, initialCheckOut, form]);
+
   const onSubmit = async (data: BookingFormData) => {
     setIsSubmitting(true);
 
@@ -172,6 +192,11 @@ const BookingForm = () => {
                               <Input type="date" className="pl-10" {...field} />
                             </div>
                           </FormControl>
+                          {initialCheckIn && (
+                            <Badge variant="secondary" className="mt-1 text-xs">
+                              ✓ Vom Kalender übernommen
+                            </Badge>
+                          )}
                           <FormMessage />
                         </FormItem>} />
 
@@ -185,6 +210,11 @@ const BookingForm = () => {
                               <Input type="date" className="pl-10" {...field} />
                             </div>
                           </FormControl>
+                          {initialCheckOut && (
+                            <Badge variant="secondary" className="mt-1 text-xs">
+                              ✓ Vom Kalender übernommen
+                            </Badge>
+                          )}
                           <FormMessage />
                         </FormItem>} />
 
