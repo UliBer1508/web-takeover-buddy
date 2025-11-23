@@ -89,7 +89,18 @@ const galleryImages = [
 const Gallery = () => {
   const [images, setImages] = useState(() => {
     const saved = localStorage.getItem('gallery_images');
-    return saved ? JSON.parse(saved) : galleryImages;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Merge new images from galleryImages that aren't in saved list
+        const savedSrcs = new Set(parsed.map((img: any) => img.src));
+        const newImages = galleryImages.filter(img => !savedSrcs.has(img.src));
+        return [...parsed, ...newImages];
+      } catch (e) {
+        console.error('Error parsing gallery images:', e);
+      }
+    }
+    return galleryImages;
   });
 
   const [heroImageSrc, setHeroImageSrc] = useState(() => {
