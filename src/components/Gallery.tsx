@@ -3,11 +3,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import heroImage from "@/assets/hero-chalet.jpg";
-import exteriorWinter from "@/assets/exterior-winter.jpg";
 import exteriorFrontGarage from "@/assets/exterior-front-garage.jpg";
 import exteriorFrontView from "@/assets/exterior-front-view.jpg";
-import terrace from "@/assets/terrace.jpg";
 import balconyMountainView from "@/assets/balcony-mountain-view.jpg";
 import balconyTerrace from "@/assets/balcony-terrace.jpg";
 import balconyInteriorView from "@/assets/balcony-interior-view.jpg";
@@ -42,11 +39,8 @@ import hallwayStairs from "@/assets/hallway-stairs.jpg";
 
 const galleryImages = [
   // Außenbereich
-  { src: heroImage, title: "Außenansicht Sommer", category: "Außenbereich" },
-  { src: exteriorWinter, title: "Außenansicht Winter", category: "Außenbereich" },
   { src: exteriorFrontGarage, title: "Chalet mit Garage", category: "Außenbereich" },
   { src: exteriorFrontView, title: "Frontansicht des Chalets", category: "Außenbereich" },
-  { src: terrace, title: "Terrasse mit Bergblick", category: "Außenbereich" },
   { src: balconyMountainView, title: "Balkon mit Bergpanorama", category: "Außenbereich" },
   { src: balconyTerrace, title: "Sonnenterrasse", category: "Außenbereich" },
   { src: balconyInteriorView, title: "Balkon mit Innenansicht", category: "Außenbereich" },
