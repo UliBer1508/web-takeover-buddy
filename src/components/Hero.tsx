@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import heroImage from "@/assets/hero-chalet.jpg";
+import heroImage from "@/assets/hero-chalet-winter.jpg";
 
 const Hero = () => {
   const scrollToBooking = () => {
