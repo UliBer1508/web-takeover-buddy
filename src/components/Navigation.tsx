@@ -26,6 +26,7 @@ const Navigation = () => {
     { label: "Home", id: "hero" },
     { label: "Über Uns", id: "about" },
     { label: "Ausstattung", id: "features" },
+    { label: "Galerie", id: "galerie" },
     { label: "Buchen", id: "booking" },
     { label: "Kontakt", id: "footer" },
   ];
