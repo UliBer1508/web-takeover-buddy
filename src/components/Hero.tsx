@@ -1,8 +1,22 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import heroImage from "@/assets/hero-chalet.jpg";
 
 const Hero = () => {
+  const [heroImageSrc, setHeroImageSrc] = useState(() => {
+    return localStorage.getItem('hero_image') || heroImage;
+  });
+
+  useEffect(() => {
+    const handleHeroChange = () => {
+      const newHero = localStorage.getItem('hero_image');
+      if (newHero) setHeroImageSrc(newHero);
+    };
+    
+    window.addEventListener('heroImageChanged', handleHeroChange);
+    return () => window.removeEventListener('heroImageChanged', handleHeroChange);
+  }, []);
   const scrollToBooking = () => {
     const element = document.getElementById("booking");
     if (element) {
@@ -15,7 +29,7 @@ const Hero = () => {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src={heroImage}
+          src={heroImageSrc}
           alt="Steinbock Chalet in den Alpen"
           className="w-full h-full object-cover"
         />
