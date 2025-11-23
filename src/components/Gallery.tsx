@@ -4,21 +4,36 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import heroImage from "@/assets/hero-chalet.jpg";
-import interiorLiving from "@/assets/interior-living.jpg";
-import kitchen from "@/assets/kitchen.jpg";
-import dining from "@/assets/dining.jpg";
-import terrace from "@/assets/terrace.jpg";
 import exteriorWinter from "@/assets/exterior-winter.jpg";
+import terrace from "@/assets/terrace.jpg";
+import balconyMountainView from "@/assets/balcony-mountain-view.jpg";
+import balconyTerrace from "@/assets/balcony-terrace.jpg";
+import balconyInteriorView from "@/assets/balcony-interior-view.jpg";
 
-// Real chalet images
+// Real chalet images - Living & Dining
+import livingDiningOpen from "@/assets/living-dining-open.jpg";
+import diningTableView from "@/assets/dining-table-view.jpg";
+import diningCornerWindow from "@/assets/dining-corner-window.jpg";
+import diningPanorama from "@/assets/dining-panorama.jpg";
+import livingFireplace from "@/assets/living-fireplace.jpg";
+import livingFireplaceTV from "@/assets/living-fireplace-tv.jpg";
+
+// Kitchen
+import kitchenOak from "@/assets/kitchen-oak.jpg";
+
+// Bedrooms
 import bedroomMountainView from "@/assets/bedroom-mountain-view.jpg";
 import bedroomBalcony from "@/assets/bedroom-balcony.jpg";
 import bedroomDoorOpen from "@/assets/bedroom-door-open.jpg";
 import bedroomDetail from "@/assets/bedroom-detail.jpg";
+
+// Bathrooms
 import bathroomMain from "@/assets/bathroom-main.jpg";
 import bathroomShower from "@/assets/bathroom-shower.jpg";
 import bathroomMirror from "@/assets/bathroom-mirror.jpg";
 import bathroomGuest from "@/assets/bathroom-guest.jpg";
+
+// Wellness & Entrance
 import saunaInterior from "@/assets/sauna-interior.jpg";
 import hallwayStairs from "@/assets/hallway-stairs.jpg";
 
@@ -27,18 +42,26 @@ const galleryImages = [
   { src: heroImage, title: "Außenansicht Sommer", category: "Außenbereich" },
   { src: exteriorWinter, title: "Außenansicht Winter", category: "Außenbereich" },
   { src: terrace, title: "Terrasse mit Bergblick", category: "Außenbereich" },
+  { src: balconyMountainView, title: "Balkon mit Bergpanorama", category: "Außenbereich" },
+  { src: balconyTerrace, title: "Sonnenterrasse", category: "Außenbereich" },
+  { src: balconyInteriorView, title: "Balkon mit Innenansicht", category: "Außenbereich" },
+  
+  // Wohn- & Essbereich
+  { src: livingDiningOpen, title: "Offener Wohn-/Essbereich", category: "Wohn- & Essbereich" },
+  { src: diningTableView, title: "Essbereich mit gedecktem Tisch", category: "Wohn- & Essbereich" },
+  { src: diningCornerWindow, title: "Essbereich mit Eckfenster", category: "Wohn- & Essbereich" },
+  { src: diningPanorama, title: "Essbereich mit Panoramablick", category: "Wohn- & Essbereich" },
+  { src: livingFireplace, title: "Wohnzimmer mit Kamin", category: "Wohn- & Essbereich" },
+  { src: livingFireplaceTV, title: "Gemütlicher Wohnbereich", category: "Wohn- & Essbereich" },
+  
+  // Küche
+  { src: kitchenOak, title: "Küche mit Eichenfronten", category: "Küche" },
   
   // Schlafzimmer
   { src: bedroomMountainView, title: "Schlafzimmer mit Bergblick", category: "Schlafzimmer" },
   { src: bedroomBalcony, title: "Schlafzimmer mit Balkonzugang", category: "Schlafzimmer" },
   { src: bedroomDoorOpen, title: "Gemütliches Schlafzimmer", category: "Schlafzimmer" },
   { src: bedroomDetail, title: "Schlafzimmer Detail", category: "Schlafzimmer" },
-  
-  // Innenräume
-  { src: interiorLiving, title: "Wohnbereich", category: "Innenräume" },
-  { src: kitchen, title: "Moderne Küche", category: "Innenräume" },
-  { src: dining, title: "Essbereich", category: "Innenräume" },
-  { src: hallwayStairs, title: "Eingangsbereich", category: "Innenräume" },
   
   // Badezimmer
   { src: bathroomMain, title: "Hauptbadezimmer", category: "Badezimmer" },
@@ -48,6 +71,9 @@ const galleryImages = [
   
   // Wellness
   { src: saunaInterior, title: "Finnische Sauna", category: "Wellness" },
+  
+  // Eingangsbereich
+  { src: hallwayStairs, title: "Eingangsbereich mit Treppe", category: "Eingangsbereich" },
 ];
 
 const Gallery = () => {
