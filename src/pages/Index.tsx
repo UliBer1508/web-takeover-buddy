@@ -5,6 +5,7 @@ import Features from "@/components/Features";
 import Stats from "@/components/Stats";
 import BookingForm from "@/components/BookingForm";
 import Testimonials from "@/components/Testimonials";
+import Gallery from "@/components/Gallery";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -16,6 +17,7 @@ const Index = () => {
       <Stats />
       <Features />
       <Testimonials />
+      <Gallery />
       <BookingForm />
       <Footer />
     </div>
