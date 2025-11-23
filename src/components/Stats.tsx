@@ -4,6 +4,7 @@ interface StatItem {
   value: number;
   label: string;
   suffix?: string;
+  decimals?: number;
 }
 
 const Stats = () => {
@@ -12,9 +13,9 @@ const Stats = () => {
 
   const stats: StatItem[] = [
     { value: 3, label: "Schlafzimmer", suffix: "" },
-    { value: 10, label: "Gäste", suffix: "" },
-    { value: 280, label: "Quadratmeter", suffix: "m²" },
-    { value: 5, label: "Sterne", suffix: "★" },
+    { value: 6, label: "Gäste", suffix: "" },
+    { value: 135, label: "Quadratmeter", suffix: "m²" },
+    { value: 4.9, label: "Booking Bewertung", suffix: "★", decimals: 1 },
   ];
 
   useEffect(() => {
@@ -46,7 +47,7 @@ const Stats = () => {
             >
               <div className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2">
                 {isVisible ? (
-                  <AnimatedNumber value={stat.value} suffix={stat.suffix} />
+                  <AnimatedNumber value={stat.value} suffix={stat.suffix} decimals={stat.decimals} />
                 ) : (
                   "0"
                 )}
@@ -65,9 +66,11 @@ const Stats = () => {
 const AnimatedNumber = ({
   value,
   suffix = "",
+  decimals = 0,
 }: {
   value: number;
   suffix?: string;
+  decimals?: number;
 }) => {
   const [count, setCount] = useState(0);
 
@@ -83,7 +86,7 @@ const AnimatedNumber = ({
         setCount(value);
         clearInterval(timer);
       } else {
-        setCount(Math.floor(current));
+        setCount(current);
       }
     }, duration / steps);
 
@@ -92,7 +95,7 @@ const AnimatedNumber = ({
 
   return (
     <>
-      {count}
+      {decimals > 0 ? count.toFixed(decimals) : Math.floor(count)}
       {suffix}
     </>
   );
