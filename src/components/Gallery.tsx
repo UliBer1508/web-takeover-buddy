@@ -140,7 +140,16 @@ const Gallery = () => {
 
   const handleDelete = () => {
     if (imageToDelete) {
-      setImages(images.filter(img => img.src !== imageToDelete.src));
+      const newImages = images.filter(img => img.src !== imageToDelete.src);
+      
+      // Safety check: If deleted image was somehow the hero (shouldn't happen), reset to first image
+      if (imageToDelete.src === heroImageSrc && newImages.length > 0) {
+        const newHero = newImages[0].src;
+        setHeroImageSrc(newHero);
+        localStorage.setItem('hero_image', newHero);
+      }
+      
+      setImages(newImages);
       toast({
         title: "✓ Bild gelöscht",
         description: "Das Bild wurde aus der Galerie entfernt.",

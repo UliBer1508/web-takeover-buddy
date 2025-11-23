@@ -5,7 +5,32 @@ import heroImage from "@/assets/hero-chalet.jpg";
 
 const Hero = () => {
   const [heroImageSrc, setHeroImageSrc] = useState(() => {
-    return localStorage.getItem('hero_image') || heroImage;
+    const savedHero = localStorage.getItem('hero_image');
+    const savedImages = localStorage.getItem('gallery_images');
+    
+    // Check if saved hero image exists and is still in gallery
+    if (savedHero && savedImages) {
+      try {
+        const images = JSON.parse(savedImages);
+        const heroExists = images.some((img: { src: string }) => img.src === savedHero);
+        if (heroExists) return savedHero;
+      } catch (e) {
+        console.error('Error parsing gallery images:', e);
+      }
+    }
+    
+    // Fallback: First image from gallery
+    if (savedImages) {
+      try {
+        const images = JSON.parse(savedImages);
+        if (images.length > 0) return images[0].src;
+      } catch (e) {
+        console.error('Error parsing gallery images:', e);
+      }
+    }
+    
+    // Last fallback: Original imported image
+    return heroImage;
   });
 
   useEffect(() => {
@@ -32,6 +57,10 @@ const Hero = () => {
           src={heroImageSrc}
           alt="Steinbock Chalet in den Alpen"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error('Hero image failed to load:', heroImageSrc);
+            e.currentTarget.src = heroImage;
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/30 to-foreground/60" />
       </div>
