@@ -7,7 +7,7 @@ const Features = () => {
   const features = [
     {
       icon: Bed,
-      title: "5 Schlafzimmer",
+      title: "3 Schlafzimmer",
       description: "Komfortable Zimmer mit hochwertigen Matratzen und alpinem Charme",
       image: bedroomImage,
     },
