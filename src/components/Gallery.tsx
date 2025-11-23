@@ -5,26 +5,49 @@ import { Button } from "@/components/ui/button";
 
 import heroImage from "@/assets/hero-chalet.jpg";
 import interiorLiving from "@/assets/interior-living.jpg";
-import bedroom from "@/assets/bedroom.jpg";
-import masterBedroom from "@/assets/master-bedroom.jpg";
 import kitchen from "@/assets/kitchen.jpg";
 import dining from "@/assets/dining.jpg";
-import bathroom from "@/assets/bathroom.jpg";
-import sauna from "@/assets/sauna.jpg";
 import terrace from "@/assets/terrace.jpg";
 import exteriorWinter from "@/assets/exterior-winter.jpg";
 
+// Real chalet images
+import bedroomMountainView from "@/assets/bedroom-mountain-view.jpg";
+import bedroomBalcony from "@/assets/bedroom-balcony.jpg";
+import bedroomDoorOpen from "@/assets/bedroom-door-open.jpg";
+import bedroomDetail from "@/assets/bedroom-detail.jpg";
+import bathroomMain from "@/assets/bathroom-main.jpg";
+import bathroomShower from "@/assets/bathroom-shower.jpg";
+import bathroomMirror from "@/assets/bathroom-mirror.jpg";
+import bathroomGuest from "@/assets/bathroom-guest.jpg";
+import saunaInterior from "@/assets/sauna-interior.jpg";
+import hallwayStairs from "@/assets/hallway-stairs.jpg";
+
 const galleryImages = [
+  // Außenbereich
   { src: heroImage, title: "Außenansicht Sommer", category: "Außenbereich" },
   { src: exteriorWinter, title: "Außenansicht Winter", category: "Außenbereich" },
+  { src: terrace, title: "Terrasse mit Bergblick", category: "Außenbereich" },
+  
+  // Schlafzimmer
+  { src: bedroomMountainView, title: "Schlafzimmer mit Bergblick", category: "Schlafzimmer" },
+  { src: bedroomBalcony, title: "Schlafzimmer mit Balkonzugang", category: "Schlafzimmer" },
+  { src: bedroomDoorOpen, title: "Gemütliches Schlafzimmer", category: "Schlafzimmer" },
+  { src: bedroomDetail, title: "Schlafzimmer Detail", category: "Schlafzimmer" },
+  
+  // Innenräume
   { src: interiorLiving, title: "Wohnbereich", category: "Innenräume" },
-  { src: masterBedroom, title: "Master Schlafzimmer", category: "Schlafzimmer" },
-  { src: bedroom, title: "Schlafzimmer", category: "Schlafzimmer" },
-  { src: kitchen, title: "Küche", category: "Innenräume" },
+  { src: kitchen, title: "Moderne Küche", category: "Innenräume" },
   { src: dining, title: "Essbereich", category: "Innenräume" },
-  { src: bathroom, title: "Badezimmer", category: "Innenräume" },
-  { src: sauna, title: "Wellness & Sauna", category: "Wellness" },
-  { src: terrace, title: "Terrasse", category: "Außenbereich" },
+  { src: hallwayStairs, title: "Eingangsbereich", category: "Innenräume" },
+  
+  // Badezimmer
+  { src: bathroomMain, title: "Hauptbadezimmer", category: "Badezimmer" },
+  { src: bathroomShower, title: "Badezimmer mit Dusche", category: "Badezimmer" },
+  { src: bathroomMirror, title: "Elegantes Badezimmer", category: "Badezimmer" },
+  { src: bathroomGuest, title: "Gäste-WC", category: "Badezimmer" },
+  
+  // Wellness
+  { src: saunaInterior, title: "Finnische Sauna", category: "Wellness" },
 ];
 
 const Gallery = () => {
