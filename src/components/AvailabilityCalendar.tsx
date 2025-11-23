@@ -5,6 +5,7 @@ import { DayPicker } from "react-day-picker";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Loader2, Calendar as CalendarIcon, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import "react-day-picker/dist/style.css";
 
 const HOUSE_ID = "f5b4588b-96cf-46f7-b84a-5f6750f7088e";
 
@@ -58,84 +59,217 @@ export const AvailabilityCalendar = () => {
 
   const modifiers = { occupied: occupiedDates };
   const modifiersClassNames = {
-    occupied: 'bg-red-500 text-white hover:bg-red-600 line-through font-bold',
+    occupied: 'calendar-occupied',
   };
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="h-5 w-5 text-primary" />
-          <CardTitle>Verfügbarkeitskalender</CardTitle>
-        </div>
-        <CardDescription>
-          Belegte Tage sind rot markiert. Wählen Sie freie Tage für Ihre Buchungsanfrage.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col items-center">
-        {isLoading && (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="ml-3 text-muted-foreground">Lade Verfügbarkeit...</span>
-          </div>
-        )}
+    <>
+      <style>{`
+        .calendar-premium {
+          width: 100%;
+        }
         
-        {error && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              <strong>Fehler beim Laden der Verfügbarkeit</strong>
-              <p className="text-sm mt-1">{(error as Error).message}</p>
-              <p className="text-xs mt-2 opacity-80">
-                Mögliche Ursachen: Tabelle existiert nicht, Netzwerkfehler, oder Berechtigungen fehlen.
-              </p>
-            </AlertDescription>
-          </Alert>
-        )}
+        .calendar-premium .rdp {
+          margin: 0;
+          width: 100%;
+        }
         
-        {!isLoading && !error && (
-          <>
-            <DayPicker
-              mode="single"
-              disabled={{ before: new Date() }}
-              modifiers={modifiers}
-              modifiersClassNames={modifiersClassNames}
-              className="rounded-md border p-4 shadow-sm"
-              showOutsideDays
-              fixedWeeks
-            />
-            
-            {/* Legend */}
-            <div className="mt-6 flex flex-wrap gap-4 justify-center text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-green-500 rounded shadow-sm"></div>
-                <span className="font-medium">Verfügbar</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-red-500 rounded shadow-sm"></div>
-                <span className="font-medium">Belegt</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-gray-300 rounded shadow-sm"></div>
-                <span className="font-medium">Vergangen</span>
-              </div>
+        .calendar-premium .rdp-months {
+          display: flex;
+          gap: 3rem;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+        
+        .calendar-premium .rdp-month {
+          flex: 1;
+          min-width: 320px;
+          max-width: 420px;
+        }
+        
+        .calendar-premium .rdp-caption {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 1.5rem 0;
+          margin-bottom: 1rem;
+        }
+        
+        .calendar-premium .rdp-caption_label {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: hsl(var(--foreground));
+          text-transform: capitalize;
+        }
+        
+        .calendar-premium .rdp-head_cell {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: hsl(var(--muted-foreground));
+          text-transform: uppercase;
+          padding: 0.75rem 0;
+          letter-spacing: 0.05em;
+        }
+        
+        .calendar-premium .rdp-cell {
+          padding: 0.25rem;
+        }
+        
+        .calendar-premium .rdp-day {
+          width: 56px;
+          height: 56px;
+          font-size: 1.125rem;
+          font-weight: 600;
+          border-radius: 0.5rem;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          border: 2px solid transparent;
+          background: hsl(var(--background));
+          color: hsl(var(--foreground));
+        }
+        
+        .calendar-premium .rdp-day:hover:not(.rdp-day_disabled):not(.calendar-occupied) {
+          transform: scale(1.08);
+          background: hsl(var(--accent));
+          border-color: hsl(var(--primary));
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          z-index: 10;
+        }
+        
+        .calendar-premium .rdp-day_disabled {
+          opacity: 0.3;
+          color: hsl(var(--muted-foreground));
+          cursor: not-allowed;
+        }
+        
+        .calendar-premium .calendar-occupied {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+          color: white !important;
+          font-weight: 700;
+          position: relative;
+          transform: scale(0.95);
+          border-color: #b91c1c;
+        }
+        
+        .calendar-premium .calendar-occupied::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 10%;
+          right: 10%;
+          height: 2px;
+          background: white;
+          transform: translateY(-50%);
+        }
+        
+        .calendar-premium .calendar-occupied:hover {
+          background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+          transform: scale(0.98);
+        }
+        
+        .calendar-premium .rdp-day_today:not(.calendar-occupied) {
+          border-color: hsl(var(--primary));
+          background: hsl(var(--primary) / 0.1);
+          font-weight: 700;
+        }
+        
+        @media (max-width: 768px) {
+          .calendar-premium .rdp-day {
+            width: 48px;
+            height: 48px;
+            font-size: 1rem;
+          }
+          
+          .calendar-premium .rdp-months {
+            gap: 1.5rem;
+          }
+        }
+      `}</style>
+      
+      <Card className="shadow-xl border-2">
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <CalendarIcon className="h-6 w-6 text-primary" />
             </div>
+            <div>
+              <CardTitle className="text-3xl">Verfügbarkeitskalender</CardTitle>
+              <CardDescription className="text-base mt-1">
+                Belegte Tage sind rot markiert und durchgestrichen
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="px-6 pb-8">
+          {isLoading && (
+            <div className="flex flex-col justify-center items-center py-20">
+              <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+              <span className="text-lg text-muted-foreground">Lade Verfügbarkeit...</span>
+            </div>
+          )}
+          
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-5 w-5" />
+              <AlertDescription>
+                <strong className="text-base">Fehler beim Laden der Verfügbarkeit</strong>
+                <p className="text-sm mt-2">{(error as Error).message}</p>
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {!isLoading && !error && (
+            <div className="space-y-8">
+              <div className="calendar-premium">
+                <DayPicker
+                  mode="single"
+                  numberOfMonths={2}
+                  disabled={{ before: new Date() }}
+                  modifiers={modifiers}
+                  modifiersClassNames={modifiersClassNames}
+                  showOutsideDays
+                  fixedWeeks
+                />
+              </div>
+              
+              {/* Legend */}
+              <div className="flex flex-wrap gap-6 justify-center pt-6 border-t">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-background border-2 border-primary shadow-sm"></div>
+                  <span className="font-semibold text-base">Verfügbar</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-600 shadow-sm relative">
+                    <div className="absolute top-1/2 left-1 right-1 h-0.5 bg-white transform -translate-y-1/2"></div>
+                  </div>
+                  <span className="font-semibold text-base">Belegt</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-muted opacity-30 shadow-sm"></div>
+                  <span className="font-semibold text-base">Vergangen</span>
+                </div>
+              </div>
 
-            {/* Statistics */}
-            {data && data.length > 0 && (
-              <p className="mt-4 text-sm text-muted-foreground">
-                📊 {data.length} bestätigte {data.length === 1 ? 'Buchung' : 'Buchungen'}
-              </p>
-            )}
-            
-            {data && data.length === 0 && (
-              <p className="mt-4 text-sm text-green-600 font-medium">
-                ✓ Aktuell keine bestätigten Buchungen
-              </p>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+              {/* Statistics */}
+              {data && data.length > 0 && (
+                <div className="text-center">
+                  <p className="text-base text-muted-foreground font-medium">
+                    📊 {data.length} bestätigte {data.length === 1 ? 'Buchung' : 'Buchungen'}
+                  </p>
+                </div>
+              )}
+              
+              {data && data.length === 0 && (
+                <div className="text-center">
+                  <p className="text-base text-green-600 font-semibold">
+                    ✓ Aktuell keine bestätigten Buchungen
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 };
