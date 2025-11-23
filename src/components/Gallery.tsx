@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 import heroImage from "@/assets/hero-chalet.jpg";
 import exteriorWinter from "@/assets/exterior-winter.jpg";
@@ -85,7 +87,67 @@ const galleryImages = [
 ];
 
 const Gallery = () => {
+  const [images, setImages] = useState(() => {
+    const saved = localStorage.getItem('gallery_images');
+    return saved ? JSON.parse(saved) : galleryImages;
+  });
+
+  const [heroImageSrc, setHeroImageSrc] = useState(() => {
+    return localStorage.getItem('hero_image') || heroImage;
+  });
+
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [imageToDelete, setImageToDelete] = useState<typeof images[0] | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('gallery_images', JSON.stringify(images));
+  }, [images]);
+
+  useEffect(() => {
+    localStorage.setItem('hero_image', heroImageSrc);
+    window.dispatchEvent(new Event('heroImageChanged'));
+  }, [heroImageSrc]);
+
+  const handleSetHero = (imageSrc: string) => {
+    setHeroImageSrc(imageSrc);
+    toast({
+      title: "⭐ Hero-Bild aktualisiert",
+      description: "Das Bild wird nun auf der Startseite angezeigt.",
+    });
+  };
+
+  const confirmDelete = (image: typeof images[0]) => {
+    if (image.src === heroImageSrc) {
+      toast({
+        title: "⚠️ Aktion nicht möglich",
+        description: "Das aktuelle Hero-Bild kann nicht gelöscht werden. Bitte wählen Sie zuerst ein anderes Hero-Bild.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (images.length <= 1) {
+      toast({
+        title: "⚠️ Aktion nicht möglich",
+        description: "Mindestens ein Bild muss in der Galerie bleiben.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setImageToDelete(image);
+  };
+
+  const handleDelete = () => {
+    if (imageToDelete) {
+      setImages(images.filter(img => img.src !== imageToDelete.src));
+      toast({
+        title: "✓ Bild gelöscht",
+        description: "Das Bild wurde aus der Galerie entfernt.",
+      });
+      setImageToDelete(null);
+    }
+  };
 
   const openLightbox = (index: number) => {
     setSelectedImageIndex(index);
@@ -97,13 +159,13 @@ const Gallery = () => {
 
   const goToPrevious = () => {
     if (selectedImageIndex !== null) {
-      setSelectedImageIndex((selectedImageIndex - 1 + galleryImages.length) % galleryImages.length);
+      setSelectedImageIndex((selectedImageIndex - 1 + images.length) % images.length);
     }
   };
 
   const goToNext = () => {
     if (selectedImageIndex !== null) {
-      setSelectedImageIndex((selectedImageIndex + 1) % galleryImages.length);
+      setSelectedImageIndex((selectedImageIndex + 1) % images.length);
     }
   };
 
@@ -118,7 +180,7 @@ const Gallery = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {galleryImages.map((image, index) => (
+          {images.map((image, index) => (
             <div
               key={index}
               className="group relative overflow-hidden rounded-lg cursor-pointer aspect-[4/3] animate-fade-in-up"
@@ -130,6 +192,39 @@ const Gallery = () => {
                 alt={image.title}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
+              
+              {/* Icon Overlay */}
+              <div className="absolute top-2 left-2 right-2 flex justify-between opacity-0 md:group-hover:opacity-100 opacity-100 md:opacity-0 transition-opacity z-10">
+                {/* Stern-Icon links */}
+                <button 
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    handleSetHero(image.src); 
+                  }}
+                  className="bg-black/60 hover:bg-black/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  aria-label="Als Hero-Bild setzen"
+                >
+                  {heroImageSrc === image.src ? (
+                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                  ) : (
+                    <StarOff className="w-5 h-5 text-white" />
+                  )}
+                </button>
+                
+                {/* Trash-Icon rechts */}
+                <button 
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    confirmDelete(image); 
+                  }}
+                  className="bg-black/60 hover:bg-red-600/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  disabled={images.length <= 1}
+                  aria-label="Bild löschen"
+                >
+                  <Trash2 className="w-5 h-5 text-white" />
+                </button>
+              </div>
+
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <p className="text-sm font-medium text-accent">{image.category}</p>
@@ -164,15 +259,15 @@ const Gallery = () => {
 
               <div className="flex flex-col items-center justify-center max-w-full max-h-full">
                 <img
-                  src={galleryImages[selectedImageIndex].src}
-                  alt={galleryImages[selectedImageIndex].title}
+                  src={images[selectedImageIndex].src}
+                  alt={images[selectedImageIndex].title}
                   className="max-w-full max-h-[80vh] object-contain rounded-lg"
                 />
                 <div className="text-white text-center mt-4">
-                  <p className="text-sm text-accent">{galleryImages[selectedImageIndex].category}</p>
-                  <p className="text-xl font-semibold">{galleryImages[selectedImageIndex].title}</p>
+                  <p className="text-sm text-accent">{images[selectedImageIndex].category}</p>
+                  <p className="text-xl font-semibold">{images[selectedImageIndex].title}</p>
                   <p className="text-sm text-muted-foreground mt-2">
-                    {selectedImageIndex + 1} / {galleryImages.length}
+                    {selectedImageIndex + 1} / {images.length}
                   </p>
                 </div>
               </div>
@@ -189,6 +284,25 @@ const Gallery = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={imageToDelete !== null} onOpenChange={() => setImageToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Bild löschen?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Möchten Sie das Bild "{imageToDelete?.title}" wirklich aus der Galerie entfernen? 
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Löschen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 };
