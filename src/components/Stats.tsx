@@ -11,7 +11,7 @@ const Stats = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const stats: StatItem[] = [
-    { value: 5, label: "Schlafzimmer", suffix: "" },
+    { value: 3, label: "Schlafzimmer", suffix: "" },
     { value: 10, label: "Gäste", suffix: "" },
     { value: 280, label: "Quadratmeter", suffix: "m²" },
     { value: 5, label: "Sterne", suffix: "★" },
