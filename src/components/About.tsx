@@ -1,5 +1,5 @@
 import { Mountain, Sparkles, Snowflake, Heart } from "lucide-react";
-import interiorImage from "@/assets/interior-living.jpg";
+import interiorImage from "@/assets/interior-living-new.jpg";
 
 const About = () => {
   const highlights = [
