@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { externalSupabase } from "@/integrations/external-supabase/client";
 
 // Chalet Venedigersiedlung house ID
 const HOUSE_ID = "f5b4588b-96cf-46f7-b84a-5f6750f7088e";
@@ -66,7 +66,7 @@ const BookingForm = () => {
       const checkOutDate = new Date(data.checkOut);
 
       // Insert booking inquiry into database
-      const { error } = await supabase
+      const { error } = await externalSupabase
         .from('booking_inquiries')
         .insert({
           house_id: HOUSE_ID,

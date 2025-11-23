@@ -7,6 +7,7 @@ import BookingForm from "@/components/BookingForm";
 import Testimonials from "@/components/Testimonials";
 import Gallery from "@/components/Gallery";
 import Footer from "@/components/Footer";
+import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 
 const Index = () => {
   return (
@@ -18,6 +19,19 @@ const Index = () => {
       <Features />
       <Testimonials />
       <Gallery />
+      <section className="py-12 md:py-16 bg-muted/30">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">
+              Verfügbarkeit prüfen
+            </h2>
+            <p className="text-muted-foreground">
+              Sehen Sie auf einen Blick, wann das Chalet verfügbar ist
+            </p>
+          </div>
+          <AvailabilityCalendar />
+        </div>
+      </section>
       <BookingForm />
       <Footer />
     </div>
