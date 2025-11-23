@@ -7,23 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-
 const bookingSchema = z.object({
   name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein"),
   email: z.string().email("Ungültige E-Mail-Adresse"),
@@ -31,14 +17,11 @@ const bookingSchema = z.object({
   checkIn: z.string().min(1, "Check-in Datum erforderlich"),
   checkOut: z.string().min(1, "Check-out Datum erforderlich"),
   guests: z.string().min(1, "Anzahl Gäste erforderlich"),
-  message: z.string().optional(),
+  message: z.string().optional()
 });
-
 type BookingFormData = z.infer<typeof bookingSchema>;
-
 const BookingForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
@@ -48,29 +31,23 @@ const BookingForm = () => {
       checkIn: "",
       checkOut: "",
       guests: "",
-      message: "",
-    },
+      message: ""
+    }
   });
-
   const onSubmit = async (data: BookingFormData) => {
     setIsSubmitting(true);
-    
+
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
+    await new Promise(resolve => setTimeout(resolve, 1500));
     console.log("Booking data:", data);
-    
     toast({
       title: "Anfrage gesendet!",
-      description: "Wir werden uns in Kürze bei Ihnen melden.",
+      description: "Wir werden uns in Kürze bei Ihnen melden."
     });
-    
     form.reset();
     setIsSubmitting(false);
   };
-
-  return (
-    <section id="booking" className="py-16 md:py-24 bg-background">
+  return <section id="booking" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 animate-fade-in">
@@ -93,25 +70,19 @@ const BookingForm = () => {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={form.control} name="name" render={({
+                    field
+                  }) => <FormItem>
                           <FormLabel>Name</FormLabel>
                           <FormControl>
                             <Input placeholder="Ihr Name" {...field} />
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
 
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={form.control} name="email" render={({
+                    field
+                  }) => <FormItem>
                           <FormLabel>E-Mail</FormLabel>
                           <FormControl>
                             <div className="relative">
@@ -120,16 +91,12 @@ const BookingForm = () => {
                             </div>
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
+                  <FormField control={form.control} name="phone" render={({
+                  field
+                }) => <FormItem>
                         <FormLabel>Telefon</FormLabel>
                         <FormControl>
                           <div className="relative">
@@ -138,16 +105,12 @@ const BookingForm = () => {
                           </div>
                         </FormControl>
                         <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      </FormItem>} />
 
                   <div className="grid sm:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="checkIn"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={form.control} name="checkIn" render={({
+                    field
+                  }) => <FormItem>
                           <FormLabel>Check-in</FormLabel>
                           <FormControl>
                             <div className="relative">
@@ -156,15 +119,11 @@ const BookingForm = () => {
                             </div>
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
 
-                    <FormField
-                      control={form.control}
-                      name="checkOut"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={form.control} name="checkOut" render={({
+                    field
+                  }) => <FormItem>
                           <FormLabel>Check-out</FormLabel>
                           <FormControl>
                             <div className="relative">
@@ -173,15 +132,11 @@ const BookingForm = () => {
                             </div>
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
 
-                    <FormField
-                      control={form.control}
-                      name="guests"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={form.control} name="guests" render={({
+                    field
+                  }) => <FormItem>
                           <FormLabel>Gäste</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
@@ -191,46 +146,29 @@ const BookingForm = () => {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                                <SelectItem key={num} value={num.toString()}>
+                              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => <SelectItem key={num} value={num.toString()}>
                                   {num} {num === 1 ? "Gast" : "Gäste"}
-                                </SelectItem>
-                              ))}
+                                </SelectItem>)}
                             </SelectContent>
                           </Select>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
+                  <FormField control={form.control} name="message" render={({
+                  field
+                }) => <FormItem>
                         <FormLabel>Nachricht (Optional)</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Textarea
-                              placeholder="Besondere Wünsche oder Fragen..."
-                              className="pl-10 min-h-[100px]"
-                              {...field}
-                            />
+                            <Textarea placeholder="Besondere Wünsche oder Fragen..." className="pl-10 min-h-[100px]" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      </FormItem>} />
 
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full bg-primary hover:bg-primary/90"
-                    disabled={isSubmitting}
-                  >
+                  <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90" disabled={isSubmitting}>
                     {isSubmitting ? "Wird gesendet..." : "Anfrage senden"}
                   </Button>
                 </form>
@@ -265,17 +203,15 @@ const BookingForm = () => {
                 <CardTitle className="text-xl">Wichtige Infos</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>✓ Mindestaufenthalt: 3 Nächte</p>
-                <p>✓ Check-in: ab 16:00 Uhr</p>
+                <p>✓ Mindestaufenthalt: 4 Nächte</p>
+                <p>✓ Check-in: ab 15:00 Uhr</p>
                 <p>✓ Check-out: bis 10:00 Uhr</p>
-                <p>✓ Endreinigung: 150€</p>
+                <p>✓ Endreinigung: 240€</p>
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default BookingForm;
