@@ -10,14 +10,37 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+// Chalet Venedigersiedlung house ID
+const HOUSE_ID = "f5b4588b-96cf-46f7-b84a-5f6750f7088e";
+
 const bookingSchema = z.object({
-  name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein"),
-  email: z.string().email("Ungültige E-Mail-Adresse"),
-  phone: z.string().min(5, "Telefonnummer erforderlich"),
+  name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein").max(100, "Name zu lang"),
+  email: z.string().email("Ungültige E-Mail-Adresse").max(255, "E-Mail zu lang"),
+  phone: z.string().min(10, "Bitte geben Sie eine gültige Telefonnummer ein").max(20, "Telefonnummer zu lang"),
   checkIn: z.string().min(1, "Check-in Datum erforderlich"),
   checkOut: z.string().min(1, "Check-out Datum erforderlich"),
-  guests: z.string().min(1, "Anzahl Gäste erforderlich"),
-  message: z.string().optional()
+  guests: z.string().refine((val) => {
+    const num = parseInt(val);
+    return num >= 1 && num <= 6;
+  }, "Anzahl Gäste muss zwischen 1 und 6 liegen"),
+  message: z.string().max(1000, "Nachricht zu lang").optional()
+}).refine((data) => {
+  const checkIn = new Date(data.checkIn);
+  const checkOut = new Date(data.checkOut);
+  return checkOut > checkIn;
+}, {
+  message: "Abreisedatum muss nach dem Anreisedatum liegen",
+  path: ["checkOut"]
+}).refine((data) => {
+  const checkIn = new Date(data.checkIn);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return checkIn >= today;
+}, {
+  message: "Anreisedatum muss heute oder in der Zukunft liegen",
+  path: ["checkIn"]
 });
 type BookingFormData = z.infer<typeof bookingSchema>;
 const BookingForm = () => {
@@ -37,15 +60,46 @@ const BookingForm = () => {
   const onSubmit = async (data: BookingFormData) => {
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("Booking data:", data);
-    toast({
-      title: "Anfrage gesendet!",
-      description: "Wir werden uns in Kürze bei Ihnen melden."
-    });
-    form.reset();
-    setIsSubmitting(false);
+    try {
+      // Convert date strings to ISO timestamps
+      const checkInDate = new Date(data.checkIn);
+      const checkOutDate = new Date(data.checkOut);
+
+      // Insert booking inquiry into database
+      const { error } = await supabase
+        .from('booking_inquiries')
+        .insert({
+          house_id: HOUSE_ID,
+          guest_name: data.name.trim(),
+          guest_email: data.email.trim().toLowerCase(),
+          guest_phone: data.phone.trim(),
+          check_in: checkInDate.toISOString(),
+          check_out: checkOutDate.toISOString(),
+          number_of_guests: parseInt(data.guests),
+          message: data.message?.trim() || null,
+          status: 'pending'
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Anfrage erfolgreich gesendet! ✓",
+        description: "Vielen Dank! Wir werden uns in Kürze bei Ihnen melden."
+      });
+      
+      form.reset();
+    } catch (error: any) {
+      console.error("Booking inquiry error:", error);
+      toast({
+        title: "Fehler beim Senden",
+        description: error.message || "Bitte versuchen Sie es später erneut.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return <section id="booking" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -146,7 +200,7 @@ const BookingForm = () => {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => <SelectItem key={num} value={num.toString()}>
+                              {[1, 2, 3, 4, 5, 6].map(num => <SelectItem key={num} value={num.toString()}>
                                   {num} {num === 1 ? "Gast" : "Gäste"}
                                 </SelectItem>)}
                             </SelectContent>
