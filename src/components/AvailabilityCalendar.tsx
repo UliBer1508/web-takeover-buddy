@@ -1,10 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { externalSupabase } from "@/integrations/external-supabase/client";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, DateRange } from "react-day-picker";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Loader2, Calendar as CalendarIcon, AlertCircle } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, AlertCircle, CheckCircle, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { format, differenceInDays, isSameDay } from "date-fns";
+import { de } from "date-fns/locale";
+import { toast } from "@/hooks/use-toast";
 import "react-day-picker/dist/style.css";
 
 const HOUSE_ID = "f5b4588b-96cf-46f7-b84a-5f6750f7088e";
@@ -14,7 +18,12 @@ interface OccupiedDate {
   check_out: string;
 }
 
-export const AvailabilityCalendar = () => {
+interface AvailabilityCalendarProps {
+  onDateRangeSelect?: (checkIn: Date | null, checkOut: Date | null) => void;
+}
+
+export const AvailabilityCalendar = ({ onDateRangeSelect }: AvailabilityCalendarProps) => {
+  const [selected, setSelected] = useState<DateRange | undefined>();
   // Query ONLY bookings table
   const { data, isLoading, error } = useQuery({
     queryKey: ['availability', HOUSE_ID],
@@ -56,6 +65,58 @@ export const AvailabilityCalendar = () => {
     
     return dates;
   }, [data]);
+
+  // Check if a date range is valid (no occupied dates in between)
+  const isRangeValid = (range: DateRange | undefined) => {
+    if (!range?.from || !range?.to) return true;
+    
+    let current = new Date(range.from);
+    while (current <= range.to) {
+      if (occupiedDates.some(d => isSameDay(d, current))) {
+        return false;
+      }
+      current.setDate(current.getDate() + 1);
+    }
+    return true;
+  };
+
+  // Handle date selection with validation
+  const handleSelect = (range: DateRange | undefined) => {
+    if (range?.from && range?.to) {
+      const nights = differenceInDays(range.to, range.from);
+      
+      // Check minimum stay (4 nights)
+      if (nights < 4) {
+        toast({
+          title: "Mindestaufenthalt nicht erfüllt",
+          description: "Bitte wählen Sie mindestens 4 Nächte",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Check for occupied dates in range
+      if (!isRangeValid(range)) {
+        toast({
+          title: "Zeitraum nicht verfügbar",
+          description: "Der gewählte Zeitraum enthält bereits belegte Tage",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      setSelected(range);
+      onDateRangeSelect?.(range.from, range.to);
+    } else {
+      setSelected(range);
+    }
+  };
+
+  // Reset selection
+  const handleReset = () => {
+    setSelected(undefined);
+    onDateRangeSelect?.(null, null);
+  };
 
   const modifiers = { occupied: occupiedDates };
   const modifiersClassNames = {
@@ -172,6 +233,29 @@ export const AvailabilityCalendar = () => {
           font-weight: 700;
         }
         
+        /* Range selection styles */
+        .calendar-premium .rdp-day_range_start,
+        .calendar-premium .rdp-day_range_end {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+          color: white !important;
+          font-weight: 700;
+          border-color: #047857 !important;
+          transform: scale(1.05);
+          box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+        }
+        
+        .calendar-premium .rdp-day_range_middle {
+          background: hsl(var(--primary) / 0.15) !important;
+          border-color: hsl(var(--primary) / 0.3) !important;
+          color: hsl(var(--foreground));
+        }
+        
+        .calendar-premium .rdp-day_range_start:hover,
+        .calendar-premium .rdp-day_range_end:hover {
+          transform: scale(1.08);
+          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        }
+        
         @media (max-width: 768px) {
           .calendar-premium .rdp-day {
             width: 48px;
@@ -220,9 +304,39 @@ export const AvailabilityCalendar = () => {
           
           {!isLoading && !error && (
             <div className="space-y-8">
+              {/* Selected Range Display */}
+              {selected?.from && selected?.to && (
+                <Alert className="bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800">
+                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <AlertDescription className="text-green-800 dark:text-green-200 flex items-center justify-between">
+                    <div>
+                      <strong className="font-semibold">Ausgewählter Zeitraum:</strong>
+                      <div className="mt-1 text-base">
+                        {format(selected.from, 'dd. MMMM yyyy', { locale: de })} bis{' '}
+                        {format(selected.to, 'dd. MMMM yyyy', { locale: de })}
+                        <span className="ml-2 font-semibold">
+                          ({differenceInDays(selected.to, selected.from)} {differenceInDays(selected.to, selected.from) === 1 ? 'Nacht' : 'Nächte'})
+                        </span>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={handleReset}
+                      className="ml-4 text-green-700 hover:text-green-900 hover:bg-green-100 dark:text-green-300 dark:hover:text-green-100"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Zurücksetzen
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+              
               <div className="calendar-premium">
                 <DayPicker
-                  mode="single"
+                  mode="range"
+                  selected={selected}
+                  onSelect={handleSelect}
                   numberOfMonths={2}
                   disabled={{ before: new Date() }}
                   modifiers={modifiers}

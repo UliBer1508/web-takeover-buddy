@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -10,6 +11,25 @@ import Footer from "@/components/Footer";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 
 const Index = () => {
+  const [selectedDates, setSelectedDates] = useState<{
+    checkIn: Date | null;
+    checkOut: Date | null;
+  }>({ checkIn: null, checkOut: null });
+
+  const handleDateSelection = (checkIn: Date | null, checkOut: Date | null) => {
+    setSelectedDates({ checkIn, checkOut });
+    
+    // Smooth scroll to booking form after selection
+    if (checkIn && checkOut) {
+      setTimeout(() => {
+        document.getElementById('booking')?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 400);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -26,13 +46,16 @@ const Index = () => {
               Verfügbarkeit prüfen
             </h2>
             <p className="text-muted-foreground">
-              Sehen Sie auf einen Blick, wann das Chalet verfügbar ist
+              Wählen Sie Ihren gewünschten Zeitraum direkt im Kalender aus
             </p>
           </div>
-          <AvailabilityCalendar />
+          <AvailabilityCalendar onDateRangeSelect={handleDateSelection} />
         </div>
       </section>
-      <BookingForm />
+      <BookingForm 
+        initialCheckIn={selectedDates.checkIn} 
+        initialCheckOut={selectedDates.checkOut} 
+      />
       <Footer />
     </div>
   );
