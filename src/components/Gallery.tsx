@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight, X, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 
+import heroImage from "@/assets/hero-chalet.jpg";
+import exteriorWinter from "@/assets/exterior-winter.jpg";
 import exteriorFrontGarage from "@/assets/exterior-front-garage.jpg";
 import exteriorFrontView from "@/assets/exterior-front-view.jpg";
+import terrace from "@/assets/terrace.jpg";
 import balconyMountainView from "@/assets/balcony-mountain-view.jpg";
 import balconyTerrace from "@/assets/balcony-terrace.jpg";
 import balconyInteriorView from "@/assets/balcony-interior-view.jpg";
@@ -41,8 +42,11 @@ import hallwayStairs from "@/assets/hallway-stairs.jpg";
 
 const galleryImages = [
   // Außenbereich
+  { src: heroImage, title: "Außenansicht Sommer", category: "Außenbereich" },
+  { src: exteriorWinter, title: "Außenansicht Winter", category: "Außenbereich" },
   { src: exteriorFrontGarage, title: "Chalet mit Garage", category: "Außenbereich" },
   { src: exteriorFrontView, title: "Frontansicht des Chalets", category: "Außenbereich" },
+  { src: terrace, title: "Terrasse mit Bergblick", category: "Außenbereich" },
   { src: balconyMountainView, title: "Balkon mit Bergpanorama", category: "Außenbereich" },
   { src: balconyTerrace, title: "Sonnenterrasse", category: "Außenbereich" },
   { src: balconyInteriorView, title: "Balkon mit Innenansicht", category: "Außenbereich" },
@@ -82,47 +86,6 @@ const galleryImages = [
 
 const Gallery = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
-  const [heroImageIndex, setHeroImageIndex] = useState<number | null>(null);
-
-  // Load hero image from localStorage on mount
-  useEffect(() => {
-    const savedHeroImage = localStorage.getItem("heroImage");
-    if (savedHeroImage) {
-      try {
-        const parsed = JSON.parse(savedHeroImage);
-        setHeroImageIndex(parsed.index);
-      } catch (e) {
-        console.error("Error loading hero image:", e);
-      }
-    }
-  }, []);
-
-  const setAsHeroImage = (index: number) => {
-    const heroImage = {
-      src: galleryImages[index].src,
-      title: galleryImages[index].title,
-      category: galleryImages[index].category,
-      index: index,
-    };
-    localStorage.setItem("heroImage", JSON.stringify(heroImage));
-    setHeroImageIndex(index);
-    
-    // Dispatch custom event for same-page updates
-    window.dispatchEvent(new Event("heroImageUpdated"));
-    
-    // Show success toast
-    toast.success("Hero-Bild gesetzt", {
-      description: `"${galleryImages[index].title}" wird jetzt als Hero-Bild verwendet.`,
-    });
-
-    // Scroll to hero section
-    setTimeout(() => {
-      const heroElement = document.getElementById("hero");
-      if (heroElement) {
-        heroElement.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 500);
-  };
 
   const openLightbox = (index: number) => {
     setSelectedImageIndex(index);
@@ -167,12 +130,6 @@ const Gallery = () => {
                 alt={image.title}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               />
-              {heroImageIndex === index && (
-                <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground flex items-center gap-1 z-10">
-                  <Star className="h-3 w-3 fill-current" />
-                  Hero
-                </Badge>
-              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <p className="text-sm font-medium text-accent">{image.category}</p>
@@ -212,27 +169,11 @@ const Gallery = () => {
                   className="max-w-full max-h-[80vh] object-contain rounded-lg"
                 />
                 <div className="text-white text-center mt-4">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <p className="text-sm text-accent">{galleryImages[selectedImageIndex].category}</p>
-                    {heroImageIndex === selectedImageIndex && (
-                      <Badge className="bg-primary text-primary-foreground flex items-center gap-1">
-                        <Star className="h-3 w-3 fill-current" />
-                        Hero
-                      </Badge>
-                    )}
-                  </div>
+                  <p className="text-sm text-accent">{galleryImages[selectedImageIndex].category}</p>
                   <p className="text-xl font-semibold">{galleryImages[selectedImageIndex].title}</p>
                   <p className="text-sm text-muted-foreground mt-2">
                     {selectedImageIndex + 1} / {galleryImages.length}
                   </p>
-                  <Button
-                    onClick={() => setAsHeroImage(selectedImageIndex)}
-                    className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
-                    size="sm"
-                  >
-                    <Star className="h-4 w-4 mr-2" />
-                    Als Hero-Bild verwenden
-                  </Button>
                 </div>
               </div>
 

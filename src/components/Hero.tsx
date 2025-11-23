@@ -1,59 +1,14 @@
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import defaultHeroImage from "@/assets/hero-chalet-winter.jpg";
+import heroImage from "@/assets/hero-chalet.jpg";
 
 const Hero = () => {
-  const [heroImage, setHeroImage] = useState(defaultHeroImage);
-
   const scrollToBooking = () => {
     const element = document.getElementById("booking");
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
-
-  // Load hero image from localStorage
-  useEffect(() => {
-    const savedHeroImage = localStorage.getItem("heroImage");
-    if (savedHeroImage) {
-      try {
-        const parsed = JSON.parse(savedHeroImage);
-        setHeroImage(parsed.src);
-      } catch (e) {
-        console.error("Error loading hero image:", e);
-        setHeroImage(defaultHeroImage);
-      }
-    }
-  }, []);
-
-  // Listen for localStorage changes (when hero image is updated from Gallery)
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const savedHeroImage = localStorage.getItem("heroImage");
-      if (savedHeroImage) {
-        try {
-          const parsed = JSON.parse(savedHeroImage);
-          setHeroImage(parsed.src);
-        } catch (e) {
-          console.error("Error loading hero image:", e);
-        }
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    
-    // Also listen for custom event for same-page updates
-    const handleHeroImageUpdate = () => {
-      handleStorageChange();
-    };
-    window.addEventListener("heroImageUpdated", handleHeroImageUpdate);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("heroImageUpdated", handleHeroImageUpdate);
-    };
-  }, []);
 
   return (
     <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
