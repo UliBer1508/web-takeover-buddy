@@ -6,6 +6,13 @@ import defaultHeroImage from "@/assets/hero-chalet-winter.jpg";
 const Hero = () => {
   const [heroImage, setHeroImage] = useState(defaultHeroImage);
 
+  const scrollToBooking = () => {
+    const element = document.getElementById("booking");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   // Load hero image from localStorage
   useEffect(() => {
     const savedHeroImage = localStorage.getItem("heroImage");
@@ -47,12 +54,6 @@ const Hero = () => {
       window.removeEventListener("heroImageUpdated", handleHeroImageUpdate);
     };
   }, []);
-  const scrollToBooking = () => {
-    const element = document.getElementById("booking");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   return (
     <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
