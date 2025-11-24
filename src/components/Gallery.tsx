@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
-import heroImage from "@/assets/hero-chalet.jpg";
 import exteriorWinter from "@/assets/exterior-winter.jpg";
 import exteriorFrontGarage from "@/assets/exterior-front-garage.jpg";
 import exteriorFrontView from "@/assets/exterior-front-view.jpg";
@@ -44,7 +43,6 @@ import hallwayStairs from "@/assets/hallway-stairs.jpg";
 
 const galleryImages = [
   // Außenbereich
-  { src: heroImage, title: "Außenansicht Sommer", category: "Außenbereich" },
   { src: exteriorWinter, title: "Außenansicht Winter", category: "Außenbereich" },
   { src: exteriorFrontGarage, title: "Chalet mit Garage", category: "Außenbereich" },
   { src: exteriorFrontView, title: "Frontansicht des Chalets", category: "Außenbereich" },
@@ -104,7 +102,7 @@ const Gallery = () => {
   });
 
   const [heroImageSrc, setHeroImageSrc] = useState(() => {
-    return localStorage.getItem('hero_image') || heroImage;
+    return localStorage.getItem('hero_image') || exteriorWinter;
   });
 
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
