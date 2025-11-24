@@ -25,26 +25,38 @@ interface AvailabilityCalendarProps {
 export const AvailabilityCalendar = ({ onDateRangeSelect }: AvailabilityCalendarProps) => {
   const [selected, setSelected] = useState<DateRange | undefined>();
   // Query ONLY bookings table
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['availability', HOUSE_ID],
     queryFn: async () => {
-      const { data: bookings, error: bookingsError } = await externalSupabase
-        .from('bookings')
-        .select('check_in, check_out')
-        .eq('house_id', HOUSE_ID)
-        .in('status', ['confirmed', 'completed']);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 Sekunden Timeout
+      
+      try {
+        const { data: bookings, error: bookingsError } = await externalSupabase
+          .from('bookings')
+          .select('check_in, check_out')
+          .eq('house_id', HOUSE_ID)
+          .in('status', ['confirmed', 'completed'])
+          .abortSignal(controller.signal);
 
-      if (bookingsError) {
-        console.error('Error fetching bookings:', bookingsError);
-        throw new Error(`bookings: ${bookingsError.message}`);
+        clearTimeout(timeoutId);
+
+        if (bookingsError) {
+          console.error('Error fetching bookings:', bookingsError);
+          throw new Error(`bookings: ${bookingsError.message}`);
+        }
+
+        console.log(`Loaded ${bookings?.length || 0} confirmed bookings`);
+        return (bookings || []) as OccupiedDate[];
+      } catch (err) {
+        clearTimeout(timeoutId);
+        throw err;
       }
-
-      console.log(`Loaded ${bookings?.length || 0} confirmed bookings`);
-      return (bookings || []) as OccupiedDate[];
     },
     refetchInterval: 5 * 60 * 1000, // Auto-refresh every 5 minutes
     staleTime: 2 * 60 * 1000, // Cache for 2 minutes
-    retry: 2
+    retry: 3, // 3 Versuche
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000) // Exponential Backoff
   });
 
   // Calculate all occupied dates
@@ -295,9 +307,23 @@ export const AvailabilityCalendar = ({ onDateRangeSelect }: AvailabilityCalendar
           {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-5 w-5" />
-              <AlertDescription>
-                <strong className="text-base">Fehler beim Laden der Verfügbarkeit</strong>
-                <p className="text-sm mt-2">{(error as Error).message}</p>
+              <AlertDescription className="space-y-3">
+                <div>
+                  <strong className="text-base">Verbindungsproblem</strong>
+                  <p className="text-sm mt-2">
+                    Die Buchungsdaten können momentan nicht geladen werden. 
+                    Die externe Datenbank ist möglicherweise pausiert oder nicht erreichbar.
+                  </p>
+                  <p className="text-sm mt-1 opacity-75">{(error as Error).message}</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => refetch()}
+                  className="bg-background hover:bg-accent"
+                >
+                  Erneut versuchen
+                </Button>
               </AlertDescription>
             </Alert>
           )}
