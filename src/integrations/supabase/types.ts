@@ -59,6 +59,36 @@ export type Database = {
         }
         Relationships: []
       }
+      gallery_images: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_hero: boolean
+          sort_order: number
+          title: string
+          url: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          is_hero?: boolean
+          sort_order?: number
+          title: string
+          url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_hero?: boolean
+          sort_order?: number
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

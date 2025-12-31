@@ -1,47 +1,39 @@
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import heroImage from "@/assets/exterior-winter.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import heroImageFallback from "@/assets/exterior-winter.jpg";
 
 const Hero = () => {
-  const [heroImageSrc, setHeroImageSrc] = useState(() => {
-    const savedHero = localStorage.getItem('hero_image');
-    const savedImages = localStorage.getItem('gallery_images');
-    
-    // Check if saved hero image exists and is still in gallery
-    if (savedHero && savedImages) {
-      try {
-        const images = JSON.parse(savedImages);
-        const heroExists = images.some((img: { src: string }) => img.src === savedHero);
-        if (heroExists) return savedHero;
-      } catch (e) {
-        console.error('Error parsing gallery images:', e);
+  // Fetch hero image from Supabase
+  const { data: heroImage } = useQuery({
+    queryKey: ['hero-image'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('gallery_images')
+        .select('url')
+        .eq('is_hero', true)
+        .limit(1)
+        .single();
+      
+      if (error || !data) {
+        // Fallback to first image if no hero is set
+        const { data: firstImage } = await supabase
+          .from('gallery_images')
+          .select('url')
+          .order('sort_order', { ascending: true })
+          .limit(1)
+          .single();
+        
+        return firstImage?.url || null;
       }
-    }
-    
-    // Fallback: First image from gallery
-    if (savedImages) {
-      try {
-        const images = JSON.parse(savedImages);
-        if (images.length > 0) return images[0].src;
-      } catch (e) {
-        console.error('Error parsing gallery images:', e);
-      }
-    }
-    
-    // Last fallback: Original imported image
-    return heroImage;
+      
+      return data.url;
+    },
   });
 
-  useEffect(() => {
-    const handleHeroChange = () => {
-      const newHero = localStorage.getItem('hero_image');
-      if (newHero) setHeroImageSrc(newHero);
-    };
-    
-    window.addEventListener('heroImageChanged', handleHeroChange);
-    return () => window.removeEventListener('heroImageChanged', handleHeroChange);
-  }, []);
+  const heroImageSrc = heroImage || heroImageFallback;
+
   const scrollToBooking = () => {
     const element = document.getElementById("booking");
     if (element) {
@@ -59,7 +51,7 @@ const Hero = () => {
           className="w-full h-full object-cover"
           onError={(e) => {
             console.error('Hero image failed to load:', heroImageSrc);
-            e.currentTarget.src = heroImage;
+            e.currentTarget.src = heroImageFallback;
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/30 to-foreground/60" />
