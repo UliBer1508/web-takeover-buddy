@@ -1,12 +1,14 @@
 import { useState, useCallback } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff, GripVertical } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff, GripVertical, Pencil } from "lucide-react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ImageUploadDialog from "./ImageUploadDialog";
+import ImageEditDialog from "./ImageEditDialog";
 import { Badge } from "@/components/ui/badge";
 
 interface GalleryImage {
@@ -41,6 +43,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
   const [activeSeasonId, setActiveSeasonId] = useState<string | null>(null);
   const [draggedImage, setDraggedImage] = useState<GalleryImage | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [imageToEdit, setImageToEdit] = useState<GalleryImage | null>(null);
 
   // Fetch seasons from database
   const { data: seasons = [] } = useQuery({
@@ -405,18 +408,32 @@ const Gallery = ({ houseId }: GalleryProps) => {
                     )}
                   </button>
                   
-                  {/* Trash Icon */}
-                  <button 
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      confirmDelete(image); 
-                    }}
-                    className="bg-black/60 hover:bg-red-600/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
-                    disabled={deleteMutation.isPending}
-                    aria-label="Bild löschen"
-                  >
-                    <Trash2 className="w-5 h-5 text-white" />
-                  </button>
+                  <div className="flex gap-2">
+                    {/* Edit Icon */}
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        setImageToEdit(image); 
+                      }}
+                      className="bg-black/60 hover:bg-black/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
+                      aria-label="Bild bearbeiten"
+                    >
+                      <Pencil className="w-5 h-5 text-white" />
+                    </button>
+                    
+                    {/* Trash Icon */}
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        confirmDelete(image); 
+                      }}
+                      className="bg-black/60 hover:bg-red-600/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
+                      disabled={deleteMutation.isPending}
+                      aria-label="Bild löschen"
+                    >
+                      <Trash2 className="w-5 h-5 text-white" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -439,9 +456,21 @@ const Gallery = ({ houseId }: GalleryProps) => {
         houseId={houseId}
       />
 
+      {/* Image Edit Dialog */}
+      <ImageEditDialog
+        open={!!imageToEdit}
+        onOpenChange={(open) => !open && setImageToEdit(null)}
+        image={imageToEdit}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
+      />
+
       {/* Lightbox Dialog */}
       <Dialog open={selectedImageIndex !== null} onOpenChange={closeLightbox}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
+          <VisuallyHidden>
+            <DialogTitle>Bildansicht</DialogTitle>
+            <DialogDescription>Großansicht des ausgewählten Bildes</DialogDescription>
+          </VisuallyHidden>
           <button
             onClick={closeLightbox}
             className="absolute top-4 right-4 z-50 text-white hover:text-accent transition-colors"
