@@ -722,9 +722,9 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                 </div>
                 
                 {/* Promotion Banner - now under prices */}
-                {promotions.length > 0 && (
+                {promotions.length > 0 && selectedHouse && (
                   <div className="mt-4 pt-4 border-t">
-                    <PromotionBanner houseId={selectedHouse?.id} checkInDate={watchedCheckIn} />
+                    <PromotionBanner houseId={selectedHouse.id} checkInDate={watchedCheckIn} />
                   </div>
                 )}
               </CardContent>
