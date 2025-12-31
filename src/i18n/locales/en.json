@@ -89,6 +89,13 @@
     "noImages": "No images yet",
     "noImagesForSeason": "No images for \"{{season}}\" available",
     "uploadHint": "Click \"Add Images\" to upload images",
+    "seasons": {
+      "all": "All Seasons",
+      "spring": "Spring",
+      "summer": "Summer",
+      "autumn": "Autumn",
+      "winter": "Winter"
+    },
     "noCategory": "No Category",
     "heroUpdated": "Hero image updated",
     "heroUpdatedDesc": "The image will now be displayed on the homepage.",

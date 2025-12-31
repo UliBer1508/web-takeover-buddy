@@ -89,6 +89,13 @@
     "noImages": "Noch keine Bilder vorhanden",
     "noImagesForSeason": "Keine Bilder für \"{{season}}\" vorhanden",
     "uploadHint": "Klicken Sie auf \"Bilder hinzufügen\" um Bilder hochzuladen",
+    "seasons": {
+      "all": "Ganzjährig",
+      "spring": "Frühling",
+      "summer": "Sommer",
+      "autumn": "Herbst",
+      "winter": "Winter"
+    },
     "noCategory": "Keine Kategorie",
     "heroUpdated": "Hero-Bild aktualisiert",
     "heroUpdatedDesc": "Das Bild wird nun auf der Startseite angezeigt.",

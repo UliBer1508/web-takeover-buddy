@@ -333,7 +333,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
                 onClick={() => setActiveSeasonId(season.id)}
                 className="gap-2"
               >
-                {season.display_name}
+                {t(`gallery.seasons.${season.name}`)}
                 <Badge variant="secondary" className="ml-1 text-xs">
                   {count}
                 </Badge>
@@ -359,7 +359,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
             <p className="text-lg">
               {!activeSeasonId || activeSeasonId === allSeasonId
                 ? t('gallery.noImages')
-                : t('gallery.noImagesForSeason', { season: seasons.find(s => s.id === activeSeasonId)?.display_name })
+                : t('gallery.noImagesForSeason', { season: t(`gallery.seasons.${seasons.find(s => s.id === activeSeasonId)?.name}`) })
               }
             </p>
             <p className="text-sm">{t('gallery.uploadHint')}</p>
