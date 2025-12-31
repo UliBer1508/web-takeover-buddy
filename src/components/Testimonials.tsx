@@ -21,8 +21,12 @@ interface Review {
   sort_order: number;
 }
 
+// Entwicklungsmodus - auf false setzen wenn Auth implementiert ist
+const DEV_MODE = true;
+
 const Testimonials = () => {
   const { isAuthenticated } = useAuth();
+  const canEdit = DEV_MODE || isAuthenticated;
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
 
@@ -86,7 +90,7 @@ const Testimonials = () => {
             Was unsere Gäste über ihren Aufenthalt sagen
           </p>
           
-          {isAuthenticated && (
+          {canEdit && (
             <Button
               onClick={() => setAddDialogOpen(true)}
               className="mt-4"
@@ -110,7 +114,7 @@ const Testimonials = () => {
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {isAuthenticated && (
+                {canEdit && (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -135,7 +139,7 @@ const Testimonials = () => {
                   <div className="border-t pt-4">
                     <p className="font-semibold text-foreground">{review.guest_name}</p>
                     <p className="text-sm text-muted-foreground">{formatDate(review.review_date)}</p>
-                    {!review.is_visible && isAuthenticated && (
+                    {!review.is_visible && canEdit && (
                       <p className="text-xs text-destructive mt-1">Ausgeblendet</p>
                     )}
                   </div>
