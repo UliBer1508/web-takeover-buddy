@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Calendar, Users, Mail, Phone, MessageSquare, Pencil, ChevronDown, Calculator, Tag } from "lucide-react";
+import { CalendarIcon, Users, Mail, Phone, MessageSquare, Pencil, ChevronDown, Calculator, Tag } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,11 @@ import { toast } from "@/hooks/use-toast";
 import { externalSupabase } from "@/integrations/external-supabase/client";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { format, differenceInDays, getMonth } from "date-fns";
+import { format, differenceInDays, getMonth, parse } from "date-fns";
+import { de } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import HouseSettingsDialog from "@/components/HouseSettingsDialog";
 
 import PromotionBanner from "@/components/PromotionBanner";
@@ -519,14 +523,39 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
                     <FormField control={form.control} name="checkIn" render={({ field }) => (
-                      <FormItem className="min-w-0">
+                      <FormItem className="min-w-0 flex flex-col">
                         <FormLabel>{t('booking.checkIn')}</FormLabel>
-                        <FormControl>
-                          <div className="relative min-w-0">
-                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
-                            <Input type="date" className="pl-10 w-full" {...field} />
-                          </div>
-                        </FormControl>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal justify-start",
+                                  !field.value && "text-muted-foreground"
+                                )}
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                                {field.value ? (
+                                  format(parse(field.value, 'yyyy-MM-dd', new Date()), 'dd.MM.yyyy')
+                                ) : (
+                                  <span>{t('booking.selectDate')}</span>
+                                )}
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value ? parse(field.value, 'yyyy-MM-dd', new Date()) : undefined}
+                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                              initialFocus
+                              locale={de}
+                              className="pointer-events-auto"
+                            />
+                          </PopoverContent>
+                        </Popover>
                         {initialCheckIn && (
                           <Badge variant="secondary" className="mt-1 text-xs">
                             ✓ {t('booking.fromCalendar')}
@@ -536,23 +565,60 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                       </FormItem>
                     )} />
 
-                    <FormField control={form.control} name="checkOut" render={({ field }) => (
-                      <FormItem className="min-w-0">
-                        <FormLabel>{t('booking.checkOut')}</FormLabel>
-                        <FormControl>
-                          <div className="relative min-w-0">
-                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
-                            <Input type="date" className="pl-10 w-full" {...field} />
-                          </div>
-                        </FormControl>
-                        {initialCheckOut && (
-                          <Badge variant="secondary" className="mt-1 text-xs">
-                            ✓ {t('booking.fromCalendar')}
-                          </Badge>
-                        )}
-                        <FormMessage />
-                      </FormItem>
-                    )} />
+                    <FormField control={form.control} name="checkOut" render={({ field }) => {
+                      const checkInValue = form.watch('checkIn');
+                      const checkInDate = checkInValue ? parse(checkInValue, 'yyyy-MM-dd', new Date()) : undefined;
+                      
+                      return (
+                        <FormItem className="min-w-0 flex flex-col">
+                          <FormLabel>{t('booking.checkOut')}</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full pl-3 text-left font-normal justify-start",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                                  {field.value ? (
+                                    format(parse(field.value, 'yyyy-MM-dd', new Date()), 'dd.MM.yyyy')
+                                  ) : (
+                                    <span>{t('booking.selectDate')}</span>
+                                  )}
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value ? parse(field.value, 'yyyy-MM-dd', new Date()) : undefined}
+                                onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                                disabled={(date) => {
+                                  const today = new Date();
+                                  today.setHours(0, 0, 0, 0);
+                                  if (checkInDate) {
+                                    return date <= checkInDate;
+                                  }
+                                  return date < today;
+                                }}
+                                initialFocus
+                                locale={de}
+                                className="pointer-events-auto"
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          {initialCheckOut && (
+                            <Badge variant="secondary" className="mt-1 text-xs">
+                              ✓ {t('booking.fromCalendar')}
+                            </Badge>
+                          )}
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }} />
 
                     <FormField control={form.control} name="adults" render={({ field }) => (
                       <FormItem className="min-w-0">
