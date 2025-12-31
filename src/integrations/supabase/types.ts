@@ -184,6 +184,7 @@ export type Database = {
           cleaning_fee: number | null
           created_at: string
           description: string | null
+          external_house_id: string | null
           id: string
           is_active: boolean | null
           max_guests: number
@@ -202,6 +203,7 @@ export type Database = {
           cleaning_fee?: number | null
           created_at?: string
           description?: string | null
+          external_house_id?: string | null
           id?: string
           is_active?: boolean | null
           max_guests?: number
@@ -220,6 +222,7 @@ export type Database = {
           cleaning_fee?: number | null
           created_at?: string
           description?: string | null
+          external_house_id?: string | null
           id?: string
           is_active?: boolean | null
           max_guests?: number

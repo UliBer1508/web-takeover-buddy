@@ -17,17 +17,17 @@ interface OccupiedDate {
 }
 
 interface AvailabilityCalendarProps {
-  houseId?: string | null;
+  externalHouseId?: string | null;
   onDateRangeSelect?: (checkIn: Date | null, checkOut: Date | null) => void;
 }
 
-export const AvailabilityCalendar = ({ houseId, onDateRangeSelect }: AvailabilityCalendarProps) => {
+export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: AvailabilityCalendarProps) => {
   const [selected, setSelected] = useState<DateRange | undefined>();
-  // Query ONLY bookings table
+  // Query ONLY bookings table from external database using external_house_id
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['availability', houseId],
+    queryKey: ['availability', externalHouseId],
     queryFn: async () => {
-      if (!houseId) return [];
+      if (!externalHouseId) return [];
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 Sekunden Timeout
@@ -36,7 +36,7 @@ export const AvailabilityCalendar = ({ houseId, onDateRangeSelect }: Availabilit
         const { data: bookings, error: bookingsError } = await externalSupabase
           .from('bookings')
           .select('check_in, check_out')
-          .eq('house_id', houseId)
+          .eq('house_id', externalHouseId)
           .in('status', ['confirmed', 'completed'])
           .abortSignal(controller.signal);
 
@@ -54,7 +54,7 @@ export const AvailabilityCalendar = ({ houseId, onDateRangeSelect }: Availabilit
         throw err;
       }
     },
-    enabled: !!houseId,
+    enabled: !!externalHouseId,
     refetchInterval: 5 * 60 * 1000, // Auto-refresh every 5 minutes
     staleTime: 2 * 60 * 1000, // Cache for 2 minutes
     retry: 3, // 3 Versuche

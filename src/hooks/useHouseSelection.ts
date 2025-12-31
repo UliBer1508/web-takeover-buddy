@@ -10,7 +10,7 @@ export const useHouseSelection = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('houses')
-        .select('id, name, slug, short_description, max_guests, is_active, sort_order')
+        .select('id, name, slug, short_description, max_guests, is_active, sort_order, external_house_id')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
       
