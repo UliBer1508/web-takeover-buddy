@@ -179,6 +179,7 @@ export type Database = {
       }
       houses: {
         Row: {
+          bed_linen_fee: number | null
           check_in_time: string | null
           check_out_time: string | null
           cleaning_fee: number | null
@@ -193,11 +194,14 @@ export type Database = {
           price_offseason: number | null
           price_summer: number | null
           price_winter: number | null
+          service_fee: number | null
           short_description: string | null
           slug: string | null
           sort_order: number | null
+          tourist_tax: number | null
         }
         Insert: {
+          bed_linen_fee?: number | null
           check_in_time?: string | null
           check_out_time?: string | null
           cleaning_fee?: number | null
@@ -212,11 +216,14 @@ export type Database = {
           price_offseason?: number | null
           price_summer?: number | null
           price_winter?: number | null
+          service_fee?: number | null
           short_description?: string | null
           slug?: string | null
           sort_order?: number | null
+          tourist_tax?: number | null
         }
         Update: {
+          bed_linen_fee?: number | null
           check_in_time?: string | null
           check_out_time?: string | null
           cleaning_fee?: number | null
@@ -231,9 +238,11 @@ export type Database = {
           price_offseason?: number | null
           price_summer?: number | null
           price_winter?: number | null
+          service_fee?: number | null
           short_description?: string | null
           slug?: string | null
           sort_order?: number | null
+          tourist_tax?: number | null
         }
         Relationships: []
       }

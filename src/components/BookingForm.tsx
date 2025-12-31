@@ -69,6 +69,9 @@ interface House {
   check_in_time?: string | null;
   check_out_time?: string | null;
   cleaning_fee?: number | null;
+  service_fee?: number | null;
+  bed_linen_fee?: number | null;
+  tourist_tax?: number | null;
   price_winter?: number | null;
   price_summer?: number | null;
   price_offseason?: number | null;
@@ -378,6 +381,15 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                 <p>✓ Check-in: ab {selectedHouse?.check_in_time ?? "15:00"} Uhr</p>
                 <p>✓ Check-out: bis {selectedHouse?.check_out_time ?? "10:00"} Uhr</p>
                 <p>✓ Endreinigung: {selectedHouse?.cleaning_fee ?? 240}€</p>
+                {(selectedHouse?.service_fee ?? 0) > 0 && (
+                  <p>✓ Servicegebühr: {selectedHouse?.service_fee}€</p>
+                )}
+                {(selectedHouse?.bed_linen_fee ?? 0) > 0 && (
+                  <p>✓ Bettwäsche: {selectedHouse?.bed_linen_fee}€ pro Person</p>
+                )}
+                {(selectedHouse?.tourist_tax ?? 0) > 0 && (
+                  <p>✓ Kurtaxe: {selectedHouse?.tourist_tax?.toFixed(2).replace('.', ',')}€ pro Person/Nacht</p>
+                )}
               </CardContent>
             </Card>
           </div>
