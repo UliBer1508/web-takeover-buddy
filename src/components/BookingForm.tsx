@@ -250,12 +250,23 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
   const watchedAdults = useWatch({ control: form.control, name: 'adults' });
   const watchedChildren = useWatch({ control: form.control, name: 'children' });
 
+  // Calculate dynamic guest limits (max 6 total)
+  const currentAdults = parseInt(watchedAdults) || 0;
+  const currentChildren = parseInt(watchedChildren) || 0;
+  const maxAdults = Math.max(1, 6 - currentChildren);
+  const maxChildren = 6 - currentAdults;
+
+  // Auto-reset children if adults selection makes current children invalid
+  useEffect(() => {
+    if (currentAdults > 0 && currentChildren > maxChildren) {
+      form.setValue('children', maxChildren.toString());
+    }
+  }, [currentAdults, currentChildren, maxChildren, form]);
+
   // Calculate price breakdown reactively
   const priceBreakdown = useMemo(() => {
-    const adults = parseInt(watchedAdults) || 0;
-    const children = parseInt(watchedChildren) || 0;
-    return calculatePriceBreakdown(selectedHouse, watchedCheckIn, watchedCheckOut, adults, children);
-  }, [selectedHouse, watchedCheckIn, watchedCheckOut, watchedAdults, watchedChildren]);
+    return calculatePriceBreakdown(selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren);
+  }, [selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren]);
 
   // Auto-fill form when dates are selected from calendar
   useEffect(() => {
@@ -470,7 +481,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Array.from({ length: 6 }, (_, i) => i + 1).map(num => (
+                            {Array.from({ length: maxAdults }, (_, i) => i + 1).map(num => (
                               <SelectItem key={num} value={num.toString()}>
                                 {num} {num === 1 ? t('booking.adult') : t('booking.adults')}
                               </SelectItem>
@@ -492,7 +503,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Array.from({ length: 6 }, (_, i) => i).map(num => (
+                            {Array.from({ length: maxChildren + 1 }, (_, i) => i).map(num => (
                               <SelectItem key={num} value={num.toString()}>
                                 {num} {num === 1 ? t('booking.child') : t('booking.children')}
                               </SelectItem>
