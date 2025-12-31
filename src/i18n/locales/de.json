@@ -217,5 +217,34 @@
     "delete": "Löschen",
     "edit": "Bearbeiten",
     "close": "Schließen"
+  },
+  "auth": {
+    "admin": "Admin",
+    "adminArea": "Admin-Bereich",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "email": "E-Mail",
+    "emailPlaceholder": "ihre@email.com",
+    "password": "Passwort",
+    "passwordPlaceholder": "••••••••",
+    "loginButton": "Anmelden",
+    "loggingIn": "Wird angemeldet...",
+    "invalidCredentials": "Ungültige Anmeldedaten",
+    "loginDescription": "Melden Sie sich an, um auf die Admin-Funktionen zuzugreifen",
+    "loginSuccess": "Erfolgreich angemeldet",
+    "welcomeBack": "Willkommen zurück!",
+    "loginError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "fillAllFields": "Bitte füllen Sie alle Felder aus",
+    "backToHome": "Zurück zur Startseite"
+  },
+  "testimonials": {
+    "title": "Gästebewertungen",
+    "subtitle": "Was unsere Gäste über ihren Aufenthalt sagen",
+    "newReview": "Neue Bewertung",
+    "addReview": "Bewertung schreiben",
+    "readMore": "Weiterlesen",
+    "showLess": "Weniger anzeigen",
+    "noReviews": "Noch keine Bewertungen vorhanden.",
+    "hidden": "Ausgeblendet"
   }
 }

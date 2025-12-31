@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Calendar, Users, Mail, Phone, MessageSquare, Pencil, ChevronDown, Calculator } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,12 +19,10 @@ import { format, differenceInDays, getMonth } from "date-fns";
 import HouseSettingsDialog from "@/components/HouseSettingsDialog";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
+import { useAdmin } from "@/hooks/useAdmin";
 
 // Default house ID (will be replaced by actual house from database)
 const DEFAULT_HOUSE_ID = "00000000-0000-0000-0000-000000000001";
-
-// Development mode - set to false when auth is implemented
-const DEV_MODE = true;
 
 // Season determination based on month
 type Season = 'winter' | 'summer' | 'offseason';
@@ -194,8 +191,8 @@ interface BookingStatus {
 const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: BookingFormProps) => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { isAuthenticated } = useAuth();
-  const canEdit = DEV_MODE || isAuthenticated;
+  const { isAdmin } = useAdmin();
+  const canEdit = isAdmin;
   
   // Fetch houses from database
   const { data: houses = [] } = useQuery({
