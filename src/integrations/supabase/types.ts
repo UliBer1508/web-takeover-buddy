@@ -25,6 +25,7 @@ export type Database = {
           house_id: string
           id: string
           message: string | null
+          number_of_children: number
           number_of_guests: number
           status_id: string
           updated_at: string | null
@@ -39,6 +40,7 @@ export type Database = {
           house_id: string
           id?: string
           message?: string | null
+          number_of_children?: number
           number_of_guests: number
           status_id: string
           updated_at?: string | null
@@ -53,6 +55,7 @@ export type Database = {
           house_id?: string
           id?: string
           message?: string | null
+          number_of_children?: number
           number_of_guests?: number
           status_id?: string
           updated_at?: string | null
