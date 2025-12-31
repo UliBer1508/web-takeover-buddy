@@ -300,7 +300,11 @@
     "deletedDesc": "Bewertung wurde entfernt.",
     "errorDelete": "Bewertung konnte nicht gelöscht werden.",
     "textEnglish": "Englische Übersetzung",
-    "textEnglishPlaceholder": "Optionale englische Übersetzung des Bewertungstextes"
+    "textEnglishPlaceholder": "Optionale englische Übersetzung des Bewertungstextes",
+    "translated": "Übersetzt",
+    "translatedToEn": "Text wurde ins Englische übersetzt",
+    "translatedToDe": "Text wurde ins Deutsche übersetzt",
+    "translateError": "Fehler bei der Übersetzung"
   },
   "reviewAdd": {
     "title": "Neue Bewertung",

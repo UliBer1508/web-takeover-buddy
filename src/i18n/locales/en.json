@@ -300,7 +300,11 @@
     "deletedDesc": "Review was removed.",
     "errorDelete": "Review could not be deleted.",
     "textEnglish": "English Translation",
-    "textEnglishPlaceholder": "Optional English translation of the review text"
+    "textEnglishPlaceholder": "Optional English translation of the review text",
+    "translated": "Translated",
+    "translatedToEn": "Text was translated to English",
+    "translatedToDe": "Text was translated to German",
+    "translateError": "Translation error"
   },
   "reviewAdd": {
     "title": "New Review",
