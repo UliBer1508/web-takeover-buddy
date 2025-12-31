@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Calendar, Users, Mail, Phone, MessageSquare, Pencil } from "lucide-react";
+import { Calendar, Users, Mail, Phone, MessageSquare, Pencil, ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -416,15 +417,24 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                 <p>✓ Check-in: ab {selectedHouse?.check_in_time ?? "15:00"} Uhr</p>
                 <p>✓ Check-out: bis {selectedHouse?.check_out_time ?? "10:00"} Uhr</p>
                 <p>✓ Endreinigung: {selectedHouse?.cleaning_fee ?? 240}€</p>
-                {(selectedHouse?.service_fee ?? 0) > 0 && (
-                  <p>✓ Servicegebühr: {selectedHouse?.service_fee}€</p>
-                )}
-                {(selectedHouse?.bed_linen_fee ?? 0) > 0 && (
-                  <p>✓ Bettwäsche: {selectedHouse?.bed_linen_fee}€ pro Buchung</p>
-                )}
-                {(selectedHouse?.tourist_tax ?? 0) > 0 && (
-                  <p>✓ Kurtaxe: {selectedHouse?.tourist_tax?.toFixed(2).replace('.', ',')}€ pro Person und Nacht</p>
-                )}
+                
+                <Collapsible className="mt-3">
+                  <CollapsibleTrigger className="flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors [&[data-state=open]>svg]:rotate-180">
+                    Zusätzliche Nebenkosten
+                    <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-2 pl-4 space-y-1">
+                    {(selectedHouse?.service_fee ?? 0) > 0 && (
+                      <p>✓ Servicegebühr: {selectedHouse?.service_fee}€</p>
+                    )}
+                    {(selectedHouse?.bed_linen_fee ?? 0) > 0 && (
+                      <p>✓ Bettwäsche: {selectedHouse?.bed_linen_fee}€ pro Buchung</p>
+                    )}
+                    {(selectedHouse?.tourist_tax ?? 0) > 0 && (
+                      <p>✓ Kurtaxe: {selectedHouse?.tourist_tax?.toFixed(2).replace('.', ',')}€ pro Person und Nacht</p>
+                    )}
+                  </CollapsibleContent>
+                </Collapsible>
               </CardContent>
             </Card>
           </div>
