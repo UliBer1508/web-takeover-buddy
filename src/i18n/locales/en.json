@@ -403,6 +403,8 @@
   "promotions": {
     "title": "Promotions & Discounts",
     "description": "Manage time-limited discounts and special offers",
+    "houseSpecific": "Manage promotions for {{houseName}}",
+    "global": "Global",
     "manage": "Manage Promotions",
     "add": "Create New Promotion",
     "empty": "No promotions yet",

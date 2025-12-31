@@ -17,7 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { format, differenceInDays, getMonth } from "date-fns";
 import HouseSettingsDialog from "@/components/HouseSettingsDialog";
-import PromotionSettingsDialog from "@/components/PromotionSettingsDialog";
+
 import PromotionBanner from "@/components/PromotionBanner";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
@@ -698,20 +698,6 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
             </CardContent>
           </Card>
 
-          {/* Promotion Banner */}
-          {promotions.length > 0 && (
-            <div className="mt-6">
-              <PromotionBanner houseId={selectedHouse?.id} checkInDate={watchedCheckIn} />
-            </div>
-          )}
-
-          {/* Admin: Manage Promotions */}
-          {canEdit && (
-            <div className="mt-4 flex justify-center">
-              <PromotionSettingsDialog />
-            </div>
-          )}
-
           {/* Pricing Info */}
           <div className="mt-12 grid sm:grid-cols-2 gap-6 animate-fade-in-up">
             <Card>
@@ -734,6 +720,13 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                   <span className="text-muted-foreground">{t('booking.offseason')}</span>
                   <span className="font-semibold">{t('booking.from')} {selectedHouse?.price_offseason ?? 320}€ {t('booking.perNight')}</span>
                 </div>
+                
+                {/* Promotion Banner - now under prices */}
+                {promotions.length > 0 && (
+                  <div className="mt-4 pt-4 border-t">
+                    <PromotionBanner houseId={selectedHouse?.id} checkInDate={watchedCheckIn} />
+                  </div>
+                )}
               </CardContent>
             </Card>
 
