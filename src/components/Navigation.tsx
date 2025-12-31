@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const Navigation = () => {
+  const { t } = useTranslation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -23,12 +26,12 @@ const Navigation = () => {
   };
 
   const navLinks = [
-    { label: "Home", id: "hero" },
-    { label: "Über Uns", id: "about" },
-    { label: "Ausstattung", id: "features" },
-    { label: "Galerie", id: "galerie" },
-    { label: "Buchen", id: "booking" },
-    { label: "Kontakt", id: "footer" },
+    { label: t("navigation.home"), id: "hero" },
+    { label: t("navigation.about"), id: "about" },
+    { label: t("navigation.features"), id: "features" },
+    { label: t("navigation.gallery"), id: "galerie" },
+    { label: t("navigation.booking"), id: "booking" },
+    { label: t("navigation.contact"), id: "footer" },
   ];
 
   return (
@@ -67,21 +70,25 @@ const Navigation = () => {
                   }`} />
                 </button>
               ))}
+              <LanguageSwitcher isScrolled={isScrolled} />
               <Button
                 onClick={() => scrollToSection("booking")}
                 className="bg-primary hover:bg-primary/90"
               >
-                Jetzt Buchen
+                {t("navigation.bookNow")}
               </Button>
             </div>
 
             {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`md:hidden transition-colors ${isScrolled ? "text-foreground" : "text-white"}`}
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            <div className="flex items-center gap-4 md:hidden">
+              <LanguageSwitcher isScrolled={isScrolled} />
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={`transition-colors ${isScrolled ? "text-foreground" : "text-white"}`}
+              >
+                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
           </div>
         </div>
       </nav>
@@ -104,7 +111,7 @@ const Navigation = () => {
               size="lg"
               className="bg-primary hover:bg-primary/90 mt-4"
             >
-              Jetzt Buchen
+              {t("navigation.bookNow")}
             </Button>
           </div>
         </div>

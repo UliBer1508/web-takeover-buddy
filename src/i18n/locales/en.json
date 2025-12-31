@@ -1,0 +1,221 @@
+{
+  "navigation": {
+    "home": "Home",
+    "about": "About Us",
+    "features": "Amenities",
+    "gallery": "Gallery",
+    "booking": "Book",
+    "contact": "Contact",
+    "bookNow": "Book Now"
+  },
+  "hero": {
+    "title": "Steinbock Chalet",
+    "subtitle": "Luxurious Alpine retreat with breathtaking mountain panorama",
+    "bookNow": "Book Now",
+    "altImage": "Steinbock Chalet in the Alps"
+  },
+  "about": {
+    "title": "Welcome to Steinbock Chalet",
+    "description1": "Experience alpine luxury at its finest. Our exclusive chalet offers you the perfect retreat amidst the majestic mountain world. With lovingly designed rooms, state-of-the-art amenities, and breathtaking panoramic views, your stay will become an unforgettable experience.",
+    "description2": "Whether it's a winter holiday on the slopes or summer freshness in the mountains – the Steinbock Chalet is your ideal starting point for alpine adventures and relaxing hours.",
+    "highlights": {
+      "mountain": {
+        "title": "Mountain Panorama",
+        "description": "Breathtaking 360° view of the Alps"
+      },
+      "luxury": {
+        "title": "Luxury Amenities",
+        "description": "High-quality furnishings and modern conveniences"
+      },
+      "wellness": {
+        "title": "Wellness",
+        "description": "Private sauna and relaxation area"
+      },
+      "comfort": {
+        "title": "Comfort Oasis",
+        "description": "Cozy atmosphere for unforgettable moments"
+      }
+    }
+  },
+  "features": {
+    "title": "Amenities & Highlights",
+    "subtitle": "Discover the exclusive amenities of our luxury chalet",
+    "items": {
+      "bedrooms": {
+        "title": "3 Bedrooms",
+        "description": "Comfortable rooms with high-quality mattresses and alpine charm"
+      },
+      "kitchen": {
+        "title": "Gourmet Kitchen",
+        "description": "Fully equipped kitchen with premium appliances and large dining area"
+      },
+      "wellness": {
+        "title": "Wellness & Sauna",
+        "description": "Private sauna and relaxation area for ultimate relaxation"
+      },
+      "terrace": {
+        "title": "Terrace & Garden",
+        "description": "Spacious outdoor areas with panoramic mountain views"
+      },
+      "wifi": {
+        "title": "High-Speed WiFi",
+        "description": "Fast internet available throughout the chalet"
+      },
+      "parking": {
+        "title": "Parking",
+        "description": "Private parking directly at the chalet"
+      }
+    }
+  },
+  "stats": {
+    "bedrooms": "Bedrooms",
+    "guests": "Guests",
+    "squareMeters": "Square Meters",
+    "rating": "Booking Rating"
+  },
+  "testimonials": {
+    "title": "Guest Reviews",
+    "subtitle": "What our guests say about their stay",
+    "newReview": "New Review",
+    "readMore": "Read More",
+    "showLess": "Show Less",
+    "noReviews": "No reviews yet.",
+    "hidden": "Hidden"
+  },
+  "gallery": {
+    "title": "Image Gallery",
+    "subtitle": "Discover the luxurious amenities and stunning location of our chalet",
+    "addImages": "Add Images",
+    "noImages": "No images yet",
+    "noImagesForSeason": "No images for \"{{season}}\" available",
+    "uploadHint": "Click \"Add Images\" to upload images",
+    "noCategory": "No Category",
+    "heroUpdated": "Hero image updated",
+    "heroUpdatedDesc": "The image will now be displayed on the homepage.",
+    "deleteError": "The current hero image cannot be deleted. Please select another hero image first.",
+    "imageDeleted": "Image deleted",
+    "imageDeletedDesc": "The image has been removed from the gallery.",
+    "orderUpdated": "Order updated",
+    "orderUpdatedDesc": "The new image order has been saved."
+  },
+  "calendar": {
+    "title": "Availability Calendar",
+    "titleMobile": "Calendar",
+    "subtitle": "Occupied days are marked in red and crossed out",
+    "subtitleMobile": "Red days = occupied",
+    "loading": "Loading availability...",
+    "connectionError": "Connection Problem",
+    "connectionErrorDesc": "Booking data cannot be loaded at the moment. The external database may be paused or unreachable.",
+    "retry": "Try Again",
+    "selectedRange": "Selected Period:",
+    "night": "Night",
+    "nights": "Nights",
+    "reset": "Reset",
+    "available": "Available",
+    "occupied": "Occupied",
+    "past": "Past",
+    "confirmedBookings": "confirmed bookings",
+    "confirmedBooking": "confirmed booking",
+    "noBookings": "Currently no confirmed bookings",
+    "minStay": "Minimum stay not met",
+    "minStayDesc": "Please select at least 4 nights",
+    "notAvailable": "Period not available",
+    "notAvailableDesc": "The selected period contains already occupied days"
+  },
+  "booking": {
+    "title": "Booking Request",
+    "subtitle": "Send us your inquiry and we will get back to you promptly",
+    "checkAvailability": "Check Availability",
+    "formDescription": "Fill out the form and we will check availability for your desired date",
+    "property": "Property",
+    "name": "Name",
+    "namePlaceholder": "Your Name",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "phone": "Phone",
+    "phonePlaceholder": "+49 123 456789",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "adults": "Adults",
+    "adult": "Adult",
+    "children": "Children (up to 6 yrs)",
+    "child": "Child",
+    "count": "Count",
+    "message": "Message (Optional)",
+    "messagePlaceholder": "Special requests or questions...",
+    "submit": "Send Request",
+    "submitting": "Sending...",
+    "fromCalendar": "Taken from calendar",
+    "priceOverview": "Your Price Overview",
+    "showFees": "Show fees",
+    "cleaningFee": "Final cleaning",
+    "serviceFee": "Service fee",
+    "bedLinen": "Bed linen",
+    "touristTax": "Tourist tax",
+    "persons": "pers.",
+    "totalPrice": "Total Price",
+    "prices": "Prices",
+    "winter": "Winter (Dec-Mar)",
+    "summer": "Summer (Jun-Sep)",
+    "offseason": "Off-season",
+    "perNight": "/ night",
+    "from": "from",
+    "importantInfo": "Important Info",
+    "minStay": "Minimum stay",
+    "checkInTime": "Check-in: from",
+    "checkOutTime": "Check-out: until",
+    "clock": "",
+    "additionalFees": "Additional Fees",
+    "perBooking": "per booking",
+    "perPersonPerNight": "per person per night",
+    "successTitle": "Request successfully sent! ✓",
+    "successDesc": "Thank you! We will get back to you shortly.",
+    "errorTitle": "Error sending",
+    "errorDesc": "Please try again later.",
+    "statusError": "Status could not be loaded. Please try again later.",
+    "seasons": {
+      "winter": "Winter Season",
+      "summer": "Summer Season",
+      "offseason": "Off-Season"
+    },
+    "validation": {
+      "nameMin": "Name must be at least 2 characters long",
+      "nameTooLong": "Name too long",
+      "invalidEmail": "Invalid email address",
+      "emailTooLong": "Email too long",
+      "invalidPhone": "Please enter a valid phone number",
+      "phoneTooLong": "Phone number too long",
+      "checkInRequired": "Check-in date required",
+      "checkOutRequired": "Check-out date required",
+      "minAdults": "At least 1 adult required",
+      "maxChildren": "Number of children must be between 0 and 5",
+      "maxGuests": "Maximum number of guests is 6 (adults + children)",
+      "checkOutAfterIn": "Departure date must be after arrival date",
+      "checkInFuture": "Arrival date must be today or in the future",
+      "messageTooLong": "Message too long"
+    }
+  },
+  "footer": {
+    "contact": "Contact",
+    "quickLinks": "Quick Links",
+    "aboutUs": "About Us",
+    "features": "Amenities",
+    "booking": "Booking",
+    "gallery": "Gallery",
+    "contactUs": "Contact Us",
+    "stayUpdated": "Stay up to date on offers and news from Steinbock Chalet. Ask us about special offers.",
+    "copyright": "© 2025 Copyright Steinbock Chalets. All rights reserved.",
+    "imprint": "Imprint",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
+  },
+  "common": {
+    "error": "Error",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close"
+  }
+}

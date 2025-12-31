@@ -9,7 +9,8 @@ import { useAuth } from "@/hooks/useAuth";
 import ReviewEditDialog from "./ReviewEditDialog";
 import ReviewAddDialog from "./ReviewAddDialog";
 import { format } from "date-fns";
-import { de } from "date-fns/locale";
+import { de, enUS } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface Review {
   id: string;
@@ -27,6 +28,7 @@ const DEV_MODE = true;
 const MAX_TEXT_LENGTH = 200;
 
 const Testimonials = () => {
+  const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAuth();
   const canEdit = DEV_MODE || isAuthenticated;
   const [editingReview, setEditingReview] = useState<Review | null>(null);
@@ -59,7 +61,8 @@ const Testimonials = () => {
 
   const formatDate = (dateString: string) => {
     try {
-      return format(new Date(dateString), 'MMMM yyyy', { locale: de });
+      const locale = i18n.language === 'en' ? enUS : de;
+      return format(new Date(dateString), 'MMMM yyyy', { locale });
     } catch {
       return dateString;
     }
@@ -71,7 +74,7 @@ const Testimonials = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-              Gästebewertungen
+              {t("testimonials.title")}
             </h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
@@ -99,10 +102,10 @@ const Testimonials = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 animate-fade-in">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Gästebewertungen
+            {t("testimonials.title")}
           </h2>
           <p className="text-base md:text-lg text-muted-foreground">
-            Was unsere Gäste über ihren Aufenthalt sagen
+            {t("testimonials.subtitle")}
           </p>
           
           {canEdit && (
@@ -112,13 +115,13 @@ const Testimonials = () => {
               size="lg"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Neue Bewertung
+              {t("testimonials.newReview")}
             </Button>
           )}
         </div>
 
         {displayReviews.length === 0 ? (
-          <p className="text-center text-muted-foreground">Noch keine Bewertungen vorhanden.</p>
+          <p className="text-center text-muted-foreground">{t("testimonials.noReviews")}</p>
         ) : (
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             {displayReviews.map((review, index) => (
@@ -160,7 +163,7 @@ const Testimonials = () => {
                           onClick={() => toggleExpanded(review.id)}
                           className="text-primary hover:text-primary/80 font-medium text-sm mt-2 transition-colors"
                         >
-                          {expandedReviews.has(review.id) ? "Weniger anzeigen" : "Weiterlesen"}
+                          {expandedReviews.has(review.id) ? t("testimonials.showLess") : t("testimonials.readMore")}
                         </button>
                       </>
                     ) : (
@@ -171,7 +174,7 @@ const Testimonials = () => {
                     <p className="font-semibold text-foreground">{review.guest_name}</p>
                     <p className="text-sm text-muted-foreground">{formatDate(review.review_date)}</p>
                     {!review.is_visible && canEdit && (
-                      <p className="text-xs text-destructive mt-1">Ausgeblendet</p>
+                      <p className="text-xs text-destructive mt-1">{t("testimonials.hidden")}</p>
                     )}
                   </div>
                 </CardContent>

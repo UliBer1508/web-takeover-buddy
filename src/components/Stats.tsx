@@ -1,21 +1,23 @@
 import { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface StatItem {
   value: number;
-  label: string;
+  labelKey: string;
   suffix?: string;
   decimals?: number;
 }
 
 const Stats = () => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const stats: StatItem[] = [
-    { value: 3, label: "Schlafzimmer", suffix: "" },
-    { value: 6, label: "Gäste", suffix: "" },
-    { value: 135, label: "Quadratmeter", suffix: "m²" },
-    { value: 4.9, label: "Booking Bewertung", suffix: "★", decimals: 1 },
+    { value: 3, labelKey: "stats.bedrooms", suffix: "" },
+    { value: 6, labelKey: "stats.guests", suffix: "" },
+    { value: 135, labelKey: "stats.squareMeters", suffix: "m²" },
+    { value: 4.9, labelKey: "stats.rating", suffix: "★", decimals: 1 },
   ];
 
   useEffect(() => {
@@ -53,7 +55,7 @@ const Stats = () => {
                 )}
               </div>
               <div className="text-sm md:text-base text-primary-foreground/80 font-medium">
-                {stat.label}
+                {t(stat.labelKey)}
               </div>
             </div>
           ))}

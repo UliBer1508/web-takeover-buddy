@@ -1,0 +1,221 @@
+{
+  "navigation": {
+    "home": "Home",
+    "about": "Über Uns",
+    "features": "Ausstattung",
+    "gallery": "Galerie",
+    "booking": "Buchen",
+    "contact": "Kontakt",
+    "bookNow": "Jetzt Buchen"
+  },
+  "hero": {
+    "title": "Steinbock Chalet",
+    "subtitle": "Luxuriöser Alpen-Rückzugsort mit atemberaubendem Bergpanorama",
+    "bookNow": "Jetzt Buchen",
+    "altImage": "Steinbock Chalet in den Alpen"
+  },
+  "about": {
+    "title": "Willkommen im Steinbock Chalet",
+    "description1": "Erleben Sie alpinen Luxus in seiner schönsten Form. Unser exklusives Chalet bietet Ihnen den perfekten Rückzugsort inmitten der majestätischen Bergwelt. Mit liebevoll gestalteten Räumen, modernster Ausstattung und einem atemberaubenden Panoramablick wird Ihr Aufenthalt zu einem unvergesslichen Erlebnis.",
+    "description2": "Ob Winterurlaub auf der Piste oder Sommerfrische in den Bergen – das Steinbock Chalet ist Ihr idealer Ausgangspunkt für alpine Abenteuer und erholsame Stunden.",
+    "highlights": {
+      "mountain": {
+        "title": "Bergpanorama",
+        "description": "Atemberaubender 360° Blick auf die Alpen"
+      },
+      "luxury": {
+        "title": "Luxusausstattung",
+        "description": "Hochwertige Einrichtung und moderne Annehmlichkeiten"
+      },
+      "wellness": {
+        "title": "Wellness",
+        "description": "Private Sauna und Entspannungsbereich"
+      },
+      "comfort": {
+        "title": "Wohlfühloase",
+        "description": "Gemütliche Atmosphäre für unvergessliche Momente"
+      }
+    }
+  },
+  "features": {
+    "title": "Ausstattung & Highlights",
+    "subtitle": "Entdecken Sie die exklusiven Annehmlichkeiten unseres Luxus-Chalets",
+    "items": {
+      "bedrooms": {
+        "title": "3 Schlafzimmer",
+        "description": "Komfortable Zimmer mit hochwertigen Matratzen und alpinem Charme"
+      },
+      "kitchen": {
+        "title": "Gourmet-Küche",
+        "description": "Vollausgestattete Küche mit Premium-Geräten und großem Essbereich"
+      },
+      "wellness": {
+        "title": "Wellness & Sauna",
+        "description": "Private Sauna und Entspannungsbereich für ultimative Erholung"
+      },
+      "terrace": {
+        "title": "Terrasse & Garten",
+        "description": "Weitläufige Außenbereiche mit Panoramablick auf die Berge"
+      },
+      "wifi": {
+        "title": "High-Speed WLAN",
+        "description": "Schnelles Internet im gesamten Chalet verfügbar"
+      },
+      "parking": {
+        "title": "Parkplätze",
+        "description": "Private Parkplätze direkt am Chalet"
+      }
+    }
+  },
+  "stats": {
+    "bedrooms": "Schlafzimmer",
+    "guests": "Gäste",
+    "squareMeters": "Quadratmeter",
+    "rating": "Booking Bewertung"
+  },
+  "testimonials": {
+    "title": "Gästebewertungen",
+    "subtitle": "Was unsere Gäste über ihren Aufenthalt sagen",
+    "newReview": "Neue Bewertung",
+    "readMore": "Weiterlesen",
+    "showLess": "Weniger anzeigen",
+    "noReviews": "Noch keine Bewertungen vorhanden.",
+    "hidden": "Ausgeblendet"
+  },
+  "gallery": {
+    "title": "Bildergalerie",
+    "subtitle": "Entdecken Sie die luxuriöse Ausstattung und die atemberaubende Lage unseres Chalets",
+    "addImages": "Bilder hinzufügen",
+    "noImages": "Noch keine Bilder vorhanden",
+    "noImagesForSeason": "Keine Bilder für \"{{season}}\" vorhanden",
+    "uploadHint": "Klicken Sie auf \"Bilder hinzufügen\" um Bilder hochzuladen",
+    "noCategory": "Keine Kategorie",
+    "heroUpdated": "Hero-Bild aktualisiert",
+    "heroUpdatedDesc": "Das Bild wird nun auf der Startseite angezeigt.",
+    "deleteError": "Das aktuelle Hero-Bild kann nicht gelöscht werden. Bitte wählen Sie zuerst ein anderes Hero-Bild.",
+    "imageDeleted": "Bild gelöscht",
+    "imageDeletedDesc": "Das Bild wurde aus der Galerie entfernt.",
+    "orderUpdated": "Reihenfolge aktualisiert",
+    "orderUpdatedDesc": "Die neue Bildreihenfolge wurde gespeichert."
+  },
+  "calendar": {
+    "title": "Verfügbarkeitskalender",
+    "titleMobile": "Kalender",
+    "subtitle": "Belegte Tage sind rot markiert und durchgestrichen",
+    "subtitleMobile": "Rote Tage = belegt",
+    "loading": "Lade Verfügbarkeit...",
+    "connectionError": "Verbindungsproblem",
+    "connectionErrorDesc": "Die Buchungsdaten können momentan nicht geladen werden. Die externe Datenbank ist möglicherweise pausiert oder nicht erreichbar.",
+    "retry": "Erneut versuchen",
+    "selectedRange": "Ausgewählter Zeitraum:",
+    "night": "Nacht",
+    "nights": "Nächte",
+    "reset": "Zurücksetzen",
+    "available": "Verfügbar",
+    "occupied": "Belegt",
+    "past": "Vergangen",
+    "confirmedBookings": "bestätigte Buchungen",
+    "confirmedBooking": "bestätigte Buchung",
+    "noBookings": "Aktuell keine bestätigten Buchungen",
+    "minStay": "Mindestaufenthalt nicht erfüllt",
+    "minStayDesc": "Bitte wählen Sie mindestens 4 Nächte",
+    "notAvailable": "Zeitraum nicht verfügbar",
+    "notAvailableDesc": "Der gewählte Zeitraum enthält bereits belegte Tage"
+  },
+  "booking": {
+    "title": "Buchungsanfrage",
+    "subtitle": "Senden Sie uns Ihre Anfrage und wir melden uns umgehend bei Ihnen",
+    "checkAvailability": "Verfügbarkeit anfragen",
+    "formDescription": "Füllen Sie das Formular aus und wir prüfen die Verfügbarkeit für Ihren Wunschtermin",
+    "property": "Objekt",
+    "name": "Name",
+    "namePlaceholder": "Ihr Name",
+    "email": "E-Mail",
+    "emailPlaceholder": "ihre@email.com",
+    "phone": "Telefon",
+    "phonePlaceholder": "+49 123 456789",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "adults": "Erwachsene",
+    "adult": "Erwachsener",
+    "children": "Kinder (bis 6 J.)",
+    "child": "Kind",
+    "count": "Anzahl",
+    "message": "Nachricht (Optional)",
+    "messagePlaceholder": "Besondere Wünsche oder Fragen...",
+    "submit": "Anfrage senden",
+    "submitting": "Wird gesendet...",
+    "fromCalendar": "Vom Kalender übernommen",
+    "priceOverview": "Ihre Preisübersicht",
+    "showFees": "Nebenkosten anzeigen",
+    "cleaningFee": "Endreinigung",
+    "serviceFee": "Servicegebühr",
+    "bedLinen": "Bettwäsche",
+    "touristTax": "Kurtaxe",
+    "persons": "Pers.",
+    "totalPrice": "Gesamtpreis",
+    "prices": "Preise",
+    "winter": "Winter (Dez-März)",
+    "summer": "Sommer (Jun-Sep)",
+    "offseason": "Nebensaison",
+    "perNight": "/ Nacht",
+    "from": "ab",
+    "importantInfo": "Wichtige Infos",
+    "minStay": "Mindestaufenthalt",
+    "checkInTime": "Check-in: ab",
+    "checkOutTime": "Check-out: bis",
+    "clock": "Uhr",
+    "additionalFees": "Zusätzliche Nebenkosten",
+    "perBooking": "pro Buchung",
+    "perPersonPerNight": "pro Person und Nacht",
+    "successTitle": "Anfrage erfolgreich gesendet! ✓",
+    "successDesc": "Vielen Dank! Wir werden uns in Kürze bei Ihnen melden.",
+    "errorTitle": "Fehler beim Senden",
+    "errorDesc": "Bitte versuchen Sie es später erneut.",
+    "statusError": "Status konnte nicht geladen werden. Bitte versuchen Sie es später erneut.",
+    "seasons": {
+      "winter": "Wintersaison",
+      "summer": "Sommersaison",
+      "offseason": "Nebensaison"
+    },
+    "validation": {
+      "nameMin": "Name muss mindestens 2 Zeichen lang sein",
+      "nameTooLong": "Name zu lang",
+      "invalidEmail": "Ungültige E-Mail-Adresse",
+      "emailTooLong": "E-Mail zu lang",
+      "invalidPhone": "Bitte geben Sie eine gültige Telefonnummer ein",
+      "phoneTooLong": "Telefonnummer zu lang",
+      "checkInRequired": "Check-in Datum erforderlich",
+      "checkOutRequired": "Check-out Datum erforderlich",
+      "minAdults": "Mindestens 1 Erwachsener erforderlich",
+      "maxChildren": "Anzahl Kinder muss zwischen 0 und 5 liegen",
+      "maxGuests": "Maximale Gästezahl ist 6 (Erwachsene + Kinder)",
+      "checkOutAfterIn": "Abreisedatum muss nach dem Anreisedatum liegen",
+      "checkInFuture": "Anreisedatum muss heute oder in der Zukunft liegen",
+      "messageTooLong": "Nachricht zu lang"
+    }
+  },
+  "footer": {
+    "contact": "Kontakt",
+    "quickLinks": "Quick Links",
+    "aboutUs": "Über uns",
+    "features": "Ausstattung",
+    "booking": "Buchung",
+    "gallery": "Galerie",
+    "contactUs": "Kontaktieren Sie uns",
+    "stayUpdated": "Bleiben Sie auf dem Laufenden über Angebote und Neuigkeiten aus dem Steinbock Chalet. Fragen Sie uns nach entsprechenden Angeboten.",
+    "copyright": "© 2025 Copy Right Steinbock Chalets. Alle Rechte vorbehalten.",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "terms": "AGB"
+  },
+  "common": {
+    "error": "Fehler",
+    "loading": "Laden...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen"
+  }
+}
