@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ interface ReviewEditDialogProps {
 }
 
 const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps) => {
+  const { t } = useTranslation();
   const [guestName, setGuestName] = useState(review.guest_name);
   const [reviewDate, setReviewDate] = useState(review.review_date);
   const [rating, setRating] = useState(review.rating);
@@ -51,16 +53,16 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
     setLoading(false);
     
     if (error) {
-      toast({ title: "Fehler", description: "Bewertung konnte nicht gespeichert werden.", variant: "destructive" });
+      toast({ title: t('common.error'), description: t('reviewEdit.errorSave'), variant: "destructive" });
     } else {
-      toast({ title: "Gespeichert", description: "Bewertung wurde aktualisiert." });
+      toast({ title: t('reviewEdit.saved'), description: t('reviewEdit.savedDesc') });
       queryClient.invalidateQueries({ queryKey: ['reviews'] });
       onOpenChange(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm("Bewertung wirklich löschen?")) return;
+    if (!confirm(t('reviewEdit.confirmDelete'))) return;
     
     setLoading(true);
     const { error } = await supabase
@@ -71,9 +73,9 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
     setLoading(false);
     
     if (error) {
-      toast({ title: "Fehler", description: "Bewertung konnte nicht gelöscht werden.", variant: "destructive" });
+      toast({ title: t('common.error'), description: t('reviewEdit.errorDelete'), variant: "destructive" });
     } else {
-      toast({ title: "Gelöscht", description: "Bewertung wurde entfernt." });
+      toast({ title: t('reviewEdit.deleted'), description: t('reviewEdit.deletedDesc') });
       queryClient.invalidateQueries({ queryKey: ['reviews'] });
       onOpenChange(false);
     }
@@ -83,12 +85,12 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Bewertung bearbeiten</DialogTitle>
+          <DialogTitle>{t('reviewEdit.title')}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="guestName">Name</Label>
+            <Label htmlFor="guestName">{t('reviewEdit.name')}</Label>
             <Input
               id="guestName"
               value={guestName}
@@ -97,7 +99,7 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="reviewDate">Datum</Label>
+            <Label htmlFor="reviewDate">{t('reviewEdit.date')}</Label>
             <Input
               id="reviewDate"
               type="date"
@@ -107,7 +109,7 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
           </div>
           
           <div className="space-y-2">
-            <Label>Bewertung</Label>
+            <Label>{t('reviewEdit.rating')}</Label>
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -125,7 +127,7 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="text">Text</Label>
+            <Label htmlFor="text">{t('reviewEdit.text')}</Label>
             <Textarea
               id="text"
               value={text}
@@ -142,16 +144,16 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
               onChange={(e) => setIsVisible(e.target.checked)}
               className="w-4 h-4"
             />
-            <Label htmlFor="isVisible">Sichtbar</Label>
+            <Label htmlFor="isVisible">{t('reviewEdit.visible')}</Label>
           </div>
         </div>
         
         <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button variant="destructive" onClick={handleDelete} disabled={loading}>
-            Löschen
+            {t('reviewEdit.delete')}
           </Button>
           <Button onClick={handleSave} disabled={loading}>
-            {loading ? "Speichern..." : "Speichern"}
+            {loading ? t('reviewEdit.saving') : t('reviewEdit.save')}
           </Button>
         </DialogFooter>
       </DialogContent>
