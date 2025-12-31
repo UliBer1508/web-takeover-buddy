@@ -1,39 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import heroImageFallback from "@/assets/exterior-winter.jpg";
 
 const Hero = () => {
-  // Fetch hero image from Supabase
-  const { data: heroImage } = useQuery({
-    queryKey: ['hero-image'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('gallery_images')
-        .select('url')
-        .eq('is_hero', true)
-        .limit(1)
-        .single();
-      
-      if (error || !data) {
-        // Fallback to first image if no hero is set
-        const { data: firstImage } = await supabase
-          .from('gallery_images')
-          .select('url')
-          .order('sort_order', { ascending: true })
-          .limit(1)
-          .single();
-        
-        return firstImage?.url || null;
-      }
-      
-      return data.url;
-    },
-  });
-
-  const heroImageSrc = heroImage || heroImageFallback;
-
   const scrollToBooking = () => {
     const element = document.getElementById("booking");
     if (element) {
@@ -46,13 +15,9 @@ const Hero = () => {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src={heroImageSrc}
+          src={heroImageFallback}
           alt="Steinbock Chalet in den Alpen"
           className="w-full h-full object-cover"
-          onError={(e) => {
-            console.error('Hero image failed to load:', heroImageSrc);
-            e.currentTarget.src = heroImageFallback;
-          }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/30 to-foreground/60" />
       </div>
