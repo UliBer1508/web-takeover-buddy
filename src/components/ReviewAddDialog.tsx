@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Star } from "lucide-react";
+import { Star, Languages, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
@@ -23,8 +23,46 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
   const [text, setText] = useState("");
   const [textEn, setTextEn] = useState("");
   const [loading, setLoading] = useState(false);
+  const [translatingToEn, setTranslatingToEn] = useState(false);
+  const [translatingToDe, setTranslatingToDe] = useState(false);
   
   const queryClient = useQueryClient();
+
+  const translateToEnglish = async () => {
+    if (!text.trim()) return;
+    setTranslatingToEn(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('translate-review', {
+        body: { text, targetLanguage: 'en' }
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setTextEn(data.translatedText);
+      toast({ title: t('reviewEdit.translated'), description: t('reviewEdit.translatedToEn') });
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast({ title: t('common.error'), description: t('reviewEdit.translateError'), variant: "destructive" });
+    }
+    setTranslatingToEn(false);
+  };
+
+  const translateToGerman = async () => {
+    if (!textEn.trim()) return;
+    setTranslatingToDe(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('translate-review', {
+        body: { text: textEn, targetLanguage: 'de' }
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setText(data.translatedText);
+      toast({ title: t('reviewEdit.translated'), description: t('reviewEdit.translatedToDe') });
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast({ title: t('common.error'), description: t('reviewEdit.translateError'), variant: "destructive" });
+    }
+    setTranslatingToDe(false);
+  };
 
   const handleSave = async () => {
     if (!guestName.trim() || !text.trim()) {
@@ -108,7 +146,20 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="text">{t('reviewAdd.text')}</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="text">{t('reviewAdd.text')}</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={translateToEnglish}
+                disabled={translatingToEn || !text.trim()}
+                className="h-7 px-2 text-xs"
+              >
+                {translatingToEn ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Languages className="h-3 w-3 mr-1" />}
+                → EN
+              </Button>
+            </div>
             <Textarea
               id="text"
               value={text}
@@ -119,7 +170,20 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="textEn">{t('reviewAdd.textEnglish')}</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="textEn">{t('reviewAdd.textEnglish')}</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={translateToGerman}
+                disabled={translatingToDe || !textEn.trim()}
+                className="h-7 px-2 text-xs"
+              >
+                {translatingToDe ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Languages className="h-3 w-3 mr-1" />}
+                → DE
+              </Button>
+            </div>
             <Textarea
               id="textEn"
               value={textEn}
