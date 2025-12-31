@@ -1,7 +1,5 @@
 import { Bed, UtensilsCrossed, Waves, TreePine, Wifi, Car } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import bedroomImage from "@/assets/bedroom.jpg";
-import kitchenImage from "@/assets/kitchen.jpg";
 
 const Features = () => {
   const features = [
@@ -9,37 +7,31 @@ const Features = () => {
       icon: Bed,
       title: "3 Schlafzimmer",
       description: "Komfortable Zimmer mit hochwertigen Matratzen und alpinem Charme",
-      image: bedroomImage,
     },
     {
       icon: UtensilsCrossed,
       title: "Gourmet-Küche",
       description: "Vollausgestattete Küche mit Premium-Geräten und großem Essbereich",
-      image: kitchenImage,
     },
     {
       icon: Waves,
       title: "Wellness & Sauna",
       description: "Private Sauna und Entspannungsbereich für ultimative Erholung",
-      image: null,
     },
     {
       icon: TreePine,
       title: "Terrasse & Garten",
       description: "Weitläufige Außenbereiche mit Panoramablick auf die Berge",
-      image: null,
     },
     {
       icon: Wifi,
       title: "High-Speed WLAN",
       description: "Schnelles Internet im gesamten Chalet verfügbar",
-      image: null,
     },
     {
       icon: Car,
       title: "Parkplätze",
       description: "Private Parkplätze direkt am Chalet",
-      image: null,
     },
   ];
 
@@ -62,16 +54,6 @@ const Features = () => {
               className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden animate-scale-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {feature.image && (
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent opacity-60" />
-                </div>
-              )}
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-lg bg-primary/10 text-primary">
