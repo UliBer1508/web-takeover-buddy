@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ interface ImageUploadDialogProps {
 }
 
 const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUploadDialogProps) => {
+  const { t } = useTranslation();
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [titlePrefix, setTitlePrefix] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -348,7 +350,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
               <SelectContent>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
-                    {cat.display_name}
+                    {t(`gallery.categories.${cat.name}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -368,7 +370,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
               <SelectContent>
                 {seasons.map((s) => (
                   <SelectItem key={s.id} value={s.id}>
-                    {s.display_name}
+                    {t(`gallery.seasons.${s.name}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
