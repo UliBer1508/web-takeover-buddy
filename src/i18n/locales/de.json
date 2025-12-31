@@ -96,6 +96,15 @@
       "autumn": "Herbst",
       "winter": "Winter"
     },
+    "categories": {
+      "entrance": "Eingangsbereich",
+      "exterior": "Außenbereich",
+      "living": "Wohnbereich",
+      "bedroom": "Schlafzimmer",
+      "bathroom": "Badezimmer",
+      "kitchen": "Küche/Essbereich",
+      "surroundings": "Umgebung"
+    },
     "noCategory": "Keine Kategorie",
     "heroUpdated": "Hero-Bild aktualisiert",
     "heroUpdatedDesc": "Das Bild wird nun auf der Startseite angezeigt.",

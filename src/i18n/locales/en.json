@@ -96,6 +96,15 @@
       "autumn": "Autumn",
       "winter": "Winter"
     },
+    "categories": {
+      "entrance": "Entrance Area",
+      "exterior": "Exterior",
+      "living": "Living Area",
+      "bedroom": "Bedroom",
+      "bathroom": "Bathroom",
+      "kitchen": "Kitchen/Dining",
+      "surroundings": "Surroundings"
+    },
     "noCategory": "No Category",
     "heroUpdated": "Hero image updated",
     "heroUpdatedDesc": "The image will now be displayed on the homepage.",

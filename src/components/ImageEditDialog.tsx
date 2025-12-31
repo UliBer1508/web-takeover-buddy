@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -57,6 +58,7 @@ interface ImageEditDialogProps {
 }
 
 const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDialogProps) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -208,7 +210,7 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
               <SelectContent className="bg-background">
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
-                    {cat.display_name}
+                    {t(`gallery.categories.${cat.name}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -225,7 +227,7 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
               <SelectContent className="bg-background">
                 {seasons.map((season) => (
                   <SelectItem key={season.id} value={season.id}>
-                    {season.display_name}
+                    {t(`gallery.seasons.${season.name}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
