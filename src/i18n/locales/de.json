@@ -112,7 +112,12 @@
     "imageDeleted": "Bild gelöscht",
     "imageDeletedDesc": "Das Bild wurde aus der Galerie entfernt.",
     "orderUpdated": "Reihenfolge aktualisiert",
-    "orderUpdatedDesc": "Die neue Bildreihenfolge wurde gespeichert."
+    "orderUpdatedDesc": "Die neue Bildreihenfolge wurde gespeichert.",
+    "ariaSetHero": "Als Hero-Bild setzen",
+    "ariaEditImage": "Bild bearbeiten",
+    "ariaDeleteImage": "Bild löschen",
+    "ariaLightboxTitle": "Bildansicht",
+    "ariaLightboxDesc": "Grossansicht des ausgewaehlten Bildes"
   },
   "calendar": {
     "sectionTitle": "Verfügbarkeit prüfen",
@@ -394,12 +399,5 @@
     "categoryRequiredDesc": "Bitte wählen Sie eine Kategorie aus.",
     "seasonRequired": "Jahreszeit erforderlich",
     "seasonRequiredDesc": "Bitte wählen Sie eine Jahreszeit aus."
-  },
-  "gallery": {
-    "ariaSetHero": "Als Hero-Bild setzen",
-    "ariaEditImage": "Bild bearbeiten",
-    "ariaDeleteImage": "Bild löschen",
-    "ariaLightboxTitle": "Bildansicht",
-    "ariaLightboxDesc": "Großansicht des ausgewählten Bildes"
   }
 }
