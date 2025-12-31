@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -13,6 +14,7 @@ import HouseSelector from "@/components/HouseSelector";
 import { useHouseSelection } from "@/hooks/useHouseSelection";
 
 const Index = () => {
+  const { t } = useTranslation();
   const { selectedHouseId, setSelectedHouseId, hasMultipleHouses, selectedHouse } = useHouseSelection();
   const [selectedDates, setSelectedDates] = useState<{
     checkIn: Date | null;
@@ -59,10 +61,10 @@ const Index = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              Verfügbarkeit prüfen
+              {t('calendar.sectionTitle')}
             </h2>
             <p className="text-muted-foreground">
-              Wählen Sie Ihren gewünschten Zeitraum direkt im Kalender aus
+              {t('calendar.sectionSubtitle')}
             </p>
           </div>
           <AvailabilityCalendar externalHouseId={selectedHouse?.external_house_id} onDateRangeSelect={handleDateSelection} />

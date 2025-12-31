@@ -115,6 +115,8 @@
     "orderUpdatedDesc": "The new image order has been saved."
   },
   "calendar": {
+    "sectionTitle": "Check Availability",
+    "sectionSubtitle": "Select your desired period directly in the calendar",
     "title": "Availability Calendar",
     "titleMobile": "Calendar",
     "subtitle": "Occupied days are marked in red and crossed out",
