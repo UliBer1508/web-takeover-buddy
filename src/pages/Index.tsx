@@ -9,8 +9,11 @@ import Testimonials from "@/components/Testimonials";
 import Gallery from "@/components/Gallery";
 import Footer from "@/components/Footer";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
+import HouseSelector from "@/components/HouseSelector";
+import { useHouseSelection } from "@/hooks/useHouseSelection";
 
 const Index = () => {
+  const { selectedHouseId, setSelectedHouseId, hasMultipleHouses } = useHouseSelection();
   const [selectedDates, setSelectedDates] = useState<{
     checkIn: Date | null;
     checkOut: Date | null;
@@ -34,11 +37,24 @@ const Index = () => {
     <div className="min-h-screen">
       <Navigation />
       <Hero />
+      
+      {/* House Selector - only shown when multiple houses exist */}
+      {hasMultipleHouses && (
+        <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b">
+          <div className="container mx-auto px-4">
+            <HouseSelector 
+              selectedHouseId={selectedHouseId} 
+              onHouseChange={setSelectedHouseId} 
+            />
+          </div>
+        </div>
+      )}
+      
       <About />
       <Stats />
       <Features />
       <Testimonials />
-      <Gallery />
+      <Gallery houseId={selectedHouseId} />
       <section className="py-12 md:py-16 bg-muted/30">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-8">
@@ -49,12 +65,13 @@ const Index = () => {
               Wählen Sie Ihren gewünschten Zeitraum direkt im Kalender aus
             </p>
           </div>
-          <AvailabilityCalendar onDateRangeSelect={handleDateSelection} />
+          <AvailabilityCalendar houseId={selectedHouseId} onDateRangeSelect={handleDateSelection} />
         </div>
       </section>
       <BookingForm 
         initialCheckIn={selectedDates.checkIn} 
-        initialCheckOut={selectedDates.checkOut} 
+        initialCheckOut={selectedDates.checkOut}
+        defaultHouseId={selectedHouseId}
       />
       <Footer />
     </div>

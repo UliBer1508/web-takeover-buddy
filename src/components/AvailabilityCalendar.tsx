@@ -11,23 +11,24 @@ import { de } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
 import "react-day-picker/dist/style.css";
 
-const HOUSE_ID = "f5b4588b-96cf-46f7-b84a-5f6750f7088e";
-
 interface OccupiedDate {
   check_in: string;
   check_out: string;
 }
 
 interface AvailabilityCalendarProps {
+  houseId?: string | null;
   onDateRangeSelect?: (checkIn: Date | null, checkOut: Date | null) => void;
 }
 
-export const AvailabilityCalendar = ({ onDateRangeSelect }: AvailabilityCalendarProps) => {
+export const AvailabilityCalendar = ({ houseId, onDateRangeSelect }: AvailabilityCalendarProps) => {
   const [selected, setSelected] = useState<DateRange | undefined>();
   // Query ONLY bookings table
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['availability', HOUSE_ID],
+    queryKey: ['availability', houseId],
     queryFn: async () => {
+      if (!houseId) return [];
+      
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 Sekunden Timeout
       
@@ -35,7 +36,7 @@ export const AvailabilityCalendar = ({ onDateRangeSelect }: AvailabilityCalendar
         const { data: bookings, error: bookingsError } = await externalSupabase
           .from('bookings')
           .select('check_in, check_out')
-          .eq('house_id', HOUSE_ID)
+          .eq('house_id', houseId)
           .in('status', ['confirmed', 'completed'])
           .abortSignal(controller.signal);
 
@@ -53,6 +54,7 @@ export const AvailabilityCalendar = ({ onDateRangeSelect }: AvailabilityCalendar
         throw err;
       }
     },
+    enabled: !!houseId,
     refetchInterval: 5 * 60 * 1000, // Auto-refresh every 5 minutes
     staleTime: 2 * 60 * 1000, // Cache for 2 minutes
     retry: 3, // 3 Versuche
