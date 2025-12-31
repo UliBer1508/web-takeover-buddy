@@ -237,6 +237,53 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          created_at: string | null
+          guest_name: string
+          house_id: string | null
+          id: string
+          is_visible: boolean | null
+          rating: number
+          review_date: string
+          sort_order: number | null
+          text: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          guest_name: string
+          house_id?: string | null
+          id?: string
+          is_visible?: boolean | null
+          rating: number
+          review_date: string
+          sort_order?: number | null
+          text: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          guest_name?: string
+          house_id?: string | null
+          id?: string
+          is_visible?: boolean | null
+          rating?: number
+          review_date?: string
+          sort_order?: number | null
+          text?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_house_id_fkey"
+            columns: ["house_id"]
+            isOneToOne: false
+            referencedRelation: "houses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seasons: {
         Row: {
           display_name: string
