@@ -115,6 +115,8 @@
     "orderUpdatedDesc": "Die neue Bildreihenfolge wurde gespeichert."
   },
   "calendar": {
+    "sectionTitle": "Verfügbarkeit prüfen",
+    "sectionSubtitle": "Wählen Sie Ihren gewünschten Zeitraum direkt im Kalender aus",
     "title": "Verfügbarkeitskalender",
     "titleMobile": "Kalender",
     "subtitle": "Belegte Tage sind rot markiert und durchgestrichen",
