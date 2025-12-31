@@ -388,7 +388,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                   <p>✓ Bettwäsche: {selectedHouse?.bed_linen_fee}€ pro Buchung</p>
                 )}
                 {(selectedHouse?.tourist_tax ?? 0) > 0 && (
-                  <p>✓ Kurtaxe: {selectedHouse?.tourist_tax?.toFixed(2).replace('.', ',')}€ pro Person/Nacht</p>
+                  <p>✓ Kurtaxe: {selectedHouse?.tourist_tax?.toFixed(2).replace('.', ',')}€ pro Person und Nacht</p>
                 )}
               </CardContent>
             </Card>
