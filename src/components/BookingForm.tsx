@@ -52,12 +52,14 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 interface BookingFormProps {
   initialCheckIn?: Date | null;
   initialCheckOut?: Date | null;
+  defaultHouseId?: string | null;
 }
 
 interface House {
   id: string;
   name: string;
   max_guests: number;
+  is_active?: boolean;
 }
 
 interface BookingStatus {
@@ -66,17 +68,18 @@ interface BookingStatus {
   display_name: string;
 }
 
-const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
+const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: BookingFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Fetch houses from database
   const { data: houses = [] } = useQuery({
-    queryKey: ['houses'],
+    queryKey: ['houses-active'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('houses')
         .select('*')
-        .order('name', { ascending: true });
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
       
       if (error) throw error;
       return data as House[];
@@ -97,8 +100,10 @@ const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
     },
   });
 
-  // Get the first house or use default
-  const selectedHouse = houses[0];
+  // Get house from defaultHouseId prop, or use first house
+  const selectedHouse = defaultHouseId 
+    ? houses.find(h => h.id === defaultHouseId) || houses[0]
+    : houses[0];
   const maxGuests = selectedHouse?.max_guests || 10;
   const pendingStatusId = statuses.find(s => s.name === 'pending')?.id;
 

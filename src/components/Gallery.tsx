@@ -15,6 +15,7 @@ interface GalleryImage {
   title: string;
   category_id: string;
   season_id: string;
+  house_id: string | null;
   is_hero: boolean;
   sort_order: number;
   category?: { id: string; name: string; display_name: string };
@@ -28,7 +29,11 @@ interface Season {
   sort_order: number;
 }
 
-const Gallery = () => {
+interface GalleryProps {
+  houseId?: string | null;
+}
+
+const Gallery = ({ houseId }: GalleryProps) => {
   const queryClient = useQueryClient();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [imageToDelete, setImageToDelete] = useState<GalleryImage | null>(null);
@@ -53,9 +58,9 @@ const Gallery = () => {
 
   // Fetch images with category and season joins
   const { data: images = [], isLoading } = useQuery({
-    queryKey: ['gallery-images'],
+    queryKey: ['gallery-images', houseId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('gallery_images')
         .select(`
           *,
@@ -64,6 +69,11 @@ const Gallery = () => {
         `)
         .order('sort_order', { ascending: true });
       
+      if (houseId) {
+        query = query.eq('house_id', houseId);
+      }
+      
+      const { data, error } = await query;
       if (error) throw error;
       return (data || []) as GalleryImage[];
     },
@@ -425,7 +435,8 @@ const Gallery = () => {
       <ImageUploadDialog
         open={uploadDialogOpen}
         onOpenChange={setUploadDialogOpen}
-        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images'] })}
+        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
+        houseId={houseId}
       />
 
       {/* Lightbox Dialog */}

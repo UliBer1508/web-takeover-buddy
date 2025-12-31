@@ -123,6 +123,7 @@ export type Database = {
         Row: {
           category_id: string
           created_at: string
+          house_id: string | null
           id: string
           is_hero: boolean
           season_id: string
@@ -133,6 +134,7 @@ export type Database = {
         Insert: {
           category_id: string
           created_at?: string
+          house_id?: string | null
           id?: string
           is_hero?: boolean
           season_id: string
@@ -143,6 +145,7 @@ export type Database = {
         Update: {
           category_id?: string
           created_at?: string
+          house_id?: string | null
           id?: string
           is_hero?: boolean
           season_id?: string
@@ -165,29 +168,69 @@ export type Database = {
             referencedRelation: "seasons"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "gallery_images_house_id_fkey"
+            columns: ["house_id"]
+            isOneToOne: false
+            referencedRelation: "houses"
+            referencedColumns: ["id"]
+          },
         ]
       }
       houses: {
         Row: {
+          check_in_time: string | null
+          check_out_time: string | null
+          cleaning_fee: number | null
           created_at: string
           description: string | null
           id: string
+          is_active: boolean | null
           max_guests: number
+          min_nights: number | null
           name: string
+          price_offseason: number | null
+          price_summer: number | null
+          price_winter: number | null
+          short_description: string | null
+          slug: string | null
+          sort_order: number | null
         }
         Insert: {
+          check_in_time?: string | null
+          check_out_time?: string | null
+          cleaning_fee?: number | null
           created_at?: string
           description?: string | null
           id?: string
+          is_active?: boolean | null
           max_guests?: number
+          min_nights?: number | null
           name: string
+          price_offseason?: number | null
+          price_summer?: number | null
+          price_winter?: number | null
+          short_description?: string | null
+          slug?: string | null
+          sort_order?: number | null
         }
         Update: {
+          check_in_time?: string | null
+          check_out_time?: string | null
+          cleaning_fee?: number | null
           created_at?: string
           description?: string | null
           id?: string
+          is_active?: boolean | null
           max_guests?: number
+          min_nights?: number | null
           name?: string
+          price_offseason?: number | null
+          price_summer?: number | null
+          price_winter?: number | null
+          short_description?: string | null
+          slug?: string | null
+          sort_order?: number | null
         }
         Relationships: []
       }

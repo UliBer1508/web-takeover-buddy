@@ -32,9 +32,10 @@ interface ImageUploadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  houseId?: string | null;
 }
 
-const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogProps) => {
+const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUploadDialogProps) => {
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [titlePrefix, setTitlePrefix] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -191,6 +192,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogP
               title,
               category_id: categoryId,
               season_id: seasonId,
+              house_id: houseId,
               sort_order: nextOrder++,
             });
 
