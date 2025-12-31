@@ -30,11 +30,22 @@ const bookingSchema = z.object({
   phone: z.string().min(10, "Bitte geben Sie eine gültige Telefonnummer ein").max(20, "Telefonnummer zu lang"),
   checkIn: z.string().min(1, "Check-in Datum erforderlich"),
   checkOut: z.string().min(1, "Check-out Datum erforderlich"),
-  guests: z.string().refine((val) => {
+  adults: z.string().refine((val) => {
     const num = parseInt(val);
-    return num >= 1 && num <= 10;
-  }, "Anzahl Gäste muss zwischen 1 und 10 liegen"),
+    return num >= 1 && num <= 6;
+  }, "Mindestens 1 Erwachsener erforderlich"),
+  children: z.string().refine((val) => {
+    const num = parseInt(val);
+    return num >= 0 && num <= 5;
+  }, "Anzahl Kinder muss zwischen 0 und 5 liegen"),
   message: z.string().max(1000, "Nachricht zu lang").optional()
+}).refine((data) => {
+  const adults = parseInt(data.adults);
+  const children = parseInt(data.children);
+  return (adults + children) <= 6;
+}, {
+  message: "Maximale Gästezahl ist 6 (Erwachsene + Kinder)",
+  path: ["children"]
 }).refine((data) => {
   const checkIn = new Date(data.checkIn);
   const checkOut = new Date(data.checkOut);
@@ -132,7 +143,8 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
       phone: "",
       checkIn: "",
       checkOut: "",
-      guests: "",
+      adults: "",
+      children: "0",
       message: ""
     }
   });
@@ -174,7 +186,8 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           guest_phone: data.phone.trim(),
           check_in: checkInDate.toISOString(),
           check_out: checkOutDate.toISOString(),
-          number_of_guests: parseInt(data.guests),
+          number_of_guests: parseInt(data.adults),
+          number_of_children: parseInt(data.children),
           message: data.message?.trim() || null,
           status_id: pendingStatusId
         });
@@ -263,7 +276,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                     </FormItem>
                   )} />
 
-                  <div className="grid sm:grid-cols-3 gap-4">
+                  <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <FormField control={form.control} name="checkIn" render={({ field }) => (
                       <FormItem>
                         <FormLabel>Check-in</FormLabel>
@@ -300,9 +313,9 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                       </FormItem>
                     )} />
 
-                    <FormField control={form.control} name="guests" render={({ field }) => (
+                    <FormField control={form.control} name="adults" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Gäste</FormLabel>
+                        <FormLabel>Erwachsene</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -311,9 +324,31 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Array.from({ length: maxGuests }, (_, i) => i + 1).map(num => (
+                            {Array.from({ length: 6 }, (_, i) => i + 1).map(num => (
                               <SelectItem key={num} value={num.toString()}>
-                                {num} {num === 1 ? "Gast" : "Gäste"}
+                                {num} {num === 1 ? "Erwachsener" : "Erwachsene"}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+
+                    <FormField control={form.control} name="children" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Kinder (bis 6 J.)</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <Users className="h-4 w-4 mr-2" />
+                              <SelectValue placeholder="Anzahl" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Array.from({ length: 6 }, (_, i) => i).map(num => (
+                              <SelectItem key={num} value={num.toString()}>
+                                {num} {num === 1 ? "Kind" : "Kinder"}
                               </SelectItem>
                             ))}
                           </SelectContent>
