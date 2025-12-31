@@ -1,4 +1,4 @@
-import { MapPin, Phone, Mail, Instagram, Facebook } from "lucide-react";
+import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
 const Footer = () => {
   return <footer id="footer" className="bg-primary text-primary-foreground py-12 md:py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,7 +31,51 @@ const Footer = () => {
           {/* Quick Links */}
           <div>
             <h3 className="text-xl font-bold mb-4">Quick Links</h3>
-            
+            <ul className="space-y-2">
+              <li>
+                <a 
+                  href="https://wa.me/491713020406" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  WhatsApp
+                </a>
+              </li>
+              <li>
+                <button 
+                  onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
+                  Über uns
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
+                  Ausstattung
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
+                  Buchung
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
+                  Galerie
+                </button>
+              </li>
+            </ul>
           </div>
 
           {/* Social Media & Newsletter */}
