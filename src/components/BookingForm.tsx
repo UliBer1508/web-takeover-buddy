@@ -87,6 +87,7 @@ interface House {
   price_winter?: number | null;
   price_summer?: number | null;
   price_offseason?: number | null;
+  external_house_id?: string | null;
 }
 
 interface BookingStatus {
@@ -176,9 +177,10 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
       // Convert date strings to ISO timestamps
       const checkInDate = new Date(data.checkIn);
       const checkOutDate = new Date(data.checkOut);
+      const totalGuests = parseInt(data.adults) + parseInt(data.children);
 
-      // Insert booking inquiry into database with foreign keys
-      const { error } = await supabase
+      // 1. Insert into local Lovable Cloud database
+      const { error: localError } = await supabase
         .from('booking_inquiries')
         .insert({
           house_id: selectedHouse?.id || DEFAULT_HOUSE_ID,
@@ -193,8 +195,30 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           status_id: pendingStatusId
         });
 
-      if (error) {
-        throw error;
+      if (localError) {
+        throw localError;
+      }
+
+      // 2. Insert into external "my sweet-home manager" database
+      if (selectedHouse?.external_house_id) {
+        const { error: externalError } = await externalSupabase
+          .from('booking_inquiries')
+          .insert({
+            house_id: selectedHouse.external_house_id,
+            guest_name: data.name.trim(),
+            guest_email: data.email.trim().toLowerCase(),
+            guest_phone: data.phone.trim(),
+            check_in: checkInDate.toISOString(),
+            check_out: checkOutDate.toISOString(),
+            number_of_guests: totalGuests, // Adults + Children combined
+            message: data.message?.trim() || null
+            // status defaults to 'pending' automatically
+          });
+
+        if (externalError) {
+          console.warn("External DB sync failed:", externalError);
+          // Don't throw - local save was successful
+        }
       }
 
       toast({
