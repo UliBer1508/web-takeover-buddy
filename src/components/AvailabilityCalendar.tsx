@@ -33,19 +33,30 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 Sekunden Timeout
       
       try {
-        const { data: bookings, error: bookingsError } = await externalSupabase
+        // First, fetch all bookings to debug status values
+        const { data: allBookings, error: debugError } = await externalSupabase
           .from('bookings')
-          .select('check_in, check_out')
+          .select('check_in, check_out, status')
           .eq('house_id', externalHouseId)
-          .in('status', ['confirmed', 'completed'])
           .abortSignal(controller.signal);
+        
+        if (debugError) {
+          console.error('Error fetching bookings:', debugError);
+          throw new Error(`bookings: ${debugError.message}`);
+        }
+        
+        console.log('All bookings for house:', allBookings);
+        console.log('Unique status values:', [...new Set(allBookings?.map(b => b.status))]);
+        
+        // Filter for confirmed/completed bookings (case-insensitive, German and English)
+        const confirmedStatuses = ['confirmed', 'completed', 'bestätigt', 'abgeschlossen', 'Confirmed', 'Completed'];
+        const bookings = allBookings?.filter(b => 
+          confirmedStatuses.some(status => 
+            b.status?.toLowerCase() === status.toLowerCase()
+          )
+        ) || [];
 
         clearTimeout(timeoutId);
-
-        if (bookingsError) {
-          console.error('Error fetching bookings:', bookingsError);
-          throw new Error(`bookings: ${bookingsError.message}`);
-        }
 
         console.log(`Loaded ${bookings?.length || 0} confirmed bookings`);
         return (bookings || []) as OccupiedDate[];
