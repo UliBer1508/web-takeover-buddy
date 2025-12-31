@@ -26,6 +26,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -157,9 +164,7 @@ const PromotionSettingsEmbedded = ({ houseId, houseName }: PromotionSettingsEmbe
   const onSubmit = async (data: PromotionFormData) => {
     setIsSubmitting(true);
     try {
-      // Check session first
       const { data: { session } } = await supabase.auth.getSession();
-      console.log("Current session user_id:", session?.user?.id);
       
       if (!session) {
         toast({
@@ -186,28 +191,22 @@ const PromotionSettingsEmbedded = ({ houseId, houseName }: PromotionSettingsEmbe
         is_active: data.is_active,
       };
 
-      console.log("Attempting to save promotion:", payload);
-
       if (editingPromotion) {
-        const { data: result, error } = await supabase
+        const { error } = await supabase
           .from('promotions')
           .update(payload)
-          .eq('id', editingPromotion.id)
-          .select();
+          .eq('id', editingPromotion.id);
 
-        console.log("Update result:", { result, error });
         if (error) throw error;
         toast({
           title: t('promotions.updated'),
           description: t('promotions.updatedDesc'),
         });
       } else {
-        const { data: result, error } = await supabase
+        const { error } = await supabase
           .from('promotions')
-          .insert(payload)
-          .select();
+          .insert(payload);
 
-        console.log("Insert result:", { result, error });
         if (error) throw error;
         toast({
           title: t('promotions.created'),
@@ -276,9 +275,89 @@ const PromotionSettingsEmbedded = ({ houseId, houseName }: PromotionSettingsEmbe
         </div>
         <p className="text-sm text-muted-foreground">{t('promotions.houseSpecific', { houseName })}</p>
 
-        {showForm ? (
+        <div className="space-y-3">
+          <Button onClick={() => setShowForm(true)} variant="outline" size="sm" className="w-full gap-2">
+            <Plus className="h-4 w-4" />
+            {t('promotions.add')}
+          </Button>
+
+          {isLoading ? (
+            <p className="text-center text-muted-foreground py-4 text-sm">{t('common.loading')}</p>
+          ) : promotions.length === 0 ? (
+            <p className="text-center text-muted-foreground py-4 text-sm">{t('promotions.empty')}</p>
+          ) : (
+            <ScrollArea className="h-[200px]">
+              <div className="space-y-2 pr-2">
+                {promotions.map((promo) => (
+                  <Card key={promo.id} className={`${!promo.is_active ? "opacity-60" : ""} ${isGlobalPromo(promo) ? "border-dashed" : ""}`}>
+                    <CardHeader className="py-2 px-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <CardTitle className="text-sm">{promo.name}</CardTitle>
+                          {isGlobalPromo(promo) && (
+                            <Badge variant="outline" className="text-xs">{t('promotions.global')}</Badge>
+                          )}
+                          {isPromotionActive(promo) ? (
+                            <Badge variant="default" className="text-xs">{t('promotions.activeNow')}</Badge>
+                          ) : !promo.is_active ? (
+                            <Badge variant="secondary" className="text-xs">{t('promotions.inactive')}</Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-xs">{t('promotions.scheduled')}</Badge>
+                          )}
+                        </div>
+                        {!isGlobalPromo(promo) && (
+                          <div className="flex gap-1 shrink-0">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={() => startEditing(promo)}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-destructive hover:text-destructive"
+                              onClick={() => setDeleteConfirmId(promo.id)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="text-xs text-muted-foreground py-2 px-3 pt-0">
+                      <p className="font-medium text-foreground">
+                        {promo.discount_type === 'percentage' 
+                          ? `${promo.discount_value}% ${t('promotions.discount')}`
+                          : `${promo.discount_value}€ ${t('promotions.discount')}`
+                        }
+                      </p>
+                      <p>{promo.valid_from} - {promo.valid_until}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </ScrollArea>
+          )}
+        </div>
+      </div>
+
+      {/* Promotion Form Dialog - außerhalb des Haus-Formulars */}
+      <Dialog open={showForm} onOpenChange={(open) => !open && resetForm()}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingPromotion ? t('promotions.edit') : t('promotions.add')}
+            </DialogTitle>
+            <DialogDescription>
+              {t('promotions.houseSpecific', { houseName })}
+            </DialogDescription>
+          </DialogHeader>
+          
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-muted/50 p-4 rounded-lg">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -456,76 +535,8 @@ const PromotionSettingsEmbedded = ({ houseId, houseName }: PromotionSettingsEmbe
               </div>
             </form>
           </Form>
-        ) : (
-          <div className="space-y-3">
-            <Button onClick={() => setShowForm(true)} variant="outline" size="sm" className="w-full gap-2">
-              <Plus className="h-4 w-4" />
-              {t('promotions.add')}
-            </Button>
-
-            {isLoading ? (
-              <p className="text-center text-muted-foreground py-4 text-sm">{t('common.loading')}</p>
-            ) : promotions.length === 0 ? (
-              <p className="text-center text-muted-foreground py-4 text-sm">{t('promotions.empty')}</p>
-            ) : (
-              <ScrollArea className="h-[200px]">
-                <div className="space-y-2 pr-2">
-                  {promotions.map((promo) => (
-                    <Card key={promo.id} className={`${!promo.is_active ? "opacity-60" : ""} ${isGlobalPromo(promo) ? "border-dashed" : ""}`}>
-                      <CardHeader className="py-2 px-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <CardTitle className="text-sm">{promo.name}</CardTitle>
-                            {isGlobalPromo(promo) && (
-                              <Badge variant="outline" className="text-xs">{t('promotions.global')}</Badge>
-                            )}
-                            {isPromotionActive(promo) ? (
-                              <Badge variant="default" className="text-xs">{t('promotions.activeNow')}</Badge>
-                            ) : !promo.is_active ? (
-                              <Badge variant="secondary" className="text-xs">{t('promotions.inactive')}</Badge>
-                            ) : (
-                              <Badge variant="outline" className="text-xs">{t('promotions.scheduled')}</Badge>
-                            )}
-                          </div>
-                          {!isGlobalPromo(promo) && (
-                            <div className="flex gap-1 shrink-0">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={() => startEditing(promo)}
-                              >
-                                <Pencil className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 text-destructive hover:text-destructive"
-                                onClick={() => setDeleteConfirmId(promo.id)}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="text-xs text-muted-foreground py-2 px-3 pt-0">
-                        <p className="font-medium text-foreground">
-                          {promo.discount_type === 'percentage' 
-                            ? `${promo.discount_value}% ${t('promotions.discount')}`
-                            : `${promo.discount_value}€ ${t('promotions.discount')}`
-                          }
-                        </p>
-                        <p>{promo.valid_from} - {promo.valid_until}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </ScrollArea>
-            )}
-          </div>
-        )}
-      </div>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
         <AlertDialogContent>
