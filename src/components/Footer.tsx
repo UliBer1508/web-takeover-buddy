@@ -39,8 +39,8 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <a 
-                  href="https://wa.me/491713020406" 
-                  target="_blank" 
+                  href="https://wa.me/4915757153466" 
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
