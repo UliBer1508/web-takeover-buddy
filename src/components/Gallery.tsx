@@ -10,6 +10,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ImageUploadDialog from "./ImageUploadDialog";
 import ImageEditDialog from "./ImageEditDialog";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/useAuth";
+
+// Entwicklungsmodus - auf false setzen wenn Auth implementiert ist
+const DEV_MODE = true;
 
 interface GalleryImage {
   id: string;
@@ -37,6 +41,9 @@ interface GalleryProps {
 
 const Gallery = ({ houseId }: GalleryProps) => {
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
+  const canEdit = DEV_MODE || isAuthenticated;
+  
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [imageToDelete, setImageToDelete] = useState<GalleryImage | null>(null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
@@ -336,13 +343,15 @@ const Gallery = ({ houseId }: GalleryProps) => {
           })}
         </div>
 
-        {/* Upload Button */}
-        <div className="flex justify-end mb-6">
-          <Button onClick={() => setUploadDialogOpen(true)} variant="outline">
-            <Plus className="mr-2 h-4 w-4" />
-            Bilder hinzufügen
-          </Button>
-        </div>
+        {/* Upload Button - nur für Bearbeiter sichtbar */}
+        {canEdit && (
+          <div className="flex justify-end mb-6">
+            <Button onClick={() => setUploadDialogOpen(true)} variant="outline">
+              <Plus className="mr-2 h-4 w-4" />
+              Bilder hinzufügen
+            </Button>
+          </div>
+        )}
 
         {/* Empty State */}
         {filteredImages.length === 0 ? (
@@ -361,12 +370,12 @@ const Gallery = ({ houseId }: GalleryProps) => {
             {filteredImages.map((image, index) => (
               <div
                 key={image.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, image)}
-                onDragOver={(e) => handleDragOver(e, image)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, image)}
-                onDragEnd={handleDragEnd}
+                draggable={canEdit}
+                onDragStart={canEdit ? (e) => handleDragStart(e, image) : undefined}
+                onDragOver={canEdit ? (e) => handleDragOver(e, image) : undefined}
+                onDragLeave={canEdit ? handleDragLeave : undefined}
+                onDrop={canEdit ? (e) => handleDrop(e, image) : undefined}
+                onDragEnd={canEdit ? handleDragEnd : undefined}
                 className={`
                   group relative overflow-hidden rounded-lg cursor-pointer aspect-[4/3] animate-fade-in-up transition-all
                   ${draggedImage?.id === image.id ? 'opacity-50 scale-95' : ''}
@@ -382,59 +391,63 @@ const Gallery = ({ houseId }: GalleryProps) => {
                   draggable={false}
                 />
                 
-                {/* Drag Handle */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
-                    <GripVertical className="w-4 h-4 text-white" />
+                {/* Drag Handle - nur für Bearbeiter sichtbar */}
+                {canEdit && (
+                  <div className="absolute top-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <div className="bg-black/60 backdrop-blur-sm px-2 py-1 rounded-full">
+                      <GripVertical className="w-4 h-4 text-white" />
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Icon Overlay */}
-                <div className="absolute top-2 left-2 right-2 flex justify-between opacity-0 md:group-hover:opacity-100 opacity-100 md:opacity-0 transition-opacity z-10">
-                  {/* Star Icon */}
-                  <button 
-                    onClick={(e) => { 
-                      e.stopPropagation(); 
-                      handleSetHero(image); 
-                    }}
-                    className="bg-black/60 hover:bg-black/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
-                    aria-label="Als Hero-Bild setzen"
-                    disabled={setHeroMutation.isPending}
-                  >
-                    {image.is_hero ? (
-                      <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                    ) : (
-                      <StarOff className="w-5 h-5 text-white" />
-                    )}
-                  </button>
-                  
-                  <div className="flex gap-2">
-                    {/* Edit Icon */}
+                {/* Icon Overlay - nur für Bearbeiter sichtbar */}
+                {canEdit && (
+                  <div className="absolute top-2 left-2 right-2 flex justify-between opacity-0 md:group-hover:opacity-100 opacity-100 md:opacity-0 transition-opacity z-10">
+                    {/* Star Icon */}
                     <button 
                       onClick={(e) => { 
                         e.stopPropagation(); 
-                        setImageToEdit(image); 
+                        handleSetHero(image); 
                       }}
                       className="bg-black/60 hover:bg-black/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
-                      aria-label="Bild bearbeiten"
+                      aria-label="Als Hero-Bild setzen"
+                      disabled={setHeroMutation.isPending}
                     >
-                      <Pencil className="w-5 h-5 text-white" />
+                      {image.is_hero ? (
+                        <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                      ) : (
+                        <StarOff className="w-5 h-5 text-white" />
+                      )}
                     </button>
                     
-                    {/* Trash Icon */}
-                    <button 
-                      onClick={(e) => { 
-                        e.stopPropagation(); 
-                        confirmDelete(image); 
-                      }}
-                      className="bg-black/60 hover:bg-red-600/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
-                      disabled={deleteMutation.isPending}
-                      aria-label="Bild löschen"
-                    >
-                      <Trash2 className="w-5 h-5 text-white" />
-                    </button>
+                    <div className="flex gap-2">
+                      {/* Edit Icon */}
+                      <button 
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          setImageToEdit(image); 
+                        }}
+                        className="bg-black/60 hover:bg-black/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        aria-label="Bild bearbeiten"
+                      >
+                        <Pencil className="w-5 h-5 text-white" />
+                      </button>
+                      
+                      {/* Trash Icon */}
+                      <button 
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          confirmDelete(image); 
+                        }}
+                        className="bg-black/60 hover:bg-red-600/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
+                        disabled={deleteMutation.isPending}
+                        aria-label="Bild löschen"
+                      >
+                        <Trash2 className="w-5 h-5 text-white" />
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
