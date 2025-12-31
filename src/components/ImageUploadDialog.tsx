@@ -130,10 +130,10 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
   }, []);
 
   const handleUpload = async () => {
-    if (files.length === 0 || !categoryId || !seasonId) {
+    if (files.length === 0 || !seasonId) {
       toast({
         title: "Fehlende Angaben",
-        description: "Bitte wählen Sie mindestens ein Bild, eine Kategorie und eine Jahreszeit.",
+        description: "Bitte wählen Sie mindestens ein Bild und eine Jahreszeit.",
         variant: "destructive",
       });
       return;
@@ -190,7 +190,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
             .insert({
               url: urlData.publicUrl,
               title,
-              category_id: categoryId,
+              category_id: categoryId || null,
               season_id: seasonId,
               house_id: houseId,
               sort_order: nextOrder++,
@@ -340,7 +340,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
 
           {/* Category */}
           <div className="space-y-2">
-            <Label htmlFor="category">Kategorie</Label>
+            <Label htmlFor="category">Kategorie (optional)</Label>
             <Select value={categoryId} onValueChange={setCategoryId}>
               <SelectTrigger>
                 <SelectValue placeholder="Kategorie wählen" />
@@ -353,6 +353,9 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
                 ))}
               </SelectContent>
             </Select>
+            <p className="text-xs text-muted-foreground">
+              Kann später pro Bild zugewiesen werden
+            </p>
           </div>
 
           {/* Season */}
@@ -388,7 +391,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
           <Button variant="outline" onClick={handleClose} disabled={isUploading}>
             Abbrechen
           </Button>
-          <Button onClick={handleUpload} disabled={isUploading || files.length === 0 || !categoryId || !seasonId}>
+          <Button onClick={handleUpload} disabled={isUploading || files.length === 0 || !seasonId}>
             {isUploading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

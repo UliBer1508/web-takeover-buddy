@@ -15,12 +15,12 @@ interface GalleryImage {
   id: string;
   url: string;
   title: string;
-  category_id: string;
+  category_id: string | null;
   season_id: string;
   house_id: string | null;
   is_hero: boolean;
   sort_order: number;
-  category?: { id: string; name: string; display_name: string };
+  category?: { id: string; name: string; display_name: string } | null;
   season?: { id: string; name: string; display_name: string };
 }
 

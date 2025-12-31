@@ -121,7 +121,7 @@ export type Database = {
       }
       gallery_images: {
         Row: {
-          category_id: string
+          category_id: string | null
           created_at: string
           house_id: string | null
           id: string
@@ -132,7 +132,7 @@ export type Database = {
           url: string
         }
         Insert: {
-          category_id: string
+          category_id?: string | null
           created_at?: string
           house_id?: string | null
           id?: string
@@ -143,7 +143,7 @@ export type Database = {
           url: string
         }
         Update: {
-          category_id?: string
+          category_id?: string | null
           created_at?: string
           house_id?: string | null
           id?: string
