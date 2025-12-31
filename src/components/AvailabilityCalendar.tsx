@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { format, differenceInDays, isSameDay } from "date-fns";
 import { de } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import "react-day-picker/dist/style.css";
 
 interface OccupiedDate {
@@ -23,6 +24,7 @@ interface AvailabilityCalendarProps {
 
 export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: AvailabilityCalendarProps) => {
   const [selected, setSelected] = useState<DateRange | undefined>();
+  const isMobile = useIsMobile();
   // Query ONLY bookings table from external database using external_house_id
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['availability', externalHouseId],
@@ -153,6 +155,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
       <style>{`
         .calendar-premium {
           width: 100%;
+          overflow-x: hidden;
         }
         
         .calendar-premium .rdp {
@@ -162,51 +165,56 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
         
         .calendar-premium .rdp-months {
           display: flex;
-          gap: 3rem;
+          gap: ${isMobile ? '1rem' : '3rem'};
           justify-content: center;
           flex-wrap: wrap;
         }
         
         .calendar-premium .rdp-month {
-          flex: 1;
-          min-width: 320px;
-          max-width: 420px;
+          flex: ${isMobile ? '0 0 100%' : '1'};
+          min-width: ${isMobile ? 'auto' : '320px'};
+          max-width: ${isMobile ? '100%' : '420px'};
+          width: ${isMobile ? '100%' : 'auto'};
+        }
+        
+        .calendar-premium .rdp-table {
+          width: 100%;
         }
         
         .calendar-premium .rdp-caption {
           display: flex;
           justify-content: center;
           align-items: center;
-          padding: 1.5rem 0;
-          margin-bottom: 1rem;
+          padding: ${isMobile ? '0.75rem 0' : '1.5rem 0'};
+          margin-bottom: ${isMobile ? '0.5rem' : '1rem'};
         }
         
         .calendar-premium .rdp-caption_label {
-          font-size: 1.5rem;
+          font-size: ${isMobile ? '1.125rem' : '1.5rem'};
           font-weight: 700;
           color: hsl(var(--foreground));
           text-transform: capitalize;
         }
         
         .calendar-premium .rdp-head_cell {
-          font-size: 0.875rem;
+          font-size: ${isMobile ? '0.7rem' : '0.875rem'};
           font-weight: 600;
           color: hsl(var(--muted-foreground));
           text-transform: uppercase;
-          padding: 0.75rem 0;
+          padding: ${isMobile ? '0.5rem 0' : '0.75rem 0'};
           letter-spacing: 0.05em;
         }
         
         .calendar-premium .rdp-cell {
-          padding: 0.25rem;
+          padding: ${isMobile ? '1px' : '0.25rem'};
         }
         
         .calendar-premium .rdp-day {
-          width: 56px;
-          height: 56px;
-          font-size: 1.125rem;
+          width: ${isMobile ? '40px' : '56px'};
+          height: ${isMobile ? '40px' : '56px'};
+          font-size: ${isMobile ? '0.875rem' : '1.125rem'};
           font-weight: 600;
-          border-radius: 0.5rem;
+          border-radius: ${isMobile ? '0.375rem' : '0.5rem'};
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
           border: 2px solid transparent;
           background: hsl(var(--background));
@@ -280,36 +288,26 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
           transform: scale(1.08);
           box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
         }
-        
-        @media (max-width: 768px) {
-          .calendar-premium .rdp-day {
-            width: 48px;
-            height: 48px;
-            font-size: 1rem;
-          }
-          
-          .calendar-premium .rdp-months {
-            gap: 1.5rem;
-          }
-        }
       `}</style>
       
       <Card className="shadow-xl border-2">
-        <CardHeader className="pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <CalendarIcon className="h-6 w-6 text-primary" />
+        <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-6">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+              <CalendarIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-3xl">Verfügbarkeitskalender</CardTitle>
-              <CardDescription className="text-base mt-1">
-                Belegte Tage sind rot markiert und durchgestrichen
+              <CardTitle className="text-xl sm:text-3xl">
+                {isMobile ? "Kalender" : "Verfügbarkeitskalender"}
+              </CardTitle>
+              <CardDescription className="text-sm sm:text-base mt-0.5 sm:mt-1">
+                {isMobile ? "Rote Tage = belegt" : "Belegte Tage sind rot markiert und durchgestrichen"}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         
-        <CardContent className="px-6 pb-8">
+        <CardContent className="px-2 sm:px-6 pb-4 sm:pb-8">
           {isLoading && (
             <div className="flex flex-col justify-center items-center py-20">
               <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
@@ -342,18 +340,17 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
           )}
           
           {!isLoading && !error && (
-            <div className="space-y-8">
+            <div className="space-y-4 sm:space-y-8">
               {/* Selected Range Display */}
               {selected?.from && selected?.to && (
                 <Alert className="bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800">
-                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-                  <AlertDescription className="text-green-800 dark:text-green-200 flex items-center justify-between">
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
+                  <AlertDescription className="text-green-800 dark:text-green-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <strong className="font-semibold">Ausgewählter Zeitraum:</strong>
-                      <div className="mt-1 text-base">
-                        {format(selected.from, 'dd. MMMM yyyy', { locale: de })} bis{' '}
-                        {format(selected.to, 'dd. MMMM yyyy', { locale: de })}
-                        <span className="ml-2 font-semibold">
+                      <strong className="font-semibold text-sm sm:text-base">Ausgewählter Zeitraum:</strong>
+                      <div className="mt-0.5 sm:mt-1 text-sm sm:text-base">
+                        {format(selected.from, isMobile ? 'dd.MM.yy' : 'dd. MMMM yyyy', { locale: de })} – {format(selected.to, isMobile ? 'dd.MM.yy' : 'dd. MMMM yyyy', { locale: de })}
+                        <span className="ml-1 sm:ml-2 font-semibold">
                           ({differenceInDays(selected.to, selected.from)} {differenceInDays(selected.to, selected.from) === 1 ? 'Nacht' : 'Nächte'})
                         </span>
                       </div>
@@ -362,10 +359,10 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                       variant="ghost" 
                       size="sm"
                       onClick={handleReset}
-                      className="ml-4 text-green-700 hover:text-green-900 hover:bg-green-100 dark:text-green-300 dark:hover:text-green-100"
+                      className="self-start sm:self-auto text-green-700 hover:text-green-900 hover:bg-green-100 dark:text-green-300 dark:hover:text-green-100"
                     >
                       <X className="h-4 w-4 mr-1" />
-                      Zurücksetzen
+                      {isMobile ? "Reset" : "Zurücksetzen"}
                     </Button>
                   </AlertDescription>
                 </Alert>
@@ -376,7 +373,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                   mode="range"
                   selected={selected}
                   onSelect={handleSelect}
-                  numberOfMonths={2}
+                  numberOfMonths={isMobile ? 1 : 2}
                   disabled={{ before: new Date() }}
                   modifiers={modifiers}
                   modifiersClassNames={modifiersClassNames}
@@ -386,20 +383,20 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
               </div>
               
               {/* Legend */}
-              <div className="flex flex-wrap gap-6 justify-center pt-6 border-t">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-background border-2 border-primary shadow-sm"></div>
-                  <span className="font-semibold text-base">Verfügbar</span>
+              <div className="flex flex-wrap gap-3 sm:gap-6 justify-center pt-4 sm:pt-6 border-t">
+                <div className="flex items-center gap-1.5 sm:gap-3">
+                  <div className="w-5 h-5 sm:w-8 sm:h-8 rounded sm:rounded-lg bg-background border-2 border-primary shadow-sm"></div>
+                  <span className="font-medium sm:font-semibold text-xs sm:text-base">Verfügbar</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-600 shadow-sm relative">
-                    <div className="absolute top-1/2 left-1 right-1 h-0.5 bg-white transform -translate-y-1/2"></div>
+                <div className="flex items-center gap-1.5 sm:gap-3">
+                  <div className="w-5 h-5 sm:w-8 sm:h-8 rounded sm:rounded-lg bg-gradient-to-br from-red-500 to-red-600 shadow-sm relative">
+                    <div className="absolute top-1/2 left-0.5 right-0.5 sm:left-1 sm:right-1 h-0.5 bg-white transform -translate-y-1/2"></div>
                   </div>
-                  <span className="font-semibold text-base">Belegt</span>
+                  <span className="font-medium sm:font-semibold text-xs sm:text-base">Belegt</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-muted opacity-30 shadow-sm"></div>
-                  <span className="font-semibold text-base">Vergangen</span>
+                <div className="flex items-center gap-1.5 sm:gap-3">
+                  <div className="w-5 h-5 sm:w-8 sm:h-8 rounded sm:rounded-lg bg-muted opacity-30 shadow-sm"></div>
+                  <span className="font-medium sm:font-semibold text-xs sm:text-base">Vergangen</span>
                 </div>
               </div>
 
