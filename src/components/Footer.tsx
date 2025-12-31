@@ -83,7 +83,7 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">Kontaktieren Sie uns</h3>
             
             <p className="text-sm text-primary-foreground/90">
-              Bleiben Sie auf dem Laufenden über Angebote und Neuigkeiten aus dem Steinbock Chalet.
+              Fragen Sie uns nach entsprechenden Angeboten.
             </p>
           </div>
         </div>
