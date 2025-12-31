@@ -1,68 +1,12 @@
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ImageUploadDialog from "./ImageUploadDialog";
-
-// Import all existing assets
-import exteriorWinter from "@/assets/exterior-winter.jpg";
-import exteriorFrontGarage from "@/assets/exterior-front-garage.jpg";
-import exteriorFrontView from "@/assets/exterior-front-view.jpg";
-import terrace from "@/assets/terrace.jpg";
-import balconyMountainView from "@/assets/balcony-mountain-view.jpg";
-import balconyTerrace from "@/assets/balcony-terrace.jpg";
-import balconyInteriorView from "@/assets/balcony-interior-view.jpg";
-import livingDiningOpen from "@/assets/living-dining-open.jpg";
-import diningTableView from "@/assets/dining-table-view.jpg";
-import diningCornerWindow from "@/assets/dining-corner-window.jpg";
-import diningPanorama from "@/assets/dining-panorama.jpg";
-import livingFireplace from "@/assets/living-fireplace.jpg";
-import livingFireplaceTV from "@/assets/living-fireplace-tv.jpg";
-import kitchenOak from "@/assets/kitchen-oak.jpg";
-import bedroomMountainView from "@/assets/bedroom-mountain-view.jpg";
-import bedroomBalcony from "@/assets/bedroom-balcony.jpg";
-import bedroomDoorOpen from "@/assets/bedroom-door-open.jpg";
-import bedroomDetail from "@/assets/bedroom-detail.jpg";
-import bathroomMain from "@/assets/bathroom-main.jpg";
-import bathroomShower from "@/assets/bathroom-shower.jpg";
-import bathroomMirror from "@/assets/bathroom-mirror.jpg";
-import bathroomGuest from "@/assets/bathroom-guest.jpg";
-import saunaInterior from "@/assets/sauna-interior.jpg";
-import skiRoom from "@/assets/ski-room.jpg";
-import hallwayStairs from "@/assets/hallway-stairs.jpg";
-
-// Default images from assets (used as fallback and initial data)
-const defaultImages = [
-  { id: "default-1", url: exteriorWinter, title: "Außenansicht Winter", category: "Außenbereich", is_hero: true, sort_order: 1, is_default: true },
-  { id: "default-2", url: exteriorFrontGarage, title: "Chalet mit Garage", category: "Außenbereich", is_hero: false, sort_order: 2, is_default: true },
-  { id: "default-3", url: exteriorFrontView, title: "Frontansicht des Chalets", category: "Außenbereich", is_hero: false, sort_order: 3, is_default: true },
-  { id: "default-4", url: terrace, title: "Terrasse mit Bergblick", category: "Außenbereich", is_hero: false, sort_order: 4, is_default: true },
-  { id: "default-5", url: balconyMountainView, title: "Balkon mit Bergpanorama", category: "Außenbereich", is_hero: false, sort_order: 5, is_default: true },
-  { id: "default-6", url: balconyTerrace, title: "Sonnenterrasse", category: "Außenbereich", is_hero: false, sort_order: 6, is_default: true },
-  { id: "default-7", url: balconyInteriorView, title: "Balkon mit Innenansicht", category: "Außenbereich", is_hero: false, sort_order: 7, is_default: true },
-  { id: "default-8", url: livingDiningOpen, title: "Offener Wohn-/Essbereich", category: "Wohn- & Essbereich", is_hero: false, sort_order: 8, is_default: true },
-  { id: "default-9", url: diningTableView, title: "Essbereich mit gedecktem Tisch", category: "Wohn- & Essbereich", is_hero: false, sort_order: 9, is_default: true },
-  { id: "default-10", url: diningCornerWindow, title: "Essbereich mit Eckfenster", category: "Wohn- & Essbereich", is_hero: false, sort_order: 10, is_default: true },
-  { id: "default-11", url: diningPanorama, title: "Essbereich mit Panoramablick", category: "Wohn- & Essbereich", is_hero: false, sort_order: 11, is_default: true },
-  { id: "default-12", url: livingFireplace, title: "Wohnzimmer mit Kamin", category: "Wohn- & Essbereich", is_hero: false, sort_order: 12, is_default: true },
-  { id: "default-13", url: livingFireplaceTV, title: "Gemütlicher Wohnbereich", category: "Wohn- & Essbereich", is_hero: false, sort_order: 13, is_default: true },
-  { id: "default-14", url: kitchenOak, title: "Küche mit Eichenfronten", category: "Küche", is_hero: false, sort_order: 14, is_default: true },
-  { id: "default-15", url: bedroomMountainView, title: "Schlafzimmer mit Bergblick", category: "Schlafzimmer", is_hero: false, sort_order: 15, is_default: true },
-  { id: "default-16", url: bedroomBalcony, title: "Schlafzimmer mit Balkonzugang", category: "Schlafzimmer", is_hero: false, sort_order: 16, is_default: true },
-  { id: "default-17", url: bedroomDoorOpen, title: "Gemütliches Schlafzimmer", category: "Schlafzimmer", is_hero: false, sort_order: 17, is_default: true },
-  { id: "default-18", url: bedroomDetail, title: "Schlafzimmer Detail", category: "Schlafzimmer", is_hero: false, sort_order: 18, is_default: true },
-  { id: "default-19", url: bathroomMain, title: "Hauptbadezimmer", category: "Badezimmer", is_hero: false, sort_order: 19, is_default: true },
-  { id: "default-20", url: bathroomShower, title: "Badezimmer mit Dusche", category: "Badezimmer", is_hero: false, sort_order: 20, is_default: true },
-  { id: "default-21", url: bathroomMirror, title: "Elegantes Badezimmer", category: "Badezimmer", is_hero: false, sort_order: 21, is_default: true },
-  { id: "default-22", url: bathroomGuest, title: "Gäste-WC", category: "Badezimmer", is_hero: false, sort_order: 22, is_default: true },
-  { id: "default-23", url: saunaInterior, title: "Finnische Sauna", category: "Wellness", is_hero: false, sort_order: 23, is_default: true },
-  { id: "default-24", url: skiRoom, title: "Skiraum mit Ausrüstung", category: "Ausstattung", is_hero: false, sort_order: 24, is_default: true },
-  { id: "default-25", url: hallwayStairs, title: "Eingangsbereich mit Treppe", category: "Eingangsbereich", is_hero: false, sort_order: 25, is_default: true },
-];
 
 interface GalleryImage {
   id: string;
@@ -71,7 +15,6 @@ interface GalleryImage {
   category: string;
   is_hero: boolean;
   sort_order: number;
-  is_default?: boolean;
 }
 
 const Gallery = () => {
@@ -79,10 +22,9 @@ const Gallery = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [imageToDelete, setImageToDelete] = useState<GalleryImage | null>(null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [heroImageId, setHeroImageId] = useState<string>("default-1");
 
-  // Fetch images from Supabase, merge with defaults
-  const { data: images = defaultImages, isLoading } = useQuery({
+  // Fetch images from Supabase only
+  const { data: images = [], isLoading } = useQuery({
     queryKey: ['gallery-images'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -91,36 +33,14 @@ const Gallery = () => {
         .order('sort_order', { ascending: true });
       
       if (error) throw error;
-      
-      // If database has images, use them + defaults
-      const dbImages = (data || []).map(img => ({ ...img, is_default: false }));
-      
-      // Combine: DB images first (if any), then defaults
-      if (dbImages.length > 0) {
-        // Check if any DB image is hero
-        const dbHero = dbImages.find(img => img.is_hero);
-        if (dbHero) {
-          setHeroImageId(dbHero.id);
-          // Mark all defaults as non-hero
-          return [...dbImages, ...defaultImages.map(img => ({ ...img, is_hero: false }))];
-        }
-      }
-      
-      // Use defaults with first as hero
-      return defaultImages;
+      return data || [];
     },
   });
 
-  // Set hero mutation (only for DB images)
+  // Set hero mutation
   const setHeroMutation = useMutation({
     mutationFn: async (image: GalleryImage) => {
-      if (image.is_default) {
-        // For default images, just update local state
-        setHeroImageId(image.id);
-        return;
-      }
-      
-      // First, unset all hero images in DB
+      // First, unset all hero images
       await supabase
         .from('gallery_images')
         .update({ is_hero: false })
@@ -133,7 +53,6 @@ const Gallery = () => {
         .eq('id', image.id);
       
       if (error) throw error;
-      setHeroImageId(image.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery-images'] });
@@ -152,13 +71,9 @@ const Gallery = () => {
     },
   });
 
-  // Delete mutation (only for DB images)
+  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (image: GalleryImage) => {
-      if (image.is_default) {
-        throw new Error("Standard-Bilder können nicht gelöscht werden.");
-      }
-      
       // Extract filename from URL
       const urlParts = image.url.split('/');
       const fileName = urlParts[urlParts.length - 1];
@@ -199,21 +114,8 @@ const Gallery = () => {
     setHeroMutation.mutate(image);
   };
 
-  const isCurrentHero = (image: GalleryImage) => {
-    return image.id === heroImageId || image.is_hero;
-  };
-
   const confirmDelete = (image: GalleryImage) => {
-    if (image.is_default) {
-      toast({
-        title: "⚠️ Aktion nicht möglich",
-        description: "Standard-Bilder können nicht gelöscht werden.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (isCurrentHero(image)) {
+    if (image.is_hero) {
       toast({
         title: "⚠️ Aktion nicht möglich",
         description: "Das aktuelle Hero-Bild kann nicht gelöscht werden. Bitte wählen Sie zuerst ein anderes Hero-Bild.",
@@ -251,9 +153,6 @@ const Gallery = () => {
     }
   };
 
-  // Get the current hero image URL for the Hero component
-  const currentHeroImage = images.find(img => isCurrentHero(img));
-
   if (isLoading) {
     return (
       <section id="galerie" className="py-20 bg-background">
@@ -282,41 +181,48 @@ const Gallery = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {images.map((image, index) => (
-            <div
-              key={image.id}
-              className="group relative overflow-hidden rounded-lg cursor-pointer aspect-[4/3] animate-fade-in-up"
-              style={{ animationDelay: `${Math.min(index, 10) * 0.1}s` }}
-              onClick={() => openLightbox(index)}
-            >
-              <img
-                src={image.url}
-                alt={image.title}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              
-              {/* Icon Overlay */}
-              <div className="absolute top-2 left-2 right-2 flex justify-between opacity-0 md:group-hover:opacity-100 opacity-100 md:opacity-0 transition-opacity z-10">
-                {/* Stern-Icon links */}
-                <button 
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
-                    handleSetHero(image); 
-                  }}
-                  className="bg-black/60 hover:bg-black/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
-                  aria-label="Als Hero-Bild setzen"
-                  disabled={setHeroMutation.isPending}
-                >
-                  {isCurrentHero(image) ? (
-                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                  ) : (
-                    <StarOff className="w-5 h-5 text-white" />
-                  )}
-                </button>
+        {/* Empty State */}
+        {images.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+            <ImageOff className="h-16 w-16 mb-4" />
+            <p className="text-lg">Noch keine Bilder vorhanden</p>
+            <p className="text-sm">Klicken Sie auf "Bild hinzufügen" um Bilder hochzuladen</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {images.map((image, index) => (
+              <div
+                key={image.id}
+                className="group relative overflow-hidden rounded-lg cursor-pointer aspect-[4/3] animate-fade-in-up"
+                style={{ animationDelay: `${Math.min(index, 10) * 0.1}s` }}
+                onClick={() => openLightbox(index)}
+              >
+                <img
+                  src={image.url}
+                  alt={image.title}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
                 
-                {/* Trash-Icon rechts - only for non-default images */}
-                {!image.is_default && (
+                {/* Icon Overlay */}
+                <div className="absolute top-2 left-2 right-2 flex justify-between opacity-0 md:group-hover:opacity-100 opacity-100 md:opacity-0 transition-opacity z-10">
+                  {/* Star Icon */}
+                  <button 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      handleSetHero(image); 
+                    }}
+                    className="bg-black/60 hover:bg-black/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    aria-label="Als Hero-Bild setzen"
+                    disabled={setHeroMutation.isPending}
+                  >
+                    {image.is_hero ? (
+                      <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                    ) : (
+                      <StarOff className="w-5 h-5 text-white" />
+                    )}
+                  </button>
+                  
+                  {/* Trash Icon */}
                   <button 
                     onClick={(e) => { 
                       e.stopPropagation(); 
@@ -328,18 +234,18 @@ const Gallery = () => {
                   >
                     <Trash2 className="w-5 h-5 text-white" />
                   </button>
-                )}
-              </div>
+                </div>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <p className="text-sm font-medium text-accent">{image.category}</p>
-                  <p className="text-lg font-semibold">{image.title}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                    <p className="text-sm font-medium text-accent">{image.category}</p>
+                    <p className="text-lg font-semibold">{image.title}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Upload Dialog */}
@@ -399,30 +305,21 @@ const Gallery = () => {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={imageToDelete !== null} onOpenChange={() => setImageToDelete(null)}>
+      <AlertDialog open={!!imageToDelete} onOpenChange={() => setImageToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Bild löschen?</AlertDialogTitle>
             <AlertDialogDescription>
-              Möchten Sie das Bild "{imageToDelete?.title}" wirklich aus der Galerie entfernen? 
-              Diese Aktion kann nicht rückgängig gemacht werden.
+              Möchten Sie das Bild "{imageToDelete?.title}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteMutation.isPending}>Abbrechen</AlertDialogCancel>
+            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
             <AlertDialogAction 
-              onClick={handleDelete} 
+              onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Wird gelöscht...
-                </>
-              ) : (
-                "Löschen"
-              )}
+              Löschen
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
