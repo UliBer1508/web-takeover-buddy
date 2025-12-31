@@ -21,6 +21,7 @@ export type Database = {
           check_out: string
           cleaning_fee: number | null
           created_at: string | null
+          discount_amount: number | null
           guest_email: string
           guest_name: string
           guest_phone: string
@@ -31,6 +32,7 @@ export type Database = {
           number_of_children: number
           number_of_guests: number
           price_per_night: number | null
+          promotion_id: string | null
           service_fee: number | null
           status_id: string
           total_price: number | null
@@ -43,6 +45,7 @@ export type Database = {
           check_out: string
           cleaning_fee?: number | null
           created_at?: string | null
+          discount_amount?: number | null
           guest_email: string
           guest_name: string
           guest_phone: string
@@ -53,6 +56,7 @@ export type Database = {
           number_of_children?: number
           number_of_guests: number
           price_per_night?: number | null
+          promotion_id?: string | null
           service_fee?: number | null
           status_id: string
           total_price?: number | null
@@ -65,6 +69,7 @@ export type Database = {
           check_out?: string
           cleaning_fee?: number | null
           created_at?: string | null
+          discount_amount?: number | null
           guest_email?: string
           guest_name?: string
           guest_phone?: string
@@ -75,6 +80,7 @@ export type Database = {
           number_of_children?: number
           number_of_guests?: number
           price_per_night?: number | null
+          promotion_id?: string | null
           service_fee?: number | null
           status_id?: string
           total_price?: number | null
@@ -82,6 +88,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "booking_inquiries_promotion_id_fkey"
+            columns: ["promotion_id"]
+            isOneToOne: false
+            referencedRelation: "promotions"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "fk_booking_house"
             columns: ["house_id"]
@@ -272,6 +285,68 @@ export type Database = {
           tourist_tax?: number | null
         }
         Relationships: []
+      }
+      promotions: {
+        Row: {
+          booking_end: string | null
+          booking_start: string | null
+          created_at: string | null
+          description_de: string
+          description_en: string | null
+          discount_type: string
+          discount_value: number
+          house_id: string | null
+          id: string
+          is_active: boolean | null
+          min_nights: number | null
+          name: string
+          sort_order: number | null
+          valid_from: string
+          valid_until: string
+        }
+        Insert: {
+          booking_end?: string | null
+          booking_start?: string | null
+          created_at?: string | null
+          description_de: string
+          description_en?: string | null
+          discount_type: string
+          discount_value: number
+          house_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          min_nights?: number | null
+          name: string
+          sort_order?: number | null
+          valid_from: string
+          valid_until: string
+        }
+        Update: {
+          booking_end?: string | null
+          booking_start?: string | null
+          created_at?: string | null
+          description_de?: string
+          description_en?: string | null
+          discount_type?: string
+          discount_value?: number
+          house_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          min_nights?: number | null
+          name?: string
+          sort_order?: number | null
+          valid_from?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotions_house_id_fkey"
+            columns: ["house_id"]
+            isOneToOne: false
+            referencedRelation: "houses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reviews: {
         Row: {

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Calendar, Users, Mail, Phone, MessageSquare, Pencil, ChevronDown, Calculator } from "lucide-react";
+import { Calendar, Users, Mail, Phone, MessageSquare, Pencil, ChevronDown, Calculator, Tag } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { format, differenceInDays, getMonth } from "date-fns";
 import HouseSettingsDialog from "@/components/HouseSettingsDialog";
+import PromotionSettingsDialog from "@/components/PromotionSettingsDialog";
+import PromotionBanner from "@/components/PromotionBanner";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
 import { useAdmin } from "@/hooks/useAdmin";
@@ -37,6 +39,22 @@ const getSeason = (date: Date): Season => {
   return 'offseason';
 };
 
+interface Promotion {
+  id: string;
+  house_id: string | null;
+  name: string;
+  description_de: string;
+  description_en: string | null;
+  discount_type: string;
+  discount_value: number;
+  valid_from: string;
+  valid_until: string;
+  booking_start: string | null;
+  booking_end: string | null;
+  min_nights: number | null;
+  is_active: boolean;
+}
+
 interface PriceBreakdown {
   nights: number;
   season: Season;
@@ -47,6 +65,11 @@ interface PriceBreakdown {
   bedLinenFee: number;
   touristTaxTotal: number;
   grandTotal: number;
+  // Promotion fields
+  discountAmount: number;
+  discountLabel: string | null;
+  originalTotal: number;
+  promotionId: string | null;
 }
 
 const calculatePriceBreakdown = (
@@ -54,7 +77,8 @@ const calculatePriceBreakdown = (
   checkIn: string,
   checkOut: string,
   adults: number,
-  children: number
+  children: number,
+  promotions: Promotion[] = []
 ): PriceBreakdown | null => {
   if (!house || !checkIn || !checkOut) return null;
   
@@ -90,7 +114,40 @@ const calculatePriceBreakdown = (
   const touristTaxPerPerson = house.tourist_tax ?? 0;
   const touristTaxTotal = touristTaxPerPerson * (adults + children) * nights;
   
-  const grandTotal = accommodationTotal + cleaningFee + serviceFee + bedLinenFee + touristTaxTotal;
+  const subtotalBeforeDiscount = accommodationTotal + cleaningFee + serviceFee + bedLinenFee + touristTaxTotal;
+  
+  // Find applicable promotion (highest discount wins)
+  let bestPromotion: Promotion | null = null;
+  let bestDiscountAmount = 0;
+  
+  for (const promo of promotions) {
+    // Check if promotion applies to this house
+    if (promo.house_id !== null && promo.house_id !== house.id) continue;
+    
+    // Check if check-in is within booking_start/booking_end range
+    if (promo.booking_start && new Date(promo.booking_start) > checkInDate) continue;
+    if (promo.booking_end && new Date(promo.booking_end) < checkInDate) continue;
+    
+    // Check minimum nights requirement
+    if (promo.min_nights && nights < promo.min_nights) continue;
+    
+    // Calculate discount amount
+    let discountAmount: number;
+    if (promo.discount_type === 'percentage') {
+      discountAmount = accommodationTotal * (promo.discount_value / 100);
+    } else {
+      discountAmount = promo.discount_value;
+    }
+    
+    // Keep the best discount
+    if (discountAmount > bestDiscountAmount) {
+      bestDiscountAmount = discountAmount;
+      bestPromotion = promo;
+    }
+  }
+  
+  const discountAmount = Math.round(bestDiscountAmount * 100) / 100;
+  const grandTotal = subtotalBeforeDiscount - discountAmount;
   
   return {
     nights,
@@ -101,7 +158,13 @@ const calculatePriceBreakdown = (
     serviceFee,
     bedLinenFee,
     touristTaxTotal,
-    grandTotal
+    grandTotal,
+    discountAmount,
+    discountLabel: bestPromotion 
+      ? `${bestPromotion.discount_type === 'percentage' ? `${bestPromotion.discount_value}%` : `${bestPromotion.discount_value}€`} ${bestPromotion.name}`
+      : null,
+    originalTotal: subtotalBeforeDiscount,
+    promotionId: bestPromotion?.id ?? null
   };
 };
 
@@ -230,6 +293,27 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
   const maxGuests = selectedHouse?.max_guests || 10;
   const pendingStatusId = statuses.find(s => s.name === 'pending')?.id;
 
+  // Fetch active promotions
+  const { data: promotions = [] } = useQuery({
+    queryKey: ['active-promotions', selectedHouse?.id],
+    queryFn: async () => {
+      const today = new Date().toISOString().split('T')[0];
+      
+      const { data, error } = await supabase
+        .from('promotions')
+        .select('*')
+        .eq('is_active', true)
+        .lte('valid_from', today)
+        .gte('valid_until', today);
+
+      if (error) throw error;
+      return (data as Promotion[]).filter(p => 
+        p.house_id === null || p.house_id === selectedHouse?.id
+      );
+    },
+    enabled: !!selectedHouse,
+  });
+
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
@@ -263,10 +347,10 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
     }
   }, [currentAdults, currentChildren, maxChildren, form]);
 
-  // Calculate price breakdown reactively
+  // Calculate price breakdown reactively (including promotions)
   const priceBreakdown = useMemo(() => {
-    return calculatePriceBreakdown(selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren);
-  }, [selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren]);
+    return calculatePriceBreakdown(selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren, promotions);
+  }, [selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren, promotions]);
 
   // Auto-fill form when dates are selected from calendar
   useEffect(() => {
@@ -566,10 +650,28 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                             )}
                           </CollapsibleContent>
                         </Collapsible>
+
+                        {/* Discount display */}
+                        {priceBreakdown.discountAmount > 0 && priceBreakdown.discountLabel && (
+                          <div className="flex justify-between items-center text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 p-2 rounded-md">
+                            <span className="flex items-center gap-2">
+                              <Tag className="h-4 w-4" />
+                              {t('promotions.appliedDiscount')}: {priceBreakdown.discountLabel}
+                            </span>
+                            <span className="font-medium">-{formatCurrency(priceBreakdown.discountAmount)}</span>
+                          </div>
+                        )}
                         
                         <div className="border-t pt-3 flex justify-between items-center">
                           <span className="font-semibold text-lg">{t('booking.totalPrice')}</span>
-                          <span className="font-bold text-xl text-primary">{formatCurrency(priceBreakdown.grandTotal)}</span>
+                          <div className="text-right">
+                            {priceBreakdown.discountAmount > 0 && (
+                              <span className="text-sm text-muted-foreground line-through mr-2">
+                                {formatCurrency(priceBreakdown.originalTotal)}
+                              </span>
+                            )}
+                            <span className="font-bold text-xl text-primary">{formatCurrency(priceBreakdown.grandTotal)}</span>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -595,6 +697,20 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
               </Form>
             </CardContent>
           </Card>
+
+          {/* Promotion Banner */}
+          {promotions.length > 0 && (
+            <div className="mt-6">
+              <PromotionBanner houseId={selectedHouse?.id} checkInDate={watchedCheckIn} />
+            </div>
+          )}
+
+          {/* Admin: Manage Promotions */}
+          {canEdit && (
+            <div className="mt-4 flex justify-center">
+              <PromotionSettingsDialog />
+            </div>
+          )}
 
           {/* Pricing Info */}
           <div className="mt-12 grid sm:grid-cols-2 gap-6 animate-fade-in-up">
