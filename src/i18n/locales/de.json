@@ -403,6 +403,8 @@
   "promotions": {
     "title": "Aktionen & Rabatte",
     "description": "Verwalten Sie zeitlich begrenzte Rabatte und Sonderangebote",
+    "houseSpecific": "Aktionen für {{houseName}} verwalten",
+    "global": "Global",
     "manage": "Aktionen verwalten",
     "add": "Neue Aktion erstellen",
     "empty": "Noch keine Aktionen vorhanden",

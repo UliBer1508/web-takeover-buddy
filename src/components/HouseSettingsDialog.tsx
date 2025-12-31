@@ -11,6 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import PromotionSettingsEmbedded from "./PromotionSettingsEmbedded";
 
 interface House {
   id: string;
@@ -134,52 +136,22 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{t('houseSettings.title')}</DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="min_nights"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('houseSettings.minNights')}</FormLabel>
-                    <FormControl>
-                      <Input type="number" min={1} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="cleaning_fee"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('houseSettings.cleaningFee')}</FormLabel>
-                    <FormControl>
-                      <Input type="number" min={0} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="border-t pt-4">
-              <h4 className="font-medium mb-3">{t('houseSettings.additionalFees')}</h4>
+        <ScrollArea className="max-h-[calc(90vh-100px)] pr-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="service_fee"
+                  name="min_nights"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('houseSettings.serviceFee')}</FormLabel>
+                      <FormLabel>{t('houseSettings.minNights')}</FormLabel>
                       <FormControl>
-                        <Input type="number" min={0} {...field} />
+                        <Input type="number" min={1} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -187,97 +159,10 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                 />
                 <FormField
                   control={form.control}
-                  name="bed_linen_fee"
+                  name="cleaning_fee"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('houseSettings.bedLinenFee')}</FormLabel>
-                      <FormControl>
-                        <Input type="number" min={0} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="tourist_tax"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('houseSettings.touristTax')}</FormLabel>
-                      <FormControl>
-                        <Input type="number" min={0} step="0.01" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="check_in_time"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('houseSettings.checkInTime')}</FormLabel>
-                    <FormControl>
-                      <Input type="time" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="check_out_time"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('houseSettings.checkOutTime')}</FormLabel>
-                    <FormControl>
-                      <Input type="time" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="border-t pt-4">
-              <h4 className="font-medium mb-3">{t('houseSettings.pricesPerNight')}</h4>
-              <div className="grid grid-cols-3 gap-3">
-                <FormField
-                  control={form.control}
-                  name="price_winter"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">{t('houseSettings.winter')}</FormLabel>
-                      <FormControl>
-                        <Input type="number" min={0} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="price_summer"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">{t('houseSettings.summer')}</FormLabel>
-                      <FormControl>
-                        <Input type="number" min={0} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="price_offseason"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">{t('houseSettings.offseason')}</FormLabel>
+                      <FormLabel>{t('houseSettings.cleaningFee')}</FormLabel>
                       <FormControl>
                         <Input type="number" min={0} {...field} />
                       </FormControl>
@@ -286,18 +171,140 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                   )}
                 />
               </div>
-            </div>
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                {t('houseSettings.cancel')}
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? t('houseSettings.saving') : t('houseSettings.save')}
-              </Button>
-            </div>
-          </form>
-        </Form>
+              <div className="border-t pt-4">
+                <h4 className="font-medium mb-3">{t('houseSettings.additionalFees')}</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="service_fee"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('houseSettings.serviceFee')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={0} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="bed_linen_fee"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('houseSettings.bedLinenFee')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={0} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="tourist_tax"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('houseSettings.touristTax')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={0} step="0.01" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="check_in_time"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('houseSettings.checkInTime')}</FormLabel>
+                      <FormControl>
+                        <Input type="time" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="check_out_time"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('houseSettings.checkOutTime')}</FormLabel>
+                      <FormControl>
+                        <Input type="time" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="border-t pt-4">
+                <h4 className="font-medium mb-3">{t('houseSettings.pricesPerNight')}</h4>
+                <div className="grid grid-cols-3 gap-3">
+                  <FormField
+                    control={form.control}
+                    name="price_winter"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">{t('houseSettings.winter')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={0} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="price_summer"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">{t('houseSettings.summer')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={0} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="price_offseason"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs">{t('houseSettings.offseason')}</FormLabel>
+                        <FormControl>
+                          <Input type="number" min={0} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Promotions Section */}
+              <PromotionSettingsEmbedded houseId={house.id} houseName={house.name} />
+
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                  {t('houseSettings.cancel')}
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? t('houseSettings.saving') : t('houseSettings.save')}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
