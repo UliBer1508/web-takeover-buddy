@@ -217,5 +217,34 @@
     "delete": "Delete",
     "edit": "Edit",
     "close": "Close"
+  },
+  "auth": {
+    "admin": "Admin",
+    "adminArea": "Admin Area",
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "loginButton": "Sign In",
+    "loggingIn": "Signing in...",
+    "invalidCredentials": "Invalid credentials",
+    "loginDescription": "Sign in to access admin features",
+    "loginSuccess": "Successfully signed in",
+    "welcomeBack": "Welcome back!",
+    "loginError": "An error occurred. Please try again.",
+    "fillAllFields": "Please fill in all fields",
+    "backToHome": "Back to Home"
+  },
+  "testimonials": {
+    "title": "Guest Reviews",
+    "subtitle": "What our guests say about their stay",
+    "newReview": "New Review",
+    "addReview": "Write Review",
+    "readMore": "Read More",
+    "showLess": "Show Less",
+    "noReviews": "No reviews yet.",
+    "hidden": "Hidden"
   }
 }

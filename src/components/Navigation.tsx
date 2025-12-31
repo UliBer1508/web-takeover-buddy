@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { isAuthenticated, signOut } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -71,6 +75,27 @@ const Navigation = () => {
                 </button>
               ))}
               <LanguageSwitcher isScrolled={isScrolled} />
+              {isAuthenticated ? (
+                <Button
+                  onClick={signOut}
+                  variant="outline"
+                  size="sm"
+                  className={isScrolled ? "" : "border-white/50 text-white hover:bg-white/10"}
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  {t("auth.logout")}
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => navigate("/admin")}
+                  variant="ghost"
+                  size="sm"
+                  className={isScrolled ? "" : "text-white hover:bg-white/10"}
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  {t("auth.admin")}
+                </Button>
+              )}
               <Button
                 onClick={() => scrollToSection("booking")}
                 className="bg-primary hover:bg-primary/90"
@@ -113,6 +138,30 @@ const Navigation = () => {
             >
               {t("navigation.bookNow")}
             </Button>
+            {isAuthenticated ? (
+              <Button
+                onClick={signOut}
+                variant="outline"
+                size="lg"
+                className="mt-2"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                {t("auth.logout")}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  navigate("/admin");
+                  setIsMobileMenuOpen(false);
+                }}
+                variant="ghost"
+                size="lg"
+                className="mt-2"
+              >
+                <Lock className="w-4 h-4 mr-2" />
+                {t("auth.admin")}
+              </Button>
+            )}
           </div>
         </div>
       )}

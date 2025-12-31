@@ -10,11 +10,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ImageUploadDialog from "./ImageUploadDialog";
 import ImageEditDialog from "./ImageEditDialog";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 import { useTranslation } from "react-i18next";
-
-// Entwicklungsmodus - auf false setzen wenn Auth implementiert ist
-const DEV_MODE = true;
 
 interface GalleryImage {
   id: string;
@@ -43,8 +40,8 @@ interface GalleryProps {
 const Gallery = ({ houseId }: GalleryProps) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { isAuthenticated } = useAuth();
-  const canEdit = DEV_MODE || isAuthenticated;
+  const { isAdmin } = useAdmin();
+  const canEdit = isAdmin;
   
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [imageToDelete, setImageToDelete] = useState<GalleryImage | null>(null);

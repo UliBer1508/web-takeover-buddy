@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Star, Pencil, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 import ReviewEditDialog from "./ReviewEditDialog";
 import ReviewAddDialog from "./ReviewAddDialog";
 import { format } from "date-fns";
@@ -22,15 +22,11 @@ interface Review {
   sort_order: number;
 }
 
-// Entwicklungsmodus - auf false setzen wenn Auth implementiert ist
-const DEV_MODE = true;
-
 const MAX_TEXT_LENGTH = 200;
 
 const Testimonials = () => {
   const { t, i18n } = useTranslation();
-  const { isAuthenticated } = useAuth();
-  const canEdit = DEV_MODE || isAuthenticated;
+  const { isAdmin } = useAdmin();
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [expandedReviews, setExpandedReviews] = useState<Set<string>>(new Set());
@@ -108,16 +104,15 @@ const Testimonials = () => {
             {t("testimonials.subtitle")}
           </p>
           
-          {canEdit && (
-            <Button
-              onClick={() => setAddDialogOpen(true)}
-              className="mt-4"
-              size="lg"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              {t("testimonials.newReview")}
-            </Button>
-          )}
+          {/* Bewertung hinzufügen - für alle sichtbar */}
+          <Button
+            onClick={() => setAddDialogOpen(true)}
+            className="mt-4"
+            size="lg"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            {t("testimonials.addReview")}
+          </Button>
         </div>
 
         {displayReviews.length === 0 ? (
@@ -132,7 +127,8 @@ const Testimonials = () => {
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {canEdit && (
+                {/* Bearbeiten - nur für Admins */}
+                {isAdmin && (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -173,7 +169,7 @@ const Testimonials = () => {
                   <div className="border-t pt-4">
                     <p className="font-semibold text-foreground">{review.guest_name}</p>
                     <p className="text-sm text-muted-foreground">{formatDate(review.review_date)}</p>
-                    {!review.is_visible && canEdit && (
+                    {!review.is_visible && isAdmin && (
                       <p className="text-xs text-destructive mt-1">{t("testimonials.hidden")}</p>
                     )}
                   </div>
