@@ -24,11 +24,26 @@ interface Review {
 // Entwicklungsmodus - auf false setzen wenn Auth implementiert ist
 const DEV_MODE = true;
 
+const MAX_TEXT_LENGTH = 200;
+
 const Testimonials = () => {
   const { isAuthenticated } = useAuth();
   const canEdit = DEV_MODE || isAuthenticated;
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [expandedReviews, setExpandedReviews] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (reviewId: string) => {
+    setExpandedReviews(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(reviewId)) {
+        newSet.delete(reviewId);
+      } else {
+        newSet.add(reviewId);
+      }
+      return newSet;
+    });
+  };
 
   const { data: reviews, isLoading } = useQuery({
     queryKey: ['reviews'],
@@ -133,9 +148,25 @@ const Testimonials = () => {
                       <Star key={i} className="w-5 h-5 text-muted-foreground" />
                     ))}
                   </div>
-                  <p className="text-muted-foreground mb-4 italic">
-                    "{review.text}"
-                  </p>
+                  <div className="text-muted-foreground mb-4 italic">
+                    {review.text.length > MAX_TEXT_LENGTH ? (
+                      <>
+                        <p>
+                          "{expandedReviews.has(review.id) 
+                            ? review.text 
+                            : `${review.text.substring(0, MAX_TEXT_LENGTH)}...`}"
+                        </p>
+                        <button
+                          onClick={() => toggleExpanded(review.id)}
+                          className="text-primary hover:text-primary/80 font-medium text-sm mt-2 transition-colors"
+                        >
+                          {expandedReviews.has(review.id) ? "Weniger anzeigen" : "Weiterlesen"}
+                        </button>
+                      </>
+                    ) : (
+                      <p>"{review.text}"</p>
+                    )}
+                  </div>
                   <div className="border-t pt-4">
                     <p className="font-semibold text-foreground">{review.guest_name}</p>
                     <p className="text-sm text-muted-foreground">{formatDate(review.review_date)}</p>
