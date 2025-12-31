@@ -155,6 +155,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogP
               url: urlData.publicUrl,
               title,
               category,
+              season,
               sort_order: nextOrder++,
             });
 
