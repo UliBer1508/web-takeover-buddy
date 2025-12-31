@@ -17,6 +17,7 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -69,6 +70,55 @@ const Auth = () => {
     }
   };
 
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim() || !password.trim()) {
+      toast({
+        title: t('common.error'),
+        description: t('auth.fillAllFields'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: password.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        toast({
+          title: t('common.error'),
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: t('auth.registerSuccess'),
+          description: t('auth.registerSuccessDesc'),
+        });
+        setIsRegistering(false);
+        setEmail('');
+        setPassword('');
+      }
+    } catch (err) {
+      toast({
+        title: t('common.error'),
+        description: t('auth.registerError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-secondary/30">
@@ -84,11 +134,15 @@ const Auth = () => {
           <div className="mx-auto mb-4 w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
             <Mountain className="w-6 h-6 text-primary" />
           </div>
-          <CardTitle className="text-2xl">{t('auth.adminArea')}</CardTitle>
-          <CardDescription>{t('auth.loginDescription')}</CardDescription>
+          <CardTitle className="text-2xl">
+            {isRegistering ? t('auth.register') : t('auth.adminArea')}
+          </CardTitle>
+          <CardDescription>
+            {isRegistering ? t('auth.registerDescription') : t('auth.loginDescription')}
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={isRegistering ? handleSignUp : handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">{t('auth.email')}</Label>
               <div className="relative">
@@ -120,10 +174,22 @@ const Auth = () => {
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? t('auth.loggingIn') : t('auth.loginButton')}
+              {loading 
+                ? (isRegistering ? t('auth.registering') : t('auth.loggingIn')) 
+                : (isRegistering ? t('auth.registerButton') : t('auth.loginButton'))
+              }
             </Button>
           </form>
-          <div className="mt-6 text-center">
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => setIsRegistering(!isRegistering)}
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              {isRegistering ? t('auth.hasAccount') : t('auth.noAccount')}
+            </button>
+          </div>
+          <div className="mt-4 text-center">
             <Button variant="ghost" onClick={() => navigate('/')}>
               {t('auth.backToHome')}
             </Button>

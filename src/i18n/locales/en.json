@@ -235,7 +235,16 @@
     "welcomeBack": "Welcome back!",
     "loginError": "An error occurred. Please try again.",
     "fillAllFields": "Please fill in all fields",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "register": "Register",
+    "registerButton": "Register",
+    "registering": "Registering...",
+    "registerDescription": "Create your admin account",
+    "registerSuccess": "Registration successful",
+    "registerSuccessDesc": "You can now sign in",
+    "registerError": "An error occurred. Please try again.",
+    "noAccount": "No account yet? Register",
+    "hasAccount": "Already registered? Sign In"
   },
   "testimonials": {
     "title": "Guest Reviews",
