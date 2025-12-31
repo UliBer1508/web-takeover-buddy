@@ -21,6 +21,7 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
   const [reviewDate, setReviewDate] = useState(new Date().toISOString().split('T')[0]);
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
+  const [textEn, setTextEn] = useState("");
   const [loading, setLoading] = useState(false);
   
   const queryClient = useQueryClient();
@@ -39,6 +40,7 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
         review_date: reviewDate,
         rating,
         text,
+        text_en: textEn || null,
         is_visible: true,
         sort_order: 0,
       });
@@ -54,6 +56,7 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
       // Reset form
       setGuestName("");
       setText("");
+      setTextEn("");
       setRating(5);
     }
   };
@@ -112,6 +115,17 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
               onChange={(e) => setText(e.target.value)}
               rows={4}
               placeholder={t('reviewAdd.textPlaceholder')}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="textEn">{t('reviewAdd.textEnglish')}</Label>
+            <Textarea
+              id="textEn"
+              value={textEn}
+              onChange={(e) => setTextEn(e.target.value)}
+              rows={4}
+              placeholder={t('reviewAdd.textEnglishPlaceholder')}
             />
           </div>
         </div>

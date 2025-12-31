@@ -18,6 +18,7 @@ interface Review {
   review_date: string;
   rating: number;
   text: string;
+  text_en: string | null;
   is_visible: boolean;
   sort_order: number;
 }
@@ -148,23 +149,26 @@ const Testimonials = () => {
                     ))}
                   </div>
                   <div className="text-muted-foreground mb-4 italic">
-                    {review.text.length > MAX_TEXT_LENGTH ? (
-                      <>
-                        <p>
-                          "{expandedReviews.has(review.id) 
-                            ? review.text 
-                            : `${review.text.substring(0, MAX_TEXT_LENGTH)}...`}"
-                        </p>
-                        <button
-                          onClick={() => toggleExpanded(review.id)}
-                          className="text-primary hover:text-primary/80 font-medium text-sm mt-2 transition-colors"
-                        >
-                          {expandedReviews.has(review.id) ? t("testimonials.showLess") : t("testimonials.readMore")}
-                        </button>
-                      </>
-                    ) : (
-                      <p>"{review.text}"</p>
-                    )}
+                    {(() => {
+                      const displayText = i18n.language === 'en' && review.text_en ? review.text_en : review.text;
+                      return displayText.length > MAX_TEXT_LENGTH ? (
+                        <>
+                          <p>
+                            "{expandedReviews.has(review.id) 
+                              ? displayText 
+                              : `${displayText.substring(0, MAX_TEXT_LENGTH)}...`}"
+                          </p>
+                          <button
+                            onClick={() => toggleExpanded(review.id)}
+                            className="text-primary hover:text-primary/80 font-medium text-sm mt-2 transition-colors"
+                          >
+                            {expandedReviews.has(review.id) ? t("testimonials.showLess") : t("testimonials.readMore")}
+                          </button>
+                        </>
+                      ) : (
+                        <p>"{displayText}"</p>
+                      );
+                    })()}
                   </div>
                   <div className="border-t pt-4">
                     <p className="font-semibold text-foreground">{review.guest_name}</p>

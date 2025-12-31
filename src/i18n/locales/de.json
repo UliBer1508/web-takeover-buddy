@@ -298,7 +298,9 @@
     "confirmDelete": "Bewertung wirklich löschen?",
     "deleted": "Gelöscht",
     "deletedDesc": "Bewertung wurde entfernt.",
-    "errorDelete": "Bewertung konnte nicht gelöscht werden."
+    "errorDelete": "Bewertung konnte nicht gelöscht werden.",
+    "textEnglish": "Englische Übersetzung",
+    "textEnglishPlaceholder": "Optionale englische Übersetzung des Bewertungstextes"
   },
   "reviewAdd": {
     "title": "Neue Bewertung",
@@ -314,7 +316,9 @@
     "fillAllFields": "Bitte alle Felder ausfüllen.",
     "created": "Erstellt",
     "createdDesc": "Neue Bewertung wurde hinzugefügt.",
-    "errorCreate": "Bewertung konnte nicht erstellt werden."
+    "errorCreate": "Bewertung konnte nicht erstellt werden.",
+    "textEnglish": "Englische Übersetzung (optional)",
+    "textEnglishPlaceholder": "Optionale englische Übersetzung des Bewertungstextes"
   },
   "houseSettings": {
     "title": "Hauseinstellungen bearbeiten",

@@ -298,7 +298,9 @@
     "confirmDelete": "Really delete review?",
     "deleted": "Deleted",
     "deletedDesc": "Review was removed.",
-    "errorDelete": "Review could not be deleted."
+    "errorDelete": "Review could not be deleted.",
+    "textEnglish": "English Translation",
+    "textEnglishPlaceholder": "Optional English translation of the review text"
   },
   "reviewAdd": {
     "title": "New Review",
@@ -314,7 +316,9 @@
     "fillAllFields": "Please fill in all fields.",
     "created": "Created",
     "createdDesc": "New review was added.",
-    "errorCreate": "Review could not be created."
+    "errorCreate": "Review could not be created.",
+    "textEnglish": "English Translation (optional)",
+    "textEnglishPlaceholder": "Optional English translation of the review text"
   },
   "houseSettings": {
     "title": "Edit House Settings",

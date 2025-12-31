@@ -16,6 +16,7 @@ interface Review {
   review_date: string;
   rating: number;
   text: string;
+  text_en: string | null;
   is_visible: boolean;
   sort_order: number;
 }
@@ -32,6 +33,7 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
   const [reviewDate, setReviewDate] = useState(review.review_date);
   const [rating, setRating] = useState(review.rating);
   const [text, setText] = useState(review.text);
+  const [textEn, setTextEn] = useState(review.text_en || "");
   const [isVisible, setIsVisible] = useState(review.is_visible);
   const [loading, setLoading] = useState(false);
   
@@ -46,6 +48,7 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
         review_date: reviewDate,
         rating,
         text,
+        text_en: textEn || null,
         is_visible: isVisible,
       })
       .eq('id', review.id);
@@ -133,6 +136,17 @@ const ReviewEditDialog = ({ review, open, onOpenChange }: ReviewEditDialogProps)
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={4}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="textEn">{t('reviewEdit.textEnglish')}</Label>
+            <Textarea
+              id="textEn"
+              value={textEn}
+              onChange={(e) => setTextEn(e.target.value)}
+              rows={4}
+              placeholder={t('reviewEdit.textEnglishPlaceholder')}
             />
           </div>
           
