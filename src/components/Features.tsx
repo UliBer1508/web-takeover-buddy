@@ -1,37 +1,40 @@
 import { Bed, UtensilsCrossed, Waves, TreePine, Wifi, Car } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 const Features = () => {
+  const { t } = useTranslation();
+  
   const features = [
     {
       icon: Bed,
-      title: "3 Schlafzimmer",
-      description: "Komfortable Zimmer mit hochwertigen Matratzen und alpinem Charme",
+      titleKey: "features.items.bedrooms.title",
+      descriptionKey: "features.items.bedrooms.description",
     },
     {
       icon: UtensilsCrossed,
-      title: "Gourmet-Küche",
-      description: "Vollausgestattete Küche mit Premium-Geräten und großem Essbereich",
+      titleKey: "features.items.kitchen.title",
+      descriptionKey: "features.items.kitchen.description",
     },
     {
       icon: Waves,
-      title: "Wellness & Sauna",
-      description: "Private Sauna und Entspannungsbereich für ultimative Erholung",
+      titleKey: "features.items.wellness.title",
+      descriptionKey: "features.items.wellness.description",
     },
     {
       icon: TreePine,
-      title: "Terrasse & Garten",
-      description: "Weitläufige Außenbereiche mit Panoramablick auf die Berge",
+      titleKey: "features.items.terrace.title",
+      descriptionKey: "features.items.terrace.description",
     },
     {
       icon: Wifi,
-      title: "High-Speed WLAN",
-      description: "Schnelles Internet im gesamten Chalet verfügbar",
+      titleKey: "features.items.wifi.title",
+      descriptionKey: "features.items.wifi.description",
     },
     {
       icon: Car,
-      title: "Parkplätze",
-      description: "Private Parkplätze direkt am Chalet",
+      titleKey: "features.items.parking.title",
+      descriptionKey: "features.items.parking.description",
     },
   ];
 
@@ -40,10 +43,10 @@ const Features = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 md:mb-16 animate-fade-in">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Ausstattung & Highlights
+            {t("features.title")}
           </h2>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Entdecken Sie die exklusiven Annehmlichkeiten unseres Luxus-Chalets
+            {t("features.subtitle")}
           </p>
         </div>
 
@@ -61,10 +64,10 @@ const Features = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">
-                      {feature.title}
+                      {t(feature.titleKey)}
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      {feature.description}
+                      {t(feature.descriptionKey)}
                     </p>
                   </div>
                 </div>

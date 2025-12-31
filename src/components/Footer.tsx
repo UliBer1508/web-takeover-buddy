@@ -1,11 +1,16 @@
 import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
 const Footer = () => {
-  return <footer id="footer" className="bg-primary text-primary-foreground py-12 md:py-16">
+  const { t } = useTranslation();
+  
+  return (
+    <footer id="footer" className="bg-primary text-primary-foreground py-12 md:py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8 md:gap-12 mb-8">
           {/* Contact Info */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Kontakt</h3>
+            <h3 className="text-xl font-bold mb-4">{t("footer.contact")}</h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 flex-shrink-0 mt-1" />
@@ -30,7 +35,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+            <h3 className="text-xl font-bold mb-4">{t("footer.quickLinks")}</h3>
             <ul className="space-y-2">
               <li>
                 <a 
@@ -48,7 +53,7 @@ const Footer = () => {
                   onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
-                  Über uns
+                  {t("footer.aboutUs")}
                 </button>
               </li>
               <li>
@@ -56,7 +61,7 @@ const Footer = () => {
                   onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
-                  Ausstattung
+                  {t("footer.features")}
                 </button>
               </li>
               <li>
@@ -64,15 +69,15 @@ const Footer = () => {
                   onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
-                  Buchung
+                  {t("footer.booking")}
                 </button>
               </li>
               <li>
                 <button 
-                  onClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById('galerie')?.scrollIntoView({ behavior: 'smooth' })}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
-                  Galerie
+                  {t("footer.gallery")}
                 </button>
               </li>
             </ul>
@@ -80,10 +85,10 @@ const Footer = () => {
 
           {/* Social Media & Newsletter */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Kontaktieren Sie uns</h3>
+            <h3 className="text-xl font-bold mb-4">{t("footer.contactUs")}</h3>
             
             <p className="text-sm text-primary-foreground/90">
-              Bleiben Sie auf dem Laufenden über Angebote und Neuigkeiten aus dem Steinbock Chalet. Fragen Sie uns nach entsprechenden Angeboten.
+              {t("footer.stayUpdated")}
             </p>
           </div>
         </div>
@@ -91,21 +96,23 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-primary-foreground/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/80">
-            <p>© 2025 Copy Right  Steinbock Chalets. Alle Rechte vorbehalten.</p>
+            <p>{t("footer.copyright")}</p>
             <div className="flex gap-6">
               <button className="hover:text-primary-foreground transition-colors">
-                Impressum
+                {t("footer.imprint")}
               </button>
               <button className="hover:text-primary-foreground transition-colors">
-                Datenschutz
+                {t("footer.privacy")}
               </button>
               <button className="hover:text-primary-foreground transition-colors">
-                AGB
+                {t("footer.terms")}
               </button>
             </div>
           </div>
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 };
+
 export default Footer;

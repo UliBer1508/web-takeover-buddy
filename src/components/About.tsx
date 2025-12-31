@@ -1,26 +1,29 @@
 import { Mountain, Sparkles, Snowflake, Heart } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const About = () => {
+  const { t } = useTranslation();
+  
   const highlights = [
     {
       icon: Mountain,
-      title: "Bergpanorama",
-      description: "Atemberaubender 360° Blick auf die Alpen",
+      titleKey: "about.highlights.mountain.title",
+      descriptionKey: "about.highlights.mountain.description",
     },
     {
       icon: Sparkles,
-      title: "Luxusausstattung",
-      description: "Hochwertige Einrichtung und moderne Annehmlichkeiten",
+      titleKey: "about.highlights.luxury.title",
+      descriptionKey: "about.highlights.luxury.description",
     },
     {
       icon: Snowflake,
-      title: "Wellness",
-      description: "Private Sauna und Entspannungsbereich",
+      titleKey: "about.highlights.wellness.title",
+      descriptionKey: "about.highlights.wellness.description",
     },
     {
       icon: Heart,
-      title: "Wohlfühloase",
-      description: "Gemütliche Atmosphäre für unvergessliche Momente",
+      titleKey: "about.highlights.comfort.title",
+      descriptionKey: "about.highlights.comfort.description",
     },
   ];
 
@@ -29,19 +32,13 @@ const About = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="space-y-6 max-w-4xl mx-auto text-center animate-fade-in">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-            Willkommen im Steinbock Chalet
+            {t("about.title")}
           </h2>
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-            Erleben Sie alpinen Luxus in seiner schönsten Form. Unser exklusives
-            Chalet bietet Ihnen den perfekten Rückzugsort inmitten der
-            majestätischen Bergwelt. Mit liebevoll gestalteten Räumen, modernster
-            Ausstattung und einem atemberaubenden Panoramablick wird Ihr
-            Aufenthalt zu einem unvergesslichen Erlebnis.
+            {t("about.description1")}
           </p>
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-            Ob Winterurlaub auf der Piste oder Sommerfrische in den Bergen – das
-            Steinbock Chalet ist Ihr idealer Ausgangspunkt für alpine Abenteuer
-            und erholsame Stunden.
+            {t("about.description2")}
           </p>
 
           {/* Highlights Grid */}
@@ -54,10 +51,10 @@ const About = () => {
                 <highlight.icon className="w-8 h-8 text-primary" />
                 <div className="text-center">
                   <h3 className="font-semibold text-foreground mb-1">
-                    {highlight.title}
+                    {t(highlight.titleKey)}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {highlight.description}
+                    {t(highlight.descriptionKey)}
                   </p>
                 </div>
               </div>
