@@ -157,6 +157,20 @@ const PromotionSettingsEmbedded = ({ houseId, houseName }: PromotionSettingsEmbe
   const onSubmit = async (data: PromotionFormData) => {
     setIsSubmitting(true);
     try {
+      // Check session first
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log("Current session user_id:", session?.user?.id);
+      
+      if (!session) {
+        toast({
+          title: "Nicht angemeldet",
+          description: "Bitte loggen Sie sich erneut ein",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const payload = {
         name: data.name,
         description_de: data.description_de,
@@ -168,26 +182,32 @@ const PromotionSettingsEmbedded = ({ houseId, houseName }: PromotionSettingsEmbe
         booking_start: data.booking_start || null,
         booking_end: data.booking_end || null,
         min_nights: data.min_nights || 1,
-        house_id: houseId, // Always for this house
+        house_id: houseId,
         is_active: data.is_active,
       };
 
+      console.log("Attempting to save promotion:", payload);
+
       if (editingPromotion) {
-        const { error } = await supabase
+        const { data: result, error } = await supabase
           .from('promotions')
           .update(payload)
-          .eq('id', editingPromotion.id);
+          .eq('id', editingPromotion.id)
+          .select();
 
+        console.log("Update result:", { result, error });
         if (error) throw error;
         toast({
           title: t('promotions.updated'),
           description: t('promotions.updatedDesc'),
         });
       } else {
-        const { error } = await supabase
+        const { data: result, error } = await supabase
           .from('promotions')
-          .insert(payload);
+          .insert(payload)
+          .select();
 
+        console.log("Insert result:", { result, error });
         if (error) throw error;
         toast({
           title: t('promotions.created'),
