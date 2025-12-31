@@ -7,9 +7,10 @@ import { Loader2, Calendar as CalendarIcon, AlertCircle, CheckCircle, X } from "
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { format, differenceInDays, isSameDay } from "date-fns";
-import { de } from "date-fns/locale";
+import { de, enUS } from "date-fns/locale";
 import { toast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTranslation } from "react-i18next";
 import "react-day-picker/dist/style.css";
 
 interface OccupiedDate {
@@ -23,8 +24,10 @@ interface AvailabilityCalendarProps {
 }
 
 export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: AvailabilityCalendarProps) => {
+  const { t, i18n } = useTranslation();
   const [selected, setSelected] = useState<DateRange | undefined>();
   const isMobile = useIsMobile();
+  const dateLocale = i18n.language === 'de' ? de : enUS;
   // Query ONLY bookings table from external database using external_house_id
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['availability', externalHouseId],
@@ -115,8 +118,8 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
       // Check minimum stay (4 nights)
       if (nights < 4) {
         toast({
-          title: "Mindestaufenthalt nicht erfüllt",
-          description: "Bitte wählen Sie mindestens 4 Nächte",
+          title: t('calendar.minStay'),
+          description: t('calendar.minStayDesc'),
           variant: "destructive"
         });
         return;
@@ -125,8 +128,8 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
       // Check for occupied dates in range
       if (!isRangeValid(range)) {
         toast({
-          title: "Zeitraum nicht verfügbar",
-          description: "Der gewählte Zeitraum enthält bereits belegte Tage",
+          title: t('calendar.notAvailable'),
+          description: t('calendar.notAvailableDesc'),
           variant: "destructive"
         });
         return;
@@ -298,10 +301,10 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
             </div>
             <div>
               <CardTitle className="text-xl sm:text-3xl">
-                {isMobile ? "Kalender" : "Verfügbarkeitskalender"}
+                {isMobile ? t('calendar.titleMobile') : t('calendar.title')}
               </CardTitle>
               <CardDescription className="text-sm sm:text-base mt-0.5 sm:mt-1">
-                {isMobile ? "Rote Tage = belegt" : "Belegte Tage sind rot markiert und durchgestrichen"}
+                {isMobile ? t('calendar.subtitleMobile') : t('calendar.subtitle')}
               </CardDescription>
             </div>
           </div>
@@ -311,7 +314,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
           {isLoading && (
             <div className="flex flex-col justify-center items-center py-20">
               <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-              <span className="text-lg text-muted-foreground">Lade Verfügbarkeit...</span>
+              <span className="text-lg text-muted-foreground">{t('calendar.loading')}</span>
             </div>
           )}
           
@@ -320,10 +323,9 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
               <AlertCircle className="h-5 w-5" />
               <AlertDescription className="space-y-3">
                 <div>
-                  <strong className="text-base">Verbindungsproblem</strong>
+                  <strong className="text-base">{t('calendar.connectionError')}</strong>
                   <p className="text-sm mt-2">
-                    Die Buchungsdaten können momentan nicht geladen werden. 
-                    Die externe Datenbank ist möglicherweise pausiert oder nicht erreichbar.
+                    {t('calendar.connectionErrorDesc')}
                   </p>
                   <p className="text-sm mt-1 opacity-75">{(error as Error).message}</p>
                 </div>
@@ -333,7 +335,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                   onClick={() => refetch()}
                   className="bg-background hover:bg-accent"
                 >
-                  Erneut versuchen
+                  {t('calendar.retry')}
                 </Button>
               </AlertDescription>
             </Alert>
@@ -347,11 +349,11 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                   <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400" />
                   <AlertDescription className="text-green-800 dark:text-green-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <strong className="font-semibold text-sm sm:text-base">Ausgewählter Zeitraum:</strong>
+                      <strong className="font-semibold text-sm sm:text-base">{t('calendar.selectedRange')}</strong>
                       <div className="mt-0.5 sm:mt-1 text-sm sm:text-base">
-                        {format(selected.from, isMobile ? 'dd.MM.yy' : 'dd. MMMM yyyy', { locale: de })} – {format(selected.to, isMobile ? 'dd.MM.yy' : 'dd. MMMM yyyy', { locale: de })}
+                        {format(selected.from, isMobile ? 'dd.MM.yy' : 'dd. MMMM yyyy', { locale: dateLocale })} – {format(selected.to, isMobile ? 'dd.MM.yy' : 'dd. MMMM yyyy', { locale: dateLocale })}
                         <span className="ml-1 sm:ml-2 font-semibold">
-                          ({differenceInDays(selected.to, selected.from)} {differenceInDays(selected.to, selected.from) === 1 ? 'Nacht' : 'Nächte'})
+                          ({differenceInDays(selected.to, selected.from)} {differenceInDays(selected.to, selected.from) === 1 ? t('calendar.night') : t('calendar.nights')})
                         </span>
                       </div>
                     </div>
@@ -362,7 +364,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                       className="self-start sm:self-auto text-green-700 hover:text-green-900 hover:bg-green-100 dark:text-green-300 dark:hover:text-green-100"
                     >
                       <X className="h-4 w-4 mr-1" />
-                      {isMobile ? "Reset" : "Zurücksetzen"}
+                      {t('calendar.reset')}
                     </Button>
                   </AlertDescription>
                 </Alert>
@@ -379,6 +381,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                   modifiersClassNames={modifiersClassNames}
                   showOutsideDays
                   fixedWeeks
+                  locale={dateLocale}
                 />
               </div>
               
@@ -386,17 +389,17 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
               <div className="flex flex-wrap gap-3 sm:gap-6 justify-center pt-4 sm:pt-6 border-t">
                 <div className="flex items-center gap-1.5 sm:gap-3">
                   <div className="w-5 h-5 sm:w-8 sm:h-8 rounded sm:rounded-lg bg-background border-2 border-primary shadow-sm"></div>
-                  <span className="font-medium sm:font-semibold text-xs sm:text-base">Verfügbar</span>
+                  <span className="font-medium sm:font-semibold text-xs sm:text-base">{t('calendar.available')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-3">
                   <div className="w-5 h-5 sm:w-8 sm:h-8 rounded sm:rounded-lg bg-gradient-to-br from-red-500 to-red-600 shadow-sm relative">
                     <div className="absolute top-1/2 left-0.5 right-0.5 sm:left-1 sm:right-1 h-0.5 bg-white transform -translate-y-1/2"></div>
                   </div>
-                  <span className="font-medium sm:font-semibold text-xs sm:text-base">Belegt</span>
+                  <span className="font-medium sm:font-semibold text-xs sm:text-base">{t('calendar.occupied')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-3">
                   <div className="w-5 h-5 sm:w-8 sm:h-8 rounded sm:rounded-lg bg-muted opacity-30 shadow-sm"></div>
-                  <span className="font-medium sm:font-semibold text-xs sm:text-base">Vergangen</span>
+                  <span className="font-medium sm:font-semibold text-xs sm:text-base">{t('calendar.past')}</span>
                 </div>
               </div>
 
@@ -404,7 +407,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
               {data && data.length > 0 && (
                 <div className="text-center">
                   <p className="text-base text-muted-foreground font-medium">
-                    📊 {data.length} bestätigte {data.length === 1 ? 'Buchung' : 'Buchungen'}
+                    📊 {data.length} {data.length === 1 ? t('calendar.confirmedBooking') : t('calendar.confirmedBookings')}
                   </p>
                 </div>
               )}
@@ -412,7 +415,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
               {data && data.length === 0 && (
                 <div className="text-center">
                   <p className="text-base text-green-600 font-semibold">
-                    ✓ Aktuell keine bestätigten Buchungen
+                    ✓ {t('calendar.noBookings')}
                   </p>
                 </div>
               )}

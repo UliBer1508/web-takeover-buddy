@@ -18,6 +18,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { format, differenceInDays, getMonth } from "date-fns";
 import HouseSettingsDialog from "@/components/HouseSettingsDialog";
+import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 
 // Default house ID (will be replaced by actual house from database)
 const DEFAULT_HOUSE_ID = "00000000-0000-0000-0000-000000000001";
@@ -110,11 +112,11 @@ const formatCurrency = (amount: number): string => {
   return amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 };
 
-const getSeasonLabel = (season: Season): string => {
+const getSeasonLabel = (season: Season, t: TFunction): string => {
   switch (season) {
-    case 'winter': return 'Wintersaison';
-    case 'summer': return 'Sommersaison';
-    default: return 'Nebensaison';
+    case 'winter': return t('booking.seasons.winter');
+    case 'summer': return t('booking.seasons.summer');
+    default: return t('booking.seasons.offseason');
   }
 };
 
@@ -190,6 +192,7 @@ interface BookingStatus {
 }
 
 const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: BookingFormProps) => {
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isAuthenticated } = useAuth();
   const canEdit = DEV_MODE || isAuthenticated;
@@ -270,8 +273,8 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
   const onSubmit = async (data: BookingFormData) => {
     if (!pendingStatusId) {
       toast({
-        title: "Fehler",
-        description: "Status konnte nicht geladen werden. Bitte versuchen Sie es später erneut.",
+        title: t('common.error'),
+        description: t('booking.statusError'),
         variant: "destructive"
       });
       return;
@@ -343,16 +346,16 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
       }
 
       toast({
-        title: "Anfrage erfolgreich gesendet! ✓",
-        description: "Vielen Dank! Wir werden uns in Kürze bei Ihnen melden."
+        title: t('booking.successTitle'),
+        description: t('booking.successDesc')
       });
       
       form.reset();
     } catch (error: any) {
       console.error("Booking inquiry error:", error);
       toast({
-        title: "Fehler beim Senden",
-        description: error.message || "Bitte versuchen Sie es später erneut.",
+        title: t('booking.errorTitle'),
+        description: error.message || t('booking.errorDesc'),
         variant: "destructive"
       });
     } finally {
@@ -366,19 +369,19 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 animate-fade-in">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-              Buchungsanfrage
+              {t('booking.title')}
             </h2>
             <p className="text-base md:text-lg text-muted-foreground">
-              Senden Sie uns Ihre Anfrage und wir melden uns umgehend bei Ihnen
+              {t('booking.subtitle')}
             </p>
           </div>
 
           <Card className="shadow-xl animate-scale-in">
             <CardHeader>
-              <CardTitle>Verfügbarkeit anfragen</CardTitle>
+              <CardTitle>{t('booking.checkAvailability')}</CardTitle>
               <CardDescription>
-                Füllen Sie das Formular aus und wir prüfen die Verfügbarkeit für Ihren Wunschtermin
-                {selectedHouse && <span className="block mt-1">Objekt: {selectedHouse.name}</span>}
+                {t('booking.formDescription')}
+                {selectedHouse && <span className="block mt-1">{t('booking.property')}: {selectedHouse.name}</span>}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -387,9 +390,9 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                   <div className="grid sm:grid-cols-2 gap-4">
                     <FormField control={form.control} name="name" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Name</FormLabel>
+                        <FormLabel>{t('booking.name')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Ihr Name" {...field} />
+                          <Input placeholder={t('booking.namePlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -397,11 +400,11 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
 
                     <FormField control={form.control} name="email" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>E-Mail</FormLabel>
+                        <FormLabel>{t('booking.email')}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="ihre@email.com" className="pl-10" {...field} />
+                            <Input placeholder={t('booking.emailPlaceholder')} className="pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -411,11 +414,11 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
 
                   <FormField control={form.control} name="phone" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Telefon</FormLabel>
+                      <FormLabel>{t('booking.phone')}</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input placeholder="+49 123 456789" className="pl-10" {...field} />
+                          <Input placeholder={t('booking.phonePlaceholder')} className="pl-10" {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -425,7 +428,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                   <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <FormField control={form.control} name="checkIn" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Check-in</FormLabel>
+                        <FormLabel>{t('booking.checkIn')}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -434,7 +437,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                         </FormControl>
                         {initialCheckIn && (
                           <Badge variant="secondary" className="mt-1 text-xs">
-                            ✓ Vom Kalender übernommen
+                            ✓ {t('booking.fromCalendar')}
                           </Badge>
                         )}
                         <FormMessage />
@@ -443,7 +446,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
 
                     <FormField control={form.control} name="checkOut" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Check-out</FormLabel>
+                        <FormLabel>{t('booking.checkOut')}</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -452,7 +455,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                         </FormControl>
                         {initialCheckOut && (
                           <Badge variant="secondary" className="mt-1 text-xs">
-                            ✓ Vom Kalender übernommen
+                            ✓ {t('booking.fromCalendar')}
                           </Badge>
                         )}
                         <FormMessage />
@@ -461,18 +464,18 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
 
                     <FormField control={form.control} name="adults" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Erwachsene</FormLabel>
+                        <FormLabel>{t('booking.adults')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <Users className="h-4 w-4 mr-2" />
-                              <SelectValue placeholder="Anzahl" />
+                              <SelectValue placeholder={t('booking.count')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {Array.from({ length: 6 }, (_, i) => i + 1).map(num => (
                               <SelectItem key={num} value={num.toString()}>
-                                {num} {num === 1 ? "Erwachsener" : "Erwachsene"}
+                                {num} {num === 1 ? t('booking.adult') : t('booking.adults')}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -483,18 +486,18 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
 
                     <FormField control={form.control} name="children" render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Kinder (bis 6 J.)</FormLabel>
+                        <FormLabel>{t('booking.children')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <Users className="h-4 w-4 mr-2" />
-                              <SelectValue placeholder="Anzahl" />
+                              <SelectValue placeholder={t('booking.count')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {Array.from({ length: 6 }, (_, i) => i).map(num => (
                               <SelectItem key={num} value={num.toString()}>
-                                {num} {num === 1 ? "Kind" : "Kinder"}
+                                {num} {num === 1 ? t('booking.child') : t('booking.children')}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -510,45 +513,45 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                       <CardHeader className="pb-3">
                         <CardTitle className="text-lg flex items-center gap-2">
                           <Calculator className="h-5 w-5 text-primary" />
-                          Ihre Preisübersicht
+                          {t('booking.priceOverview')}
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="text-muted-foreground">
-                            {priceBreakdown.nights} {priceBreakdown.nights === 1 ? 'Nacht' : 'Nächte'} × {formatCurrency(priceBreakdown.pricePerNight)} ({getSeasonLabel(priceBreakdown.season)})
+                            {priceBreakdown.nights} {priceBreakdown.nights === 1 ? t('booking.night') : t('booking.nights')} × {formatCurrency(priceBreakdown.pricePerNight)} ({getSeasonLabel(priceBreakdown.season, t)})
                           </span>
                           <span className="font-medium">{formatCurrency(priceBreakdown.accommodationTotal)}</span>
                         </div>
                         
                         <Collapsible>
                           <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors [&[data-state=open]>svg]:rotate-180">
-                            Nebenkosten anzeigen
+                            {t('booking.showFees')}
                             <ChevronDown className="h-4 w-4 transition-transform duration-200" />
                           </CollapsibleTrigger>
                           <CollapsibleContent className="pt-2 space-y-2">
                             {priceBreakdown.cleaningFee > 0 && (
                               <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">Endreinigung</span>
+                                <span className="text-muted-foreground">{t('booking.cleaningFee')}</span>
                                 <span>{formatCurrency(priceBreakdown.cleaningFee)}</span>
                               </div>
                             )}
                             {priceBreakdown.serviceFee > 0 && (
                               <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">Servicegebühr</span>
+                                <span className="text-muted-foreground">{t('booking.serviceFee')}</span>
                                 <span>{formatCurrency(priceBreakdown.serviceFee)}</span>
                               </div>
                             )}
                             {priceBreakdown.bedLinenFee > 0 && (
                               <div className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">Bettwäsche</span>
+                                <span className="text-muted-foreground">{t('booking.bedLinen')}</span>
                                 <span>{formatCurrency(priceBreakdown.bedLinenFee)}</span>
                               </div>
                             )}
                             {priceBreakdown.touristTaxTotal > 0 && (
                               <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">
-                                  Kurtaxe ({parseInt(watchedAdults) + parseInt(watchedChildren)} Pers. × {priceBreakdown.nights} Nächte)
+                                  {t('booking.touristTax')} ({parseInt(watchedAdults) + parseInt(watchedChildren)} {t('booking.persons')} × {priceBreakdown.nights} {priceBreakdown.nights === 1 ? t('booking.night') : t('booking.nights')})
                                 </span>
                                 <span>{formatCurrency(priceBreakdown.touristTaxTotal)}</span>
                               </div>
@@ -557,7 +560,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                         </Collapsible>
                         
                         <div className="border-t pt-3 flex justify-between items-center">
-                          <span className="font-semibold text-lg">Gesamtpreis</span>
+                          <span className="font-semibold text-lg">{t('booking.totalPrice')}</span>
                           <span className="font-bold text-xl text-primary">{formatCurrency(priceBreakdown.grandTotal)}</span>
                         </div>
                       </CardContent>
@@ -566,11 +569,11 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
 
                   <FormField control={form.control} name="message" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nachricht (Optional)</FormLabel>
+                      <FormLabel>{t('booking.message')}</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Textarea placeholder="Besondere Wünsche oder Fragen..." className="pl-10 min-h-[100px]" {...field} />
+                          <Textarea placeholder={t('booking.messagePlaceholder')} className="pl-10 min-h-[100px]" {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -578,7 +581,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                   )} />
 
                   <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90" disabled={isSubmitting}>
-                    {isSubmitting ? "Wird gesendet..." : "Anfrage senden"}
+                    {isSubmitting ? t('booking.submitting') : t('booking.submit')}
                   </Button>
                 </form>
               </Form>
@@ -589,54 +592,54 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           <div className="mt-12 grid sm:grid-cols-2 gap-6 animate-fade-in-up">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl">Preise</CardTitle>
+                <CardTitle className="text-xl">{t('booking.prices')}</CardTitle>
                 {canEdit && selectedHouse && (
                   <HouseSettingsDialog house={selectedHouse} />
                 )}
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Winter (Dez-März)</span>
-                  <span className="font-semibold">ab {selectedHouse?.price_winter ?? 450}€ / Nacht</span>
+                  <span className="text-muted-foreground">{t('booking.winter')}</span>
+                  <span className="font-semibold">{t('booking.from')} {selectedHouse?.price_winter ?? 450}€ {t('booking.perNight')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Sommer (Jun-Sep)</span>
-                  <span className="font-semibold">ab {selectedHouse?.price_summer ?? 380}€ / Nacht</span>
+                  <span className="text-muted-foreground">{t('booking.summer')}</span>
+                  <span className="font-semibold">{t('booking.from')} {selectedHouse?.price_summer ?? 380}€ {t('booking.perNight')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Nebensaison</span>
-                  <span className="font-semibold">ab {selectedHouse?.price_offseason ?? 320}€ / Nacht</span>
+                  <span className="text-muted-foreground">{t('booking.offseason')}</span>
+                  <span className="font-semibold">{t('booking.from')} {selectedHouse?.price_offseason ?? 320}€ {t('booking.perNight')}</span>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl">Wichtige Infos</CardTitle>
+                <CardTitle className="text-xl">{t('booking.importantInfo')}</CardTitle>
                 {canEdit && selectedHouse && (
                   <HouseSettingsDialog house={selectedHouse} />
                 )}
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>✓ Mindestaufenthalt: {selectedHouse?.min_nights ?? 4} Nächte</p>
-                <p>✓ Check-in: ab {selectedHouse?.check_in_time ?? "15:00"} Uhr</p>
-                <p>✓ Check-out: bis {selectedHouse?.check_out_time ?? "10:00"} Uhr</p>
-                <p>✓ Endreinigung: {selectedHouse?.cleaning_fee ?? 240}€</p>
+                <p>✓ {t('booking.minStay')}: {selectedHouse?.min_nights ?? 4} {t('booking.nights')}</p>
+                <p>✓ {t('booking.checkInTime')} {selectedHouse?.check_in_time ?? "15:00"} {t('booking.clock')}</p>
+                <p>✓ {t('booking.checkOutTime')} {selectedHouse?.check_out_time ?? "10:00"} {t('booking.clock')}</p>
+                <p>✓ {t('booking.cleaningFee')}: {selectedHouse?.cleaning_fee ?? 240}€</p>
                 
                 <Collapsible className="mt-3">
                   <CollapsibleTrigger className="flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors [&[data-state=open]>svg]:rotate-180">
-                    Zusätzliche Nebenkosten
+                    {t('booking.additionalFees')}
                     <ChevronDown className="h-4 w-4 transition-transform duration-200" />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pt-2 pl-4 space-y-1">
                     {(selectedHouse?.service_fee ?? 0) > 0 && (
-                      <p>✓ Servicegebühr: {selectedHouse?.service_fee}€</p>
+                      <p>✓ {t('booking.serviceFee')}: {selectedHouse?.service_fee}€</p>
                     )}
                     {(selectedHouse?.bed_linen_fee ?? 0) > 0 && (
-                      <p>✓ Bettwäsche: {selectedHouse?.bed_linen_fee}€ pro Buchung</p>
+                      <p>✓ {t('booking.bedLinen')}: {selectedHouse?.bed_linen_fee}€ {t('booking.perBooking')}</p>
                     )}
                     {(selectedHouse?.tourist_tax ?? 0) > 0 && (
-                      <p>✓ Kurtaxe: {selectedHouse?.tourist_tax?.toFixed(2).replace('.', ',')}€ pro Person und Nacht</p>
+                      <p>✓ {t('booking.touristTax')}: {selectedHouse?.tourist_tax?.toFixed(2).replace('.', ',')}€ {t('booking.perPersonPerNight')}</p>
                     )}
                   </CollapsibleContent>
                 </Collapsible>

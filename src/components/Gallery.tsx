@@ -11,6 +11,7 @@ import ImageUploadDialog from "./ImageUploadDialog";
 import ImageEditDialog from "./ImageEditDialog";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 // Entwicklungsmodus - auf false setzen wenn Auth implementiert ist
 const DEV_MODE = true;
@@ -40,6 +41,7 @@ interface GalleryProps {
 }
 
 const Gallery = ({ houseId }: GalleryProps) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth();
   const canEdit = DEV_MODE || isAuthenticated;
@@ -118,14 +120,14 @@ const Gallery = ({ houseId }: GalleryProps) => {
       queryClient.invalidateQueries({ queryKey: ['gallery-images'] });
       queryClient.invalidateQueries({ queryKey: ['hero-image'] });
       toast({
-        title: "⭐ Hero-Bild aktualisiert",
-        description: "Das Bild wird nun auf der Startseite angezeigt.",
+        title: `⭐ ${t('gallery.heroUpdated')}`,
+        description: t('gallery.heroUpdatedDesc'),
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Fehler",
-        description: error.message || "Das Hero-Bild konnte nicht gesetzt werden.",
+        title: t('common.error'),
+        description: error.message || t('gallery.deleteError'),
         variant: "destructive",
       });
     },
@@ -155,15 +157,15 @@ const Gallery = ({ houseId }: GalleryProps) => {
       queryClient.invalidateQueries({ queryKey: ['gallery-images'] });
       queryClient.invalidateQueries({ queryKey: ['hero-image'] });
       toast({
-        title: "✓ Bild gelöscht",
-        description: "Das Bild wurde aus der Galerie entfernt.",
+        title: `✓ ${t('gallery.imageDeleted')}`,
+        description: t('gallery.imageDeletedDesc'),
       });
       setImageToDelete(null);
     },
     onError: (error: any) => {
       toast({
-        title: "Fehler",
-        description: error.message || "Das Bild konnte nicht gelöscht werden.",
+        title: t('common.error'),
+        description: error.message || t('gallery.deleteError'),
         variant: "destructive",
       });
       setImageToDelete(null);
@@ -189,14 +191,14 @@ const Gallery = ({ houseId }: GalleryProps) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gallery-images'] });
       toast({
-        title: "Reihenfolge aktualisiert",
-        description: "Die neue Bildreihenfolge wurde gespeichert.",
+        title: t('gallery.orderUpdated'),
+        description: t('gallery.orderUpdatedDesc'),
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Fehler",
-        description: error.message || "Die Reihenfolge konnte nicht gespeichert werden.",
+        title: t('common.error'),
+        description: error.message || t('gallery.deleteError'),
         variant: "destructive",
       });
     },
@@ -209,8 +211,8 @@ const Gallery = ({ houseId }: GalleryProps) => {
   const confirmDelete = (image: GalleryImage) => {
     if (image.is_hero) {
       toast({
-        title: "⚠️ Aktion nicht möglich",
-        description: "Das aktuelle Hero-Bild kann nicht gelöscht werden. Bitte wählen Sie zuerst ein anderes Hero-Bild.",
+        title: `⚠️ ${t('common.error')}`,
+        description: t('gallery.deleteError'),
         variant: "destructive",
       });
       return;
@@ -315,9 +317,9 @@ const Gallery = ({ houseId }: GalleryProps) => {
     <section id="galerie" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 animate-fade-in">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Bildergalerie</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">{t('gallery.title')}</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Entdecken Sie die luxuriöse Ausstattung und die atemberaubende Lage unseres Chalets
+            {t('gallery.subtitle')}
           </p>
         </div>
 
@@ -348,7 +350,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
           <div className="flex justify-end mb-6">
             <Button onClick={() => setUploadDialogOpen(true)} variant="outline">
               <Plus className="mr-2 h-4 w-4" />
-              Bilder hinzufügen
+              {t('gallery.addImages')}
             </Button>
           </div>
         )}
@@ -359,11 +361,11 @@ const Gallery = ({ houseId }: GalleryProps) => {
             <ImageOff className="h-16 w-16 mb-4" />
             <p className="text-lg">
               {!activeSeasonId || activeSeasonId === allSeasonId
-                ? "Noch keine Bilder vorhanden" 
-                : `Keine Bilder für "${seasons.find(s => s.id === activeSeasonId)?.display_name}" vorhanden`
+                ? t('gallery.noImages')
+                : t('gallery.noImagesForSeason', { season: seasons.find(s => s.id === activeSeasonId)?.display_name })
               }
             </p>
-            <p className="text-sm">Klicken Sie auf "Bilder hinzufügen" um Bilder hochzuladen</p>
+            <p className="text-sm">{t('gallery.uploadHint')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -451,7 +453,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                    <p className="text-sm font-medium text-accent">{image.category?.display_name || 'Keine Kategorie'}</p>
+                    <p className="text-sm font-medium text-accent">{image.category?.display_name || t('gallery.noCategory')}</p>
                     <p className="text-lg font-semibold">{image.title}</p>
                   </div>
                 </div>
