@@ -112,7 +112,12 @@
     "imageDeleted": "Image deleted",
     "imageDeletedDesc": "The image has been removed from the gallery.",
     "orderUpdated": "Order updated",
-    "orderUpdatedDesc": "The new image order has been saved."
+    "orderUpdatedDesc": "The new image order has been saved.",
+    "ariaSetHero": "Set as hero image",
+    "ariaEditImage": "Edit image",
+    "ariaDeleteImage": "Delete image",
+    "ariaLightboxTitle": "Image view",
+    "ariaLightboxDesc": "Full view of selected image"
   },
   "calendar": {
     "sectionTitle": "Check Availability",
@@ -394,12 +399,5 @@
     "categoryRequiredDesc": "Please select a category.",
     "seasonRequired": "Season required",
     "seasonRequiredDesc": "Please select a season."
-  },
-  "gallery": {
-    "ariaSetHero": "Set as hero image",
-    "ariaEditImage": "Edit image",
-    "ariaDeleteImage": "Delete image",
-    "ariaLightboxTitle": "Image view",
-    "ariaLightboxDesc": "Full view of selected image"
   }
 }
