@@ -13,46 +13,69 @@ interface GalleryImage {
   id: string;
   url: string;
   title: string;
-  category: string;
+  category_id: string;
+  season_id: string;
   is_hero: boolean;
   sort_order: number;
+  category?: { id: string; name: string; display_name: string };
+  season?: { id: string; name: string; display_name: string };
 }
 
-const SEASONS = [
-  { value: "all", label: "Alle" },
-  { value: "spring", label: "Frühling" },
-  { value: "summer", label: "Sommer" },
-  { value: "autumn", label: "Herbst" },
-  { value: "winter", label: "Winter" },
-];
+interface Season {
+  id: string;
+  name: string;
+  display_name: string;
+  sort_order: number;
+}
 
 const Gallery = () => {
   const queryClient = useQueryClient();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [imageToDelete, setImageToDelete] = useState<GalleryImage | null>(null);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [activeSeason, setActiveSeason] = useState("all");
+  const [activeSeasonId, setActiveSeasonId] = useState<string | null>(null);
   const [draggedImage, setDraggedImage] = useState<GalleryImage | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
 
-  // Fetch images from Supabase only
+  // Fetch seasons from database
+  const { data: seasons = [] } = useQuery({
+    queryKey: ['seasons'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('seasons')
+        .select('*')
+        .order('sort_order', { ascending: true });
+      
+      if (error) throw error;
+      return data as Season[];
+    },
+  });
+
+  // Fetch images with category and season joins
   const { data: images = [], isLoading } = useQuery({
     queryKey: ['gallery-images'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('gallery_images')
-        .select('*')
+        .select(`
+          *,
+          category:categories(id, name, display_name),
+          season:seasons(id, name, display_name)
+        `)
         .order('sort_order', { ascending: true });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as GalleryImage[];
     },
   });
 
+  // Get the "all" season ID for default filter
+  const allSeasonId = seasons.find(s => s.name === 'all')?.id;
+
   // Filter images by season
-  const filteredImages = activeSeason === "all" 
+  const filteredImages = !activeSeasonId || activeSeasonId === allSeasonId
     ? images 
-    : images.filter((img: any) => img.season === activeSeason);
+    : images.filter((img) => img.season_id === activeSeasonId);
 
   // Set hero mutation
   const setHeroMutation = useMutation({
@@ -252,9 +275,10 @@ const Gallery = () => {
   };
 
   // Count images per season
-  const getSeasonCount = (seasonValue: string) => {
-    if (seasonValue === "all") return images.length;
-    return images.filter((img: any) => img.season === seasonValue).length;
+  const getSeasonCount = (seasonId: string) => {
+    const season = seasons.find(s => s.id === seasonId);
+    if (season?.name === "all") return images.length;
+    return images.filter((img) => img.season_id === seasonId).length;
   };
 
   if (isLoading) {
@@ -279,17 +303,18 @@ const Gallery = () => {
 
         {/* Season Filter Tabs */}
         <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {SEASONS.map((season) => {
-            const count = getSeasonCount(season.value);
+          {seasons.map((season) => {
+            const count = getSeasonCount(season.id);
+            const isActive = activeSeasonId === season.id || (!activeSeasonId && season.name === 'all');
             return (
               <Button
-                key={season.value}
-                variant={activeSeason === season.value ? "default" : "outline"}
+                key={season.id}
+                variant={isActive ? "default" : "outline"}
                 size="sm"
-                onClick={() => setActiveSeason(season.value)}
+                onClick={() => setActiveSeasonId(season.id)}
                 className="gap-2"
               >
-                {season.label}
+                {season.display_name}
                 <Badge variant="secondary" className="ml-1 text-xs">
                   {count}
                 </Badge>
@@ -311,9 +336,9 @@ const Gallery = () => {
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <ImageOff className="h-16 w-16 mb-4" />
             <p className="text-lg">
-              {activeSeason === "all" 
+              {!activeSeasonId || activeSeasonId === allSeasonId
                 ? "Noch keine Bilder vorhanden" 
-                : `Keine Bilder für "${SEASONS.find(s => s.value === activeSeason)?.label}" vorhanden`
+                : `Keine Bilder für "${seasons.find(s => s.id === activeSeasonId)?.display_name}" vorhanden`
               }
             </p>
             <p className="text-sm">Klicken Sie auf "Bilder hinzufügen" um Bilder hochzuladen</p>
@@ -386,7 +411,7 @@ const Gallery = () => {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                    <p className="text-sm font-medium text-accent">{image.category}</p>
+                    <p className="text-sm font-medium text-accent">{image.category?.display_name || 'Keine Kategorie'}</p>
                     <p className="text-lg font-semibold">{image.title}</p>
                   </div>
                 </div>
@@ -431,7 +456,7 @@ const Gallery = () => {
                   className="max-w-full max-h-[80vh] object-contain rounded-lg"
                 />
                 <div className="text-white text-center mt-4">
-                  <p className="text-sm text-accent">{filteredImages[selectedImageIndex].category}</p>
+                  <p className="text-sm text-accent">{filteredImages[selectedImageIndex].category?.display_name || 'Keine Kategorie'}</p>
                   <p className="text-xl font-semibold">{filteredImages[selectedImageIndex].title}</p>
                   <p className="text-sm text-muted-foreground mt-2">
                     {selectedImageIndex + 1} / {filteredImages.length}

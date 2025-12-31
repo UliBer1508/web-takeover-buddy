@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,25 +8,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Upload, Loader2, X, ImagePlus } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useQuery } from "@tanstack/react-query";
 
-const CATEGORIES = [
-  "Außenbereich",
-  "Wohn- & Essbereich",
-  "Küche",
-  "Schlafzimmer",
-  "Badezimmer",
-  "Wellness",
-  "Ausstattung",
-  "Eingangsbereich",
-];
+interface Category {
+  id: string;
+  name: string;
+  display_name: string;
+}
 
-const SEASONS = [
-  { value: "all", label: "Ganzjährig" },
-  { value: "spring", label: "Frühling" },
-  { value: "summer", label: "Sommer" },
-  { value: "autumn", label: "Herbst" },
-  { value: "winter", label: "Winter" },
-];
+interface Season {
+  id: string;
+  name: string;
+  display_name: string;
+}
 
 interface FilePreview {
   file: File;
@@ -43,11 +37,49 @@ interface ImageUploadDialogProps {
 const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogProps) => {
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [titlePrefix, setTitlePrefix] = useState("");
-  const [category, setCategory] = useState("");
-  const [season, setSeason] = useState("all");
+  const [categoryId, setCategoryId] = useState("");
+  const [seasonId, setSeasonId] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const [isDragging, setIsDragging] = useState(false);
+
+  // Fetch categories from database
+  const { data: categories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('sort_order', { ascending: true });
+      
+      if (error) throw error;
+      return data as Category[];
+    },
+  });
+
+  // Fetch seasons from database
+  const { data: seasons = [] } = useQuery({
+    queryKey: ['seasons'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('seasons')
+        .select('*')
+        .order('sort_order', { ascending: true });
+      
+      if (error) throw error;
+      return data as Season[];
+    },
+  });
+
+  // Set default season to "all" when seasons are loaded
+  useEffect(() => {
+    if (seasons.length > 0 && !seasonId) {
+      const allSeason = seasons.find(s => s.name === 'all');
+      if (allSeason) {
+        setSeasonId(allSeason.id);
+      }
+    }
+  }, [seasons, seasonId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
@@ -97,10 +129,10 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogP
   }, []);
 
   const handleUpload = async () => {
-    if (files.length === 0 || !category) {
+    if (files.length === 0 || !categoryId || !seasonId) {
       toast({
         title: "Fehlende Angaben",
-        description: "Bitte wählen Sie mindestens ein Bild und eine Kategorie.",
+        description: "Bitte wählen Sie mindestens ein Bild, eine Kategorie und eine Jahreszeit.",
         variant: "destructive",
       });
       return;
@@ -121,6 +153,9 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogP
         .limit(1);
 
       let nextOrder = (maxOrderData?.[0]?.sort_order ?? 0) + 1;
+
+      // Get category display name for title
+      const selectedCategory = categories.find(c => c.id === categoryId);
 
       for (let i = 0; i < files.length; i++) {
         const { file } = files[i];
@@ -146,16 +181,16 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogP
           // Generate title
           const title = files.length === 1 
             ? (titlePrefix || file.name.split('.')[0])
-            : `${titlePrefix || category} ${i + 1}`;
+            : `${titlePrefix || selectedCategory?.display_name || 'Bild'} ${i + 1}`;
 
-          // Insert metadata into database
+          // Insert metadata into database with foreign keys
           const { error: insertError } = await supabase
             .from('gallery_images')
             .insert({
               url: urlData.publicUrl,
               title,
-              category,
-              season,
+              category_id: categoryId,
+              season_id: seasonId,
               sort_order: nextOrder++,
             });
 
@@ -205,8 +240,10 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogP
     files.forEach((f) => URL.revokeObjectURL(f.preview));
     setFiles([]);
     setTitlePrefix("");
-    setCategory("");
-    setSeason("all");
+    setCategoryId("");
+    // Reset season to "all"
+    const allSeason = seasons.find(s => s.name === 'all');
+    setSeasonId(allSeason?.id || "");
   };
 
   const handleClose = () => {
@@ -302,14 +339,14 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogP
           {/* Category */}
           <div className="space-y-2">
             <Label htmlFor="category">Kategorie</Label>
-            <Select value={category} onValueChange={setCategory}>
+            <Select value={categoryId} onValueChange={setCategoryId}>
               <SelectTrigger>
                 <SelectValue placeholder="Kategorie wählen" />
               </SelectTrigger>
               <SelectContent>
-                {CATEGORIES.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>
+                    {cat.display_name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -319,14 +356,14 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogP
           {/* Season */}
           <div className="space-y-2">
             <Label htmlFor="season">Jahreszeit</Label>
-            <Select value={season} onValueChange={setSeason}>
+            <Select value={seasonId} onValueChange={setSeasonId}>
               <SelectTrigger>
                 <SelectValue placeholder="Jahreszeit wählen" />
               </SelectTrigger>
               <SelectContent>
-                {SEASONS.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>
-                    {s.label}
+                {seasons.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.display_name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -349,7 +386,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess }: ImageUploadDialogP
           <Button variant="outline" onClick={handleClose} disabled={isUploading}>
             Abbrechen
           </Button>
-          <Button onClick={handleUpload} disabled={isUploading || files.length === 0 || !category}>
+          <Button onClick={handleUpload} disabled={isUploading || files.length === 0 || !categoryId || !seasonId}>
             {isUploading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
