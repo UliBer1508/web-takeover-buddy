@@ -13,7 +13,7 @@ import HouseSelector from "@/components/HouseSelector";
 import { useHouseSelection } from "@/hooks/useHouseSelection";
 
 const Index = () => {
-  const { selectedHouseId, setSelectedHouseId, hasMultipleHouses } = useHouseSelection();
+  const { selectedHouseId, setSelectedHouseId, hasMultipleHouses, selectedHouse } = useHouseSelection();
   const [selectedDates, setSelectedDates] = useState<{
     checkIn: Date | null;
     checkOut: Date | null;
@@ -65,7 +65,7 @@ const Index = () => {
               Wählen Sie Ihren gewünschten Zeitraum direkt im Kalender aus
             </p>
           </div>
-          <AvailabilityCalendar houseId={selectedHouseId} onDateRangeSelect={handleDateSelection} />
+          <AvailabilityCalendar externalHouseId={selectedHouse?.external_house_id} onDateRangeSelect={handleDateSelection} />
         </div>
       </section>
       <BookingForm 
