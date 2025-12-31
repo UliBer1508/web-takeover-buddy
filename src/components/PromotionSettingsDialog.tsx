@@ -143,7 +143,7 @@ const PromotionSettingsDialog = ({ trigger }: PromotionSettingsDialogProps) => {
       booking_start: "",
       booking_end: "",
       min_nights: 1,
-      house_id: "",
+      house_id: "__all__",
       is_active: true,
     },
   });
@@ -160,7 +160,7 @@ const PromotionSettingsDialog = ({ trigger }: PromotionSettingsDialogProps) => {
       booking_start: "",
       booking_end: "",
       min_nights: 1,
-      house_id: "",
+      house_id: "__all__",
       is_active: true,
     });
     setEditingPromotion(null);
@@ -180,7 +180,7 @@ const PromotionSettingsDialog = ({ trigger }: PromotionSettingsDialogProps) => {
       booking_start: promo.booking_start || "",
       booking_end: promo.booking_end || "",
       min_nights: promo.min_nights || 1,
-      house_id: promo.house_id || "",
+      house_id: promo.house_id || "__all__",
       is_active: promo.is_active,
     });
     setShowForm(true);
@@ -200,7 +200,7 @@ const PromotionSettingsDialog = ({ trigger }: PromotionSettingsDialogProps) => {
         booking_start: data.booking_start || null,
         booking_end: data.booking_end || null,
         min_nights: data.min_nights || 1,
-        house_id: data.house_id || null,
+        house_id: data.house_id === "__all__" ? null : (data.house_id || null),
         is_active: data.is_active,
       };
 
@@ -328,7 +328,7 @@ const PromotionSettingsDialog = ({ trigger }: PromotionSettingsDialogProps) => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">{t('promotions.allHouses')}</SelectItem>
+                            <SelectItem value="__all__">{t('promotions.allHouses')}</SelectItem>
                             {houses.map((house) => (
                               <SelectItem key={house.id} value={house.id}>
                                 {house.name}
