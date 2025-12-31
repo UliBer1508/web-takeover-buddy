@@ -409,7 +409,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
                         handleSetHero(image); 
                       }}
                       className="bg-black/60 hover:bg-black/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
-                      aria-label="Als Hero-Bild setzen"
+                      aria-label={t('gallery.ariaSetHero')}
                       disabled={setHeroMutation.isPending}
                     >
                       {image.is_hero ? (
@@ -427,7 +427,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
                           setImageToEdit(image); 
                         }}
                         className="bg-black/60 hover:bg-black/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
-                        aria-label="Bild bearbeiten"
+                        aria-label={t('gallery.ariaEditImage')}
                       >
                         <Pencil className="w-5 h-5 text-white" />
                       </button>
@@ -440,7 +440,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
                         }}
                         className="bg-black/60 hover:bg-red-600/80 backdrop-blur-sm p-2 rounded-full transition-all min-h-[44px] min-w-[44px] flex items-center justify-center"
                         disabled={deleteMutation.isPending}
-                        aria-label="Bild löschen"
+                        aria-label={t('gallery.ariaDeleteImage')}
                       >
                         <Trash2 className="w-5 h-5 text-white" />
                       </button>
@@ -480,8 +480,8 @@ const Gallery = ({ houseId }: GalleryProps) => {
       <Dialog open={selectedImageIndex !== null} onOpenChange={closeLightbox}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
           <VisuallyHidden>
-            <DialogTitle>Bildansicht</DialogTitle>
-            <DialogDescription>Großansicht des ausgewählten Bildes</DialogDescription>
+            <DialogTitle>{t('gallery.ariaLightboxTitle')}</DialogTitle>
+            <DialogDescription>{t('gallery.ariaLightboxDesc')}</DialogDescription>
           </VisuallyHidden>
           <button
             onClick={closeLightbox}

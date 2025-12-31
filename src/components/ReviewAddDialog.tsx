@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ interface ReviewAddDialogProps {
 }
 
 const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
+  const { t } = useTranslation();
   const [guestName, setGuestName] = useState("");
   const [reviewDate, setReviewDate] = useState(new Date().toISOString().split('T')[0]);
   const [rating, setRating] = useState(5);
@@ -25,7 +27,7 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
 
   const handleSave = async () => {
     if (!guestName.trim() || !text.trim()) {
-      toast({ title: "Fehler", description: "Bitte alle Felder ausfüllen.", variant: "destructive" });
+      toast({ title: t('reviewAdd.error'), description: t('reviewAdd.fillAllFields'), variant: "destructive" });
       return;
     }
 
@@ -44,9 +46,9 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
     setLoading(false);
     
     if (error) {
-      toast({ title: "Fehler", description: "Bewertung konnte nicht erstellt werden.", variant: "destructive" });
+      toast({ title: t('reviewAdd.error'), description: t('reviewAdd.errorCreate'), variant: "destructive" });
     } else {
-      toast({ title: "Erstellt", description: "Neue Bewertung wurde hinzugefügt." });
+      toast({ title: t('reviewAdd.created'), description: t('reviewAdd.createdDesc') });
       queryClient.invalidateQueries({ queryKey: ['reviews'] });
       onOpenChange(false);
       // Reset form
@@ -60,22 +62,22 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Neue Bewertung</DialogTitle>
+          <DialogTitle>{t('reviewAdd.title')}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="guestName">Name</Label>
+            <Label htmlFor="guestName">{t('reviewAdd.name')}</Label>
             <Input
               id="guestName"
               value={guestName}
               onChange={(e) => setGuestName(e.target.value)}
-              placeholder="z.B. Familie Müller"
+              placeholder={t('reviewAdd.namePlaceholder')}
             />
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="reviewDate">Datum</Label>
+            <Label htmlFor="reviewDate">{t('reviewAdd.date')}</Label>
             <Input
               id="reviewDate"
               type="date"
@@ -85,7 +87,7 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
           </div>
           
           <div className="space-y-2">
-            <Label>Bewertung</Label>
+            <Label>{t('reviewAdd.rating')}</Label>
             <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -103,23 +105,23 @@ const ReviewAddDialog = ({ open, onOpenChange }: ReviewAddDialogProps) => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="text">Text</Label>
+            <Label htmlFor="text">{t('reviewAdd.text')}</Label>
             <Textarea
               id="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
               rows={4}
-              placeholder="Bewertungstext eingeben..."
+              placeholder={t('reviewAdd.textPlaceholder')}
             />
           </div>
         </div>
         
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t('reviewAdd.cancel')}
           </Button>
           <Button onClick={handleSave} disabled={loading}>
-            {loading ? "Speichern..." : "Hinzufügen"}
+            {loading ? t('reviewEdit.saving') : t('reviewAdd.add')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -134,8 +134,8 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
   const handleUpload = async () => {
     if (files.length === 0 || !seasonId) {
       toast({
-        title: "Fehlende Angaben",
-        description: "Bitte wählen Sie mindestens ein Bild und eine Jahreszeit.",
+        title: t('imageUpload.missingInfo'),
+        description: t('imageUpload.selectImageAndSeason'),
         variant: "destructive",
       });
       return;
@@ -184,7 +184,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
           // Generate title
           const title = files.length === 1 
             ? (titlePrefix || file.name.split('.')[0])
-            : `${titlePrefix || selectedCategory?.display_name || 'Bild'} ${i + 1}`;
+            : `${titlePrefix || selectedCategory?.display_name || t('gallery.noCategory')} ${i + 1}`;
 
           // Insert metadata into database with foreign keys
           const { error: insertError } = await supabase
@@ -208,17 +208,17 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
 
       if (successCount > 0) {
         toast({
-          title: `${successCount} Bild${successCount > 1 ? 'er' : ''} hochgeladen`,
+          title: `${successCount} ${successCount > 1 ? t('imageUpload.successMultiple') : t('imageUpload.successSingle')}`,
           description: errorCount > 0 
-            ? `${errorCount} Bild${errorCount > 1 ? 'er' : ''} konnte${errorCount > 1 ? 'n' : ''} nicht hochgeladen werden.`
-            : "Alle Bilder wurden erfolgreich zur Galerie hinzugefügt.",
+            ? `${errorCount} ${t('imageUpload.partialError')}`
+            : t('imageUpload.successDesc'),
           variant: errorCount > 0 ? "destructive" : "default",
         });
         onSuccess();
       } else {
         toast({
-          title: "Fehler beim Hochladen",
-          description: "Keine Bilder konnten hochgeladen werden.",
+          title: t('imageUpload.uploadError'),
+          description: t('imageUpload.noImagesUploaded'),
           variant: "destructive",
         });
       }
@@ -230,8 +230,8 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
     } catch (error: any) {
       console.error('Upload error:', error);
       toast({
-        title: "Fehler beim Hochladen",
-        description: error.message || "Die Bilder konnten nicht hochgeladen werden.",
+        title: t('imageUpload.uploadError'),
+        description: error.message || t('imageUpload.uploadErrorDesc'),
         variant: "destructive",
       });
     } finally {
@@ -259,7 +259,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Bilder hochladen</DialogTitle>
+          <DialogTitle>{t('imageUpload.title')}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
@@ -287,23 +287,23 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
             />
             <ImagePlus className="mx-auto h-10 w-10 text-muted-foreground mb-2" />
             <p className="text-sm text-muted-foreground">
-              Bilder hierher ziehen oder <span className="text-primary font-medium">klicken</span> zum Auswählen
+              {t('imageUpload.dragDropText')} <span className="text-primary font-medium">{t('imageUpload.clickToSelect')}</span> {t('imageUpload.toSelect')}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              Mehrere Bilder gleichzeitig möglich
+              {t('imageUpload.multipleAllowed')}
             </p>
           </div>
 
           {/* Preview Grid */}
           {files.length > 0 && (
             <div className="space-y-2">
-              <Label>{files.length} Bild{files.length > 1 ? 'er' : ''} ausgewählt</Label>
+              <Label>{files.length} {t('imageUpload.imagesSelected')}</Label>
               <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
                 {files.map((fp) => (
                   <div key={fp.id} className="relative aspect-square rounded-md overflow-hidden group">
                     <img
                       src={fp.preview}
-                      alt="Vorschau"
+                      alt={t('imageUpload.preview')}
                       className="w-full h-full object-cover"
                     />
                     <button
@@ -325,27 +325,27 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
           {/* Title Prefix */}
           <div className="space-y-2">
             <Label htmlFor="title">
-              {files.length > 1 ? 'Titel-Präfix (wird nummeriert)' : 'Titel'}
+              {files.length > 1 ? t('imageUpload.titlePrefix') : t('imageUpload.titleSingle')}
             </Label>
             <Input
               id="title"
               value={titlePrefix}
               onChange={(e) => setTitlePrefix(e.target.value)}
-              placeholder={files.length > 1 ? "z.B. Wohnzimmer" : "z.B. Wohnzimmer mit Kamin"}
+              placeholder={files.length > 1 ? t('imageUpload.titlePlaceholderMultiple') : t('imageUpload.titlePlaceholderSingle')}
             />
             {files.length > 1 && titlePrefix && (
               <p className="text-xs text-muted-foreground">
-                Vorschau: "{titlePrefix} 1", "{titlePrefix} 2", ...
+                {t('imageUpload.titlePreview')} "{titlePrefix} 1", "{titlePrefix} 2", ...
               </p>
             )}
           </div>
 
           {/* Category */}
           <div className="space-y-2">
-            <Label htmlFor="category">Kategorie (optional)</Label>
+            <Label htmlFor="category">{t('imageUpload.category')}</Label>
             <Select value={categoryId} onValueChange={setCategoryId}>
               <SelectTrigger>
-                <SelectValue placeholder="Kategorie wählen" />
+                <SelectValue placeholder={t('imageUpload.categoryPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
@@ -356,16 +356,16 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              Kann später pro Bild zugewiesen werden
+              {t('imageUpload.categoryHint')}
             </p>
           </div>
 
           {/* Season */}
           <div className="space-y-2">
-            <Label htmlFor="season">Jahreszeit</Label>
+            <Label htmlFor="season">{t('imageUpload.season')}</Label>
             <Select value={seasonId} onValueChange={setSeasonId}>
               <SelectTrigger>
-                <SelectValue placeholder="Jahreszeit wählen" />
+                <SelectValue placeholder={t('imageUpload.seasonPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
                 {seasons.map((s) => (
@@ -381,8 +381,8 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
           {isUploading && uploadProgress.total > 0 && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Hochladen...</span>
-                <span>{uploadProgress.current} von {uploadProgress.total}</span>
+                <span>{t('imageUpload.uploading')}</span>
+                <span>{uploadProgress.current} {t('imageUpload.uploadingProgress')} {uploadProgress.total}</span>
               </div>
               <Progress value={(uploadProgress.current / uploadProgress.total) * 100} />
             </div>
@@ -391,18 +391,18 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose} disabled={isUploading}>
-            Abbrechen
+            {t('imageUpload.cancel')}
           </Button>
           <Button onClick={handleUpload} disabled={isUploading || files.length === 0 || !seasonId}>
             {isUploading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Wird hochgeladen...
+                {t('imageUpload.uploadingButton')}
               </>
             ) : (
               <>
                 <Upload className="mr-2 h-4 w-4" />
-                {files.length > 1 ? `${files.length} Bilder hochladen` : 'Hochladen'}
+                {files.length > 1 ? `${files.length} ${t('imageUpload.uploadButtonMultiple')}` : t('imageUpload.uploadButton')}
               </>
             )}
           </Button>

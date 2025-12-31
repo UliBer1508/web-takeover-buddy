@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,21 +11,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-
-const settingsSchema = z.object({
-  min_nights: z.coerce.number().min(1, "Mindestens 1 Nacht").max(30, "Maximal 30 Nächte"),
-  check_in_time: z.string().min(1, "Check-in Zeit erforderlich"),
-  check_out_time: z.string().min(1, "Check-out Zeit erforderlich"),
-  cleaning_fee: z.coerce.number().min(0, "Muss positiv sein"),
-  service_fee: z.coerce.number().min(0, "Muss positiv sein"),
-  bed_linen_fee: z.coerce.number().min(0, "Muss positiv sein"),
-  tourist_tax: z.coerce.number().min(0, "Muss positiv sein"),
-  price_winter: z.coerce.number().min(0, "Muss positiv sein"),
-  price_summer: z.coerce.number().min(0, "Muss positiv sein"),
-  price_offseason: z.coerce.number().min(0, "Muss positiv sein"),
-});
-
-type SettingsFormData = z.infer<typeof settingsSchema>;
 
 interface House {
   id: string;
@@ -47,9 +33,25 @@ interface HouseSettingsDialogProps {
 }
 
 const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
+
+  const settingsSchema = z.object({
+    min_nights: z.coerce.number().min(1, t('houseSettings.validation.minNights')).max(30, t('houseSettings.validation.maxNights')),
+    check_in_time: z.string().min(1, t('houseSettings.validation.checkInRequired')),
+    check_out_time: z.string().min(1, t('houseSettings.validation.checkOutRequired')),
+    cleaning_fee: z.coerce.number().min(0, t('houseSettings.validation.mustBePositive')),
+    service_fee: z.coerce.number().min(0, t('houseSettings.validation.mustBePositive')),
+    bed_linen_fee: z.coerce.number().min(0, t('houseSettings.validation.mustBePositive')),
+    tourist_tax: z.coerce.number().min(0, t('houseSettings.validation.mustBePositive')),
+    price_winter: z.coerce.number().min(0, t('houseSettings.validation.mustBePositive')),
+    price_summer: z.coerce.number().min(0, t('houseSettings.validation.mustBePositive')),
+    price_offseason: z.coerce.number().min(0, t('houseSettings.validation.mustBePositive')),
+  });
+
+  type SettingsFormData = z.infer<typeof settingsSchema>;
 
   const form = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
@@ -105,8 +107,8 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
       if (error) throw error;
 
       toast({
-        title: "Einstellungen gespeichert ✓",
-        description: "Die Hauseinstellungen wurden aktualisiert.",
+        title: t('houseSettings.saved'),
+        description: t('houseSettings.savedDesc'),
       });
 
       queryClient.invalidateQueries({ queryKey: ['houses-active'] });
@@ -114,8 +116,8 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
     } catch (error: any) {
       console.error("Update error:", error);
       toast({
-        title: "Fehler beim Speichern",
-        description: error.message || "Bitte versuchen Sie es später erneut.",
+        title: t('houseSettings.error'),
+        description: error.message || t('houseSettings.errorDesc'),
         variant: "destructive",
       });
     } finally {
@@ -134,7 +136,7 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Hauseinstellungen bearbeiten</DialogTitle>
+          <DialogTitle>{t('houseSettings.title')}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -144,7 +146,7 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                 name="min_nights"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Mindestaufenthalt (Nächte)</FormLabel>
+                    <FormLabel>{t('houseSettings.minNights')}</FormLabel>
                     <FormControl>
                       <Input type="number" min={1} {...field} />
                     </FormControl>
@@ -157,7 +159,7 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                 name="cleaning_fee"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Endreinigung (€)</FormLabel>
+                    <FormLabel>{t('houseSettings.cleaningFee')}</FormLabel>
                     <FormControl>
                       <Input type="number" min={0} {...field} />
                     </FormControl>
@@ -168,14 +170,14 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
             </div>
 
             <div className="border-t pt-4">
-              <h4 className="font-medium mb-3">Nebenkosten</h4>
+              <h4 className="font-medium mb-3">{t('houseSettings.additionalFees')}</h4>
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="service_fee"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Servicegebühr (€)</FormLabel>
+                      <FormLabel>{t('houseSettings.serviceFee')}</FormLabel>
                       <FormControl>
                         <Input type="number" min={0} {...field} />
                       </FormControl>
@@ -188,7 +190,7 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                   name="bed_linen_fee"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Bettwäsche (€/Person)</FormLabel>
+                      <FormLabel>{t('houseSettings.bedLinenFee')}</FormLabel>
                       <FormControl>
                         <Input type="number" min={0} {...field} />
                       </FormControl>
@@ -201,7 +203,7 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                   name="tourist_tax"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Kurtaxe (€/Person/Nacht)</FormLabel>
+                      <FormLabel>{t('houseSettings.touristTax')}</FormLabel>
                       <FormControl>
                         <Input type="number" min={0} step="0.01" {...field} />
                       </FormControl>
@@ -218,7 +220,7 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                 name="check_in_time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Check-in Zeit</FormLabel>
+                    <FormLabel>{t('houseSettings.checkInTime')}</FormLabel>
                     <FormControl>
                       <Input type="time" {...field} />
                     </FormControl>
@@ -231,7 +233,7 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                 name="check_out_time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Check-out Zeit</FormLabel>
+                    <FormLabel>{t('houseSettings.checkOutTime')}</FormLabel>
                     <FormControl>
                       <Input type="time" {...field} />
                     </FormControl>
@@ -242,14 +244,14 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
             </div>
 
             <div className="border-t pt-4">
-              <h4 className="font-medium mb-3">Preise pro Nacht</h4>
+              <h4 className="font-medium mb-3">{t('houseSettings.pricesPerNight')}</h4>
               <div className="grid grid-cols-3 gap-3">
                 <FormField
                   control={form.control}
                   name="price_winter"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Winter (€)</FormLabel>
+                      <FormLabel className="text-xs">{t('houseSettings.winter')}</FormLabel>
                       <FormControl>
                         <Input type="number" min={0} {...field} />
                       </FormControl>
@@ -262,7 +264,7 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                   name="price_summer"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Sommer (€)</FormLabel>
+                      <FormLabel className="text-xs">{t('houseSettings.summer')}</FormLabel>
                       <FormControl>
                         <Input type="number" min={0} {...field} />
                       </FormControl>
@@ -275,7 +277,7 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
                   name="price_offseason"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Nebensaison (€)</FormLabel>
+                      <FormLabel className="text-xs">{t('houseSettings.offseason')}</FormLabel>
                       <FormControl>
                         <Input type="number" min={0} {...field} />
                       </FormControl>
@@ -288,10 +290,10 @@ const HouseSettingsDialog = ({ house, trigger }: HouseSettingsDialogProps) => {
 
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                Abbrechen
+                {t('houseSettings.cancel')}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Speichern..." : "Speichern"}
+                {isSubmitting ? t('houseSettings.saving') : t('houseSettings.save')}
               </Button>
             </div>
           </form>

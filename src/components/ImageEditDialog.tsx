@@ -124,16 +124,16 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gallery-images"] });
       toast({
-        title: "Bild aktualisiert",
-        description: "Die Änderungen wurden gespeichert.",
+        title: t('imageEdit.updated'),
+        description: t('imageEdit.updatedDesc'),
       });
       onSuccess?.();
       onOpenChange(false);
     },
     onError: (error: any) => {
       toast({
-        title: "Fehler",
-        description: error.message || "Die Änderungen konnten nicht gespeichert werden.",
+        title: t('imageEdit.error'),
+        description: error.message || t('imageEdit.errorDesc'),
         variant: "destructive",
       });
     },
@@ -142,24 +142,24 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
   const handleSave = () => {
     if (!title.trim()) {
       toast({
-        title: "Titel erforderlich",
-        description: "Bitte geben Sie einen Titel ein.",
+        title: t('imageEdit.titleRequired'),
+        description: t('imageEdit.titleRequiredDesc'),
         variant: "destructive",
       });
       return;
     }
     if (!categoryId) {
       toast({
-        title: "Kategorie erforderlich",
-        description: "Bitte wählen Sie eine Kategorie aus.",
+        title: t('imageEdit.categoryRequired'),
+        description: t('imageEdit.categoryRequiredDesc'),
         variant: "destructive",
       });
       return;
     }
     if (!seasonId) {
       toast({
-        title: "Jahreszeit erforderlich",
-        description: "Bitte wählen Sie eine Jahreszeit aus.",
+        title: t('imageEdit.seasonRequired'),
+        description: t('imageEdit.seasonRequiredDesc'),
         variant: "destructive",
       });
       return;
@@ -173,9 +173,9 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Bild bearbeiten</DialogTitle>
+          <DialogTitle>{t('imageEdit.title')}</DialogTitle>
           <DialogDescription>
-            Ändern Sie Titel, Kategorie und Jahreszeit für dieses Bild.
+            {t('imageEdit.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -191,21 +191,21 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
 
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">Titel</Label>
+            <Label htmlFor="title">{t('imageEdit.titleLabel')}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Bildtitel eingeben"
+              placeholder={t('imageEdit.titlePlaceholder')}
             />
           </div>
 
           {/* Category */}
           <div className="space-y-2">
-            <Label>Kategorie (Bereich)</Label>
+            <Label>{t('imageEdit.category')}</Label>
             <Select value={categoryId} onValueChange={setCategoryId}>
               <SelectTrigger>
-                <SelectValue placeholder="Kategorie auswählen" />
+                <SelectValue placeholder={t('imageEdit.categoryPlaceholder')} />
               </SelectTrigger>
               <SelectContent className="bg-background">
                 {categories.map((cat) => (
@@ -219,10 +219,10 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
 
           {/* Season */}
           <div className="space-y-2">
-            <Label>Jahreszeit</Label>
+            <Label>{t('imageEdit.season')}</Label>
             <Select value={seasonId} onValueChange={setSeasonId}>
               <SelectTrigger>
-                <SelectValue placeholder="Jahreszeit auswählen" />
+                <SelectValue placeholder={t('imageEdit.seasonPlaceholder')} />
               </SelectTrigger>
               <SelectContent className="bg-background">
                 {seasons.map((season) => (
@@ -237,13 +237,13 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Abbrechen
+            {t('imageEdit.cancel')}
           </Button>
           <Button onClick={handleSave} disabled={updateMutation.isPending}>
             {updateMutation.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Speichern
+            {t('imageEdit.save')}
           </Button>
         </DialogFooter>
       </DialogContent>
