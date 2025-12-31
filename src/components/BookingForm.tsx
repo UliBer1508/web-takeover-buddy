@@ -12,10 +12,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { externalSupabase } from "@/integrations/external-supabase/client";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
-// Chalet Venedigersiedlung house ID
-const HOUSE_ID = "f5b4588b-96cf-46f7-b84a-5f6750f7088e";
+// Default house ID (will be replaced by actual house from database)
+const DEFAULT_HOUSE_ID = "00000000-0000-0000-0000-000000000001";
 
 const bookingSchema = z.object({
   name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein").max(100, "Name zu lang"),
@@ -25,8 +27,8 @@ const bookingSchema = z.object({
   checkOut: z.string().min(1, "Check-out Datum erforderlich"),
   guests: z.string().refine((val) => {
     const num = parseInt(val);
-    return num >= 1 && num <= 6;
-  }, "Anzahl Gäste muss zwischen 1 und 6 liegen"),
+    return num >= 1 && num <= 10;
+  }, "Anzahl Gäste muss zwischen 1 und 10 liegen"),
   message: z.string().max(1000, "Nachricht zu lang").optional()
 }).refine((data) => {
   const checkIn = new Date(data.checkIn);
@@ -52,8 +54,54 @@ interface BookingFormProps {
   initialCheckOut?: Date | null;
 }
 
+interface House {
+  id: string;
+  name: string;
+  max_guests: number;
+}
+
+interface BookingStatus {
+  id: string;
+  name: string;
+  display_name: string;
+}
+
 const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Fetch houses from database
+  const { data: houses = [] } = useQuery({
+    queryKey: ['houses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('houses')
+        .select('*')
+        .order('name', { ascending: true });
+      
+      if (error) throw error;
+      return data as House[];
+    },
+  });
+
+  // Fetch booking statuses to get "pending" status ID
+  const { data: statuses = [] } = useQuery({
+    queryKey: ['booking-statuses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('booking_statuses')
+        .select('*')
+        .order('sort_order', { ascending: true });
+      
+      if (error) throw error;
+      return data as BookingStatus[];
+    },
+  });
+
+  // Get the first house or use default
+  const selectedHouse = houses[0];
+  const maxGuests = selectedHouse?.max_guests || 10;
+  const pendingStatusId = statuses.find(s => s.name === 'pending')?.id;
+
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
@@ -78,6 +126,15 @@ const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
   }, [initialCheckIn, initialCheckOut, form]);
 
   const onSubmit = async (data: BookingFormData) => {
+    if (!pendingStatusId) {
+      toast({
+        title: "Fehler",
+        description: "Status konnte nicht geladen werden. Bitte versuchen Sie es später erneut.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -85,11 +142,11 @@ const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
       const checkInDate = new Date(data.checkIn);
       const checkOutDate = new Date(data.checkOut);
 
-      // Insert booking inquiry into database
-      const { error } = await externalSupabase
+      // Insert booking inquiry into database with foreign keys
+      const { error } = await supabase
         .from('booking_inquiries')
         .insert({
-          house_id: HOUSE_ID,
+          house_id: selectedHouse?.id || DEFAULT_HOUSE_ID,
           guest_name: data.name.trim(),
           guest_email: data.email.trim().toLowerCase(),
           guest_phone: data.phone.trim(),
@@ -97,7 +154,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
           check_out: checkOutDate.toISOString(),
           number_of_guests: parseInt(data.guests),
           message: data.message?.trim() || null,
-          status: 'pending'
+          status_id: pendingStatusId
         });
 
       if (error) {
@@ -121,7 +178,9 @@ const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
       setIsSubmitting(false);
     }
   };
-  return <section id="booking" className="py-16 md:py-24 bg-background">
+
+  return (
+    <section id="booking" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 animate-fade-in">
@@ -138,119 +197,122 @@ const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
               <CardTitle>Verfügbarkeit anfragen</CardTitle>
               <CardDescription>
                 Füllen Sie das Formular aus und wir prüfen die Verfügbarkeit für Ihren Wunschtermin
+                {selectedHouse && <span className="block mt-1">Objekt: {selectedHouse.name}</span>}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="name" render={({
-                    field
-                  }) => <FormItem>
-                          <FormLabel>Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ihr Name" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>} />
+                    <FormField control={form.control} name="name" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Ihr Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
 
-                    <FormField control={form.control} name="email" render={({
-                    field
-                  }) => <FormItem>
-                          <FormLabel>E-Mail</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                              <Input placeholder="ihre@email.com" className="pl-10" {...field} />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>} />
-                  </div>
-
-                  <FormField control={form.control} name="phone" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Telefon</FormLabel>
+                    <FormField control={form.control} name="email" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>E-Mail</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="+49 123 456789" className="pl-10" {...field} />
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="ihre@email.com" className="pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
-                      </FormItem>} />
+                      </FormItem>
+                    )} />
+                  </div>
+
+                  <FormField control={form.control} name="phone" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefon</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input placeholder="+49 123 456789" className="pl-10" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
 
                   <div className="grid sm:grid-cols-3 gap-4">
-                    <FormField control={form.control} name="checkIn" render={({
-                    field
-                  }) => <FormItem>
-                          <FormLabel>Check-in</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                              <Input type="date" className="pl-10" {...field} />
-                            </div>
-                          </FormControl>
-                          {initialCheckIn && (
-                            <Badge variant="secondary" className="mt-1 text-xs">
-                              ✓ Vom Kalender übernommen
-                            </Badge>
-                          )}
-                          <FormMessage />
-                        </FormItem>} />
-
-                    <FormField control={form.control} name="checkOut" render={({
-                    field
-                  }) => <FormItem>
-                          <FormLabel>Check-out</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                              <Input type="date" className="pl-10" {...field} />
-                            </div>
-                          </FormControl>
-                          {initialCheckOut && (
-                            <Badge variant="secondary" className="mt-1 text-xs">
-                              ✓ Vom Kalender übernommen
-                            </Badge>
-                          )}
-                          <FormMessage />
-                        </FormItem>} />
-
-                    <FormField control={form.control} name="guests" render={({
-                    field
-                  }) => <FormItem>
-                          <FormLabel>Gäste</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <Users className="h-4 w-4 mr-2" />
-                                <SelectValue placeholder="Anzahl" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {[1, 2, 3, 4, 5, 6].map(num => <SelectItem key={num} value={num.toString()}>
-                                  {num} {num === 1 ? "Gast" : "Gäste"}
-                                </SelectItem>)}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>} />
-                  </div>
-
-                  <FormField control={form.control} name="message" render={({
-                  field
-                }) => <FormItem>
-                        <FormLabel>Nachricht (Optional)</FormLabel>
+                    <FormField control={form.control} name="checkIn" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Check-in</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Textarea placeholder="Besondere Wünsche oder Fragen..." className="pl-10 min-h-[100px]" {...field} />
+                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input type="date" className="pl-10" {...field} />
                           </div>
                         </FormControl>
+                        {initialCheckIn && (
+                          <Badge variant="secondary" className="mt-1 text-xs">
+                            ✓ Vom Kalender übernommen
+                          </Badge>
+                        )}
                         <FormMessage />
-                      </FormItem>} />
+                      </FormItem>
+                    )} />
+
+                    <FormField control={form.control} name="checkOut" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Check-out</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input type="date" className="pl-10" {...field} />
+                          </div>
+                        </FormControl>
+                        {initialCheckOut && (
+                          <Badge variant="secondary" className="mt-1 text-xs">
+                            ✓ Vom Kalender übernommen
+                          </Badge>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+
+                    <FormField control={form.control} name="guests" render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gäste</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <Users className="h-4 w-4 mr-2" />
+                              <SelectValue placeholder="Anzahl" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {Array.from({ length: maxGuests }, (_, i) => i + 1).map(num => (
+                              <SelectItem key={num} value={num.toString()}>
+                                {num} {num === 1 ? "Gast" : "Gäste"}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+
+                  <FormField control={form.control} name="message" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nachricht (Optional)</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Textarea placeholder="Besondere Wünsche oder Fragen..." className="pl-10 min-h-[100px]" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
 
                   <Button type="submit" size="lg" className="w-full bg-primary hover:bg-primary/90" disabled={isSubmitting}>
                     {isSubmitting ? "Wird gesendet..." : "Anfrage senden"}
@@ -296,6 +358,8 @@ const BookingForm = ({ initialCheckIn, initialCheckOut }: BookingFormProps) => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default BookingForm;

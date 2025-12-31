@@ -26,7 +26,7 @@ export type Database = {
           id: string
           message: string | null
           number_of_guests: number
-          status: string | null
+          status_id: string
           updated_at: string | null
         }
         Insert: {
@@ -40,7 +40,7 @@ export type Database = {
           id?: string
           message?: string | null
           number_of_guests: number
-          status?: string | null
+          status_id: string
           updated_at?: string | null
         }
         Update: {
@@ -54,38 +54,161 @@ export type Database = {
           id?: string
           message?: string | null
           number_of_guests?: number
-          status?: string | null
+          status_id?: string
           updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_booking_house"
+            columns: ["house_id"]
+            isOneToOne: false
+            referencedRelation: "houses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_booking_status"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "booking_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      booking_statuses: {
+        Row: {
+          display_name: string
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          display_name: string
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          display_name?: string
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          name?: string
+          sort_order?: number
         }
         Relationships: []
       }
       gallery_images: {
         Row: {
-          category: string
+          category_id: string
           created_at: string
           id: string
           is_hero: boolean
+          season_id: string
           sort_order: number
           title: string
           url: string
         }
         Insert: {
-          category: string
+          category_id: string
           created_at?: string
           id?: string
           is_hero?: boolean
+          season_id: string
           sort_order?: number
           title: string
           url: string
         }
         Update: {
-          category?: string
+          category_id?: string
           created_at?: string
           id?: string
           is_hero?: boolean
+          season_id?: string
           sort_order?: number
           title?: string
           url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_gallery_category"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_gallery_season"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      houses: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          max_guests: number
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          max_guests?: number
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          max_guests?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      seasons: {
+        Row: {
+          display_name: string
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          display_name: string
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          display_name?: string
+          id?: string
+          name?: string
+          sort_order?: number
         }
         Relationships: []
       }
