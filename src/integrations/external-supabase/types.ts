@@ -8,6 +8,9 @@ export interface BookingInquiry {
   check_in: string;
   check_out: string;
   number_of_guests: number;
+  number_of_adults?: number;
+  number_of_children?: number;
+  estimated_amount?: number | null;
   status: 'pending' | 'confirmed' | 'cancelled' | 'rejected';
   message?: string | null;
   created_at: string;

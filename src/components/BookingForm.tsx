@@ -329,9 +329,11 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
             guest_phone: data.phone.trim(),
             check_in: checkInDate.toISOString(),
             check_out: checkOutDate.toISOString(),
-            number_of_guests: totalGuests, // Adults + Children combined
+            number_of_guests: totalGuests,
+            number_of_adults: adults,
+            number_of_children: children,
+            estimated_amount: calculatedPrice?.grandTotal ?? null,
             message: data.message?.trim() || null
-            // status defaults to 'pending' automatically
           });
 
         if (externalError) {
