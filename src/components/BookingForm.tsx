@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useState, useEffect, useMemo } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Calendar, Users, Mail, Phone, MessageSquare, Pencil, ChevronDown } from "lucide-react";
+import { Calendar, Users, Mail, Phone, MessageSquare, Pencil, ChevronDown, Calculator } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { externalSupabase } from "@/integrations/external-supabase/client";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, differenceInDays, getMonth } from "date-fns";
 import HouseSettingsDialog from "@/components/HouseSettingsDialog";
 
 // Default house ID (will be replaced by actual house from database)
@@ -24,6 +24,99 @@ const DEFAULT_HOUSE_ID = "00000000-0000-0000-0000-000000000001";
 
 // Development mode - set to false when auth is implemented
 const DEV_MODE = true;
+
+// Season determination based on month
+type Season = 'winter' | 'summer' | 'offseason';
+
+const getSeason = (date: Date): Season => {
+  const month = getMonth(date); // 0-11
+  // Winter: December (11), January (0), February (1), March (2)
+  if (month === 11 || month <= 2) return 'winter';
+  // Summer: June (5), July (6), August (7), September (8)
+  if (month >= 5 && month <= 8) return 'summer';
+  // Offseason: April (3), May (4), October (9), November (10)
+  return 'offseason';
+};
+
+interface PriceBreakdown {
+  nights: number;
+  season: Season;
+  pricePerNight: number;
+  accommodationTotal: number;
+  cleaningFee: number;
+  serviceFee: number;
+  bedLinenFee: number;
+  touristTaxTotal: number;
+  grandTotal: number;
+}
+
+const calculatePriceBreakdown = (
+  house: House | undefined,
+  checkIn: string,
+  checkOut: string,
+  adults: number,
+  children: number
+): PriceBreakdown | null => {
+  if (!house || !checkIn || !checkOut) return null;
+  
+  const checkInDate = new Date(checkIn);
+  const checkOutDate = new Date(checkOut);
+  
+  if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) return null;
+  
+  const nights = differenceInDays(checkOutDate, checkInDate);
+  if (nights <= 0) return null;
+  
+  const season = getSeason(checkInDate);
+  
+  // Get price per night based on season
+  let pricePerNight: number;
+  switch (season) {
+    case 'winter':
+      pricePerNight = house.price_winter ?? 450;
+      break;
+    case 'summer':
+      pricePerNight = house.price_summer ?? 380;
+      break;
+    default:
+      pricePerNight = house.price_offseason ?? 320;
+  }
+  
+  const accommodationTotal = pricePerNight * nights;
+  const cleaningFee = house.cleaning_fee ?? 240;
+  const serviceFee = house.service_fee ?? 0;
+  const bedLinenFee = house.bed_linen_fee ?? 0;
+  
+  // Tourist tax: per person per night (adults + children who count)
+  const touristTaxPerPerson = house.tourist_tax ?? 0;
+  const touristTaxTotal = touristTaxPerPerson * (adults + children) * nights;
+  
+  const grandTotal = accommodationTotal + cleaningFee + serviceFee + bedLinenFee + touristTaxTotal;
+  
+  return {
+    nights,
+    season,
+    pricePerNight,
+    accommodationTotal,
+    cleaningFee,
+    serviceFee,
+    bedLinenFee,
+    touristTaxTotal,
+    grandTotal
+  };
+};
+
+const formatCurrency = (amount: number): string => {
+  return amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+};
+
+const getSeasonLabel = (season: Season): string => {
+  switch (season) {
+    case 'winter': return 'Wintersaison';
+    case 'summer': return 'Sommersaison';
+    default: return 'Nebensaison';
+  }
+};
 
 const bookingSchema = z.object({
   name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein").max(100, "Name zu lang"),
@@ -151,6 +244,19 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
     }
   });
 
+  // Watch form fields for price calculation
+  const watchedCheckIn = useWatch({ control: form.control, name: 'checkIn' });
+  const watchedCheckOut = useWatch({ control: form.control, name: 'checkOut' });
+  const watchedAdults = useWatch({ control: form.control, name: 'adults' });
+  const watchedChildren = useWatch({ control: form.control, name: 'children' });
+
+  // Calculate price breakdown reactively
+  const priceBreakdown = useMemo(() => {
+    const adults = parseInt(watchedAdults) || 0;
+    const children = parseInt(watchedChildren) || 0;
+    return calculatePriceBreakdown(selectedHouse, watchedCheckIn, watchedCheckOut, adults, children);
+  }, [selectedHouse, watchedCheckIn, watchedCheckOut, watchedAdults, watchedChildren]);
+
   // Auto-fill form when dates are selected from calendar
   useEffect(() => {
     if (initialCheckIn) {
@@ -179,6 +285,11 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
       const checkOutDate = new Date(data.checkOut);
       const totalGuests = parseInt(data.adults) + parseInt(data.children);
 
+      // Calculate price for storage
+      const adults = parseInt(data.adults);
+      const children = parseInt(data.children);
+      const calculatedPrice = calculatePriceBreakdown(selectedHouse, data.checkIn, data.checkOut, adults, children);
+
       // 1. Insert into local Lovable Cloud database
       const { error: localError } = await supabase
         .from('booking_inquiries')
@@ -189,10 +300,18 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           guest_phone: data.phone.trim(),
           check_in: checkInDate.toISOString(),
           check_out: checkOutDate.toISOString(),
-          number_of_guests: parseInt(data.adults),
-          number_of_children: parseInt(data.children),
+          number_of_guests: adults,
+          number_of_children: children,
           message: data.message?.trim() || null,
-          status_id: pendingStatusId
+          status_id: pendingStatusId,
+          // Price fields
+          total_price: calculatedPrice?.grandTotal ?? null,
+          price_per_night: calculatedPrice?.pricePerNight ?? null,
+          nights: calculatedPrice?.nights ?? null,
+          cleaning_fee: calculatedPrice?.cleaningFee ?? null,
+          service_fee: calculatedPrice?.serviceFee ?? null,
+          bed_linen_fee: calculatedPrice?.bedLinenFee ?? null,
+          tourist_tax_total: calculatedPrice?.touristTaxTotal ?? null
         });
 
       if (localError) {
@@ -382,6 +501,66 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                       </FormItem>
                     )} />
                   </div>
+
+                  {/* Live Price Display */}
+                  {priceBreakdown && (
+                    <Card className="border-primary/20 bg-primary/5">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <Calculator className="h-5 w-5 text-primary" />
+                          Ihre Preisübersicht
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">
+                            {priceBreakdown.nights} {priceBreakdown.nights === 1 ? 'Nacht' : 'Nächte'} × {formatCurrency(priceBreakdown.pricePerNight)} ({getSeasonLabel(priceBreakdown.season)})
+                          </span>
+                          <span className="font-medium">{formatCurrency(priceBreakdown.accommodationTotal)}</span>
+                        </div>
+                        
+                        <Collapsible>
+                          <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors [&[data-state=open]>svg]:rotate-180">
+                            Nebenkosten anzeigen
+                            <ChevronDown className="h-4 w-4 transition-transform duration-200" />
+                          </CollapsibleTrigger>
+                          <CollapsibleContent className="pt-2 space-y-2">
+                            {priceBreakdown.cleaningFee > 0 && (
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Endreinigung</span>
+                                <span>{formatCurrency(priceBreakdown.cleaningFee)}</span>
+                              </div>
+                            )}
+                            {priceBreakdown.serviceFee > 0 && (
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Servicegebühr</span>
+                                <span>{formatCurrency(priceBreakdown.serviceFee)}</span>
+                              </div>
+                            )}
+                            {priceBreakdown.bedLinenFee > 0 && (
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Bettwäsche</span>
+                                <span>{formatCurrency(priceBreakdown.bedLinenFee)}</span>
+                              </div>
+                            )}
+                            {priceBreakdown.touristTaxTotal > 0 && (
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">
+                                  Kurtaxe ({parseInt(watchedAdults) + parseInt(watchedChildren)} Pers. × {priceBreakdown.nights} Nächte)
+                                </span>
+                                <span>{formatCurrency(priceBreakdown.touristTaxTotal)}</span>
+                              </div>
+                            )}
+                          </CollapsibleContent>
+                        </Collapsible>
+                        
+                        <div className="border-t pt-3 flex justify-between items-center">
+                          <span className="font-semibold text-lg">Gesamtpreis</span>
+                          <span className="font-bold text-xl text-primary">{formatCurrency(priceBreakdown.grandTotal)}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
 
                   <FormField control={form.control} name="message" render={({ field }) => (
                     <FormItem>

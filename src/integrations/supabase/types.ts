@@ -16,8 +16,10 @@ export type Database = {
     Tables: {
       booking_inquiries: {
         Row: {
+          bed_linen_fee: number | null
           check_in: string
           check_out: string
+          cleaning_fee: number | null
           created_at: string | null
           guest_email: string
           guest_name: string
@@ -25,14 +27,21 @@ export type Database = {
           house_id: string
           id: string
           message: string | null
+          nights: number | null
           number_of_children: number
           number_of_guests: number
+          price_per_night: number | null
+          service_fee: number | null
           status_id: string
+          total_price: number | null
+          tourist_tax_total: number | null
           updated_at: string | null
         }
         Insert: {
+          bed_linen_fee?: number | null
           check_in: string
           check_out: string
+          cleaning_fee?: number | null
           created_at?: string | null
           guest_email: string
           guest_name: string
@@ -40,14 +49,21 @@ export type Database = {
           house_id: string
           id?: string
           message?: string | null
+          nights?: number | null
           number_of_children?: number
           number_of_guests: number
+          price_per_night?: number | null
+          service_fee?: number | null
           status_id: string
+          total_price?: number | null
+          tourist_tax_total?: number | null
           updated_at?: string | null
         }
         Update: {
+          bed_linen_fee?: number | null
           check_in?: string
           check_out?: string
+          cleaning_fee?: number | null
           created_at?: string | null
           guest_email?: string
           guest_name?: string
@@ -55,9 +71,14 @@ export type Database = {
           house_id?: string
           id?: string
           message?: string | null
+          nights?: number | null
           number_of_children?: number
           number_of_guests?: number
+          price_per_night?: number | null
+          service_fee?: number | null
           status_id?: string
+          total_price?: number | null
+          tourist_tax_total?: number | null
           updated_at?: string | null
         }
         Relationships: [
