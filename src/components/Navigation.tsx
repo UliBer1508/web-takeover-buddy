@@ -44,7 +44,9 @@ const Navigation = () => {
           <div className="flex items-center justify-between h-16 md:h-20">
             <button
               onClick={() => scrollToSection("hero")}
-              className="text-xl md:text-2xl font-bold text-foreground hover:text-primary transition-colors"
+              className={`text-xl md:text-2xl font-bold transition-colors ${
+                isScrolled ? "text-foreground hover:text-primary" : "text-white hover:text-white/80"
+              }`}
             >
               Steinbock Chalet
             </button>
@@ -55,10 +57,14 @@ const Navigation = () => {
                 <button
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors relative group"
+                  className={`text-sm font-medium transition-colors relative group ${
+                    isScrolled ? "text-foreground hover:text-primary" : "text-white hover:text-white/80"
+                  }`}
                 >
                   {link.label}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+                  <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
+                    isScrolled ? "bg-primary" : "bg-white"
+                  }`} />
                 </button>
               ))}
               <Button
@@ -72,7 +78,7 @@ const Navigation = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden text-foreground"
+              className={`md:hidden transition-colors ${isScrolled ? "text-foreground" : "text-white"}`}
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
