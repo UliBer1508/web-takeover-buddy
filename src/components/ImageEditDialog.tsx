@@ -92,10 +92,16 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
   useEffect(() => {
     if (image) {
       setTitle(image.title);
-      setCategoryId(image.category_id);
-      setSeasonId(image.season_id);
+      setCategoryId(image.category_id || "");
+      // Set season from image, or default to "Ganzjährig" if not set
+      if (image.season_id) {
+        setSeasonId(image.season_id);
+      } else {
+        const allSeason = seasons.find(s => s.name === "all");
+        if (allSeason) setSeasonId(allSeason.id);
+      }
     }
-  }, [image]);
+  }, [image, seasons]);
 
   // Update mutation
   const updateMutation = useMutation({
@@ -217,13 +223,11 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
                 <SelectValue placeholder="Jahreszeit auswählen" />
               </SelectTrigger>
               <SelectContent className="bg-background">
-                {seasons
-                  .filter((s) => s.name !== "all")
-                  .map((season) => (
-                    <SelectItem key={season.id} value={season.id}>
-                      {season.display_name}
-                    </SelectItem>
-                  ))}
+                {seasons.map((season) => (
+                  <SelectItem key={season.id} value={season.id}>
+                    {season.display_name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
