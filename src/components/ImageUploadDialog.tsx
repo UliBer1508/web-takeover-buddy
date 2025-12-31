@@ -46,6 +46,18 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const [isDragging, setIsDragging] = useState(false);
 
+  // Helper function to get translated category name with fallback
+  const getCategoryName = (cat: Category) => {
+    const translated = t(`gallery.categories.${cat.name}`);
+    return translated.startsWith('gallery.categories.') ? cat.display_name : translated;
+  };
+
+  // Helper function to get translated season name with fallback
+  const getSeasonName = (season: Season) => {
+    const translated = t(`gallery.seasons.${season.name}`);
+    return translated.startsWith('gallery.seasons.') ? season.display_name : translated;
+  };
+
   // Fetch categories from database
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
@@ -350,7 +362,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
               <SelectContent>
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
-                    {t(`gallery.categories.${cat.name}`)}
+                    {getCategoryName(cat)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -370,7 +382,7 @@ const ImageUploadDialog = ({ open, onOpenChange, onSuccess, houseId }: ImageUplo
               <SelectContent>
                 {seasons.map((s) => (
                   <SelectItem key={s.id} value={s.id}>
-                    {t(`gallery.seasons.${s.name}`)}
+                    {getSeasonName(s)}
                   </SelectItem>
                 ))}
               </SelectContent>

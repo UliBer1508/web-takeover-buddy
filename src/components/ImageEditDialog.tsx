@@ -64,6 +64,18 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
   const [categoryId, setCategoryId] = useState("");
   const [seasonId, setSeasonId] = useState("");
 
+  // Helper function to get translated category name with fallback
+  const getCategoryName = (cat: Category) => {
+    const translated = t(`gallery.categories.${cat.name}`);
+    return translated.startsWith('gallery.categories.') ? cat.display_name : translated;
+  };
+
+  // Helper function to get translated season name with fallback
+  const getSeasonName = (season: Season) => {
+    const translated = t(`gallery.seasons.${season.name}`);
+    return translated.startsWith('gallery.seasons.') ? season.display_name : translated;
+  };
+
   // Fetch categories
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
@@ -210,7 +222,7 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
               <SelectContent className="bg-background">
                 {categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.id}>
-                    {t(`gallery.categories.${cat.name}`)}
+                    {getCategoryName(cat)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -227,7 +239,7 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
               <SelectContent className="bg-background">
                 {seasons.map((season) => (
                   <SelectItem key={season.id} value={season.id}>
-                    {t(`gallery.seasons.${season.name}`)}
+                    {getSeasonName(season)}
                   </SelectItem>
                 ))}
               </SelectContent>
