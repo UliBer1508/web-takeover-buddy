@@ -51,7 +51,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
         console.log('Unique status values:', [...new Set(allBookings?.map(b => b.status))]);
         
         // Filter for confirmed/completed bookings (case-insensitive, German and English)
-        const confirmedStatuses = ['confirmed', 'completed', 'bestätigt', 'abgeschlossen', 'Confirmed', 'Completed'];
+        const confirmedStatuses = ['confirmed', 'checked_in', 'bestätigt', 'eingescheckt'];
         const bookings = allBookings?.filter(b => 
           confirmedStatuses.some(status => 
             b.status?.toLowerCase() === status.toLowerCase()
