@@ -235,7 +235,16 @@
     "welcomeBack": "Willkommen zurück!",
     "loginError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
     "fillAllFields": "Bitte füllen Sie alle Felder aus",
-    "backToHome": "Zurück zur Startseite"
+    "backToHome": "Zurück zur Startseite",
+    "register": "Registrieren",
+    "registerButton": "Registrieren",
+    "registering": "Wird registriert...",
+    "registerDescription": "Erstellen Sie Ihren Admin-Account",
+    "registerSuccess": "Registrierung erfolgreich",
+    "registerSuccessDesc": "Sie können sich jetzt anmelden",
+    "registerError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "noAccount": "Noch kein Konto? Registrieren",
+    "hasAccount": "Bereits registriert? Anmelden"
   },
   "testimonials": {
     "title": "Gästebewertungen",
