@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Calendar, Users, Mail, Phone, MessageSquare } from "lucide-react";
+import { Calendar, Users, Mail, Phone, MessageSquare, Pencil } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,9 +16,13 @@ import { externalSupabase } from "@/integrations/external-supabase/client";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
+import HouseSettingsDialog from "@/components/HouseSettingsDialog";
 
 // Default house ID (will be replaced by actual house from database)
 const DEFAULT_HOUSE_ID = "00000000-0000-0000-0000-000000000001";
+
+// Development mode - set to false when auth is implemented
+const DEV_MODE = true;
 
 const bookingSchema = z.object({
   name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein").max(100, "Name zu lang"),
@@ -60,6 +65,13 @@ interface House {
   name: string;
   max_guests: number;
   is_active?: boolean;
+  min_nights?: number | null;
+  check_in_time?: string | null;
+  check_out_time?: string | null;
+  cleaning_fee?: number | null;
+  price_winter?: number | null;
+  price_summer?: number | null;
+  price_offseason?: number | null;
 }
 
 interface BookingStatus {
@@ -70,6 +82,8 @@ interface BookingStatus {
 
 const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: BookingFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const canEdit = DEV_MODE || isAuthenticated;
   
   // Fetch houses from database
   const { data: houses = [] } = useQuery({
@@ -330,34 +344,40 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           {/* Pricing Info */}
           <div className="mt-12 grid sm:grid-cols-2 gap-6 animate-fade-in-up">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl">Preise</CardTitle>
+                {canEdit && selectedHouse && (
+                  <HouseSettingsDialog house={selectedHouse} />
+                )}
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Winter (Dez-März)</span>
-                  <span className="font-semibold">ab 450€ / Nacht</span>
+                  <span className="font-semibold">ab {selectedHouse?.price_winter ?? 450}€ / Nacht</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Sommer (Jun-Sep)</span>
-                  <span className="font-semibold">ab 380€ / Nacht</span>
+                  <span className="font-semibold">ab {selectedHouse?.price_summer ?? 380}€ / Nacht</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Nebensaison</span>
-                  <span className="font-semibold">ab 320€ / Nacht</span>
+                  <span className="font-semibold">ab {selectedHouse?.price_offseason ?? 320}€ / Nacht</span>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl">Wichtige Infos</CardTitle>
+                {canEdit && selectedHouse && (
+                  <HouseSettingsDialog house={selectedHouse} />
+                )}
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>✓ Mindestaufenthalt: 4 Nächte</p>
-                <p>✓ Check-in: ab 15:00 Uhr</p>
-                <p>✓ Check-out: bis 10:00 Uhr</p>
-                <p>✓ Endreinigung: 240€</p>
+                <p>✓ Mindestaufenthalt: {selectedHouse?.min_nights ?? 4} Nächte</p>
+                <p>✓ Check-in: ab {selectedHouse?.check_in_time ?? "15:00"} Uhr</p>
+                <p>✓ Check-out: bis {selectedHouse?.check_out_time ?? "10:00"} Uhr</p>
+                <p>✓ Endreinigung: {selectedHouse?.cleaning_fee ?? 240}€</p>
               </CardContent>
             </Card>
           </div>
