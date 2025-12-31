@@ -359,6 +359,7 @@ export type Database = {
           review_date: string
           sort_order: number | null
           text: string
+          text_en: string | null
           updated_at: string | null
         }
         Insert: {
@@ -371,6 +372,7 @@ export type Database = {
           review_date: string
           sort_order?: number | null
           text: string
+          text_en?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -383,6 +385,7 @@ export type Database = {
           review_date?: string
           sort_order?: number | null
           text?: string
+          text_en?: string | null
           updated_at?: string | null
         }
         Relationships: [

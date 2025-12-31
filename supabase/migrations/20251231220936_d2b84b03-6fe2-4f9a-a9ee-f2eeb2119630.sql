@@ -1,0 +1,1 @@
+ALTER TABLE public.reviews ADD COLUMN text_en TEXT;
