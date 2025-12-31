@@ -468,7 +468,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
             </p>
           </div>
 
-          <Card className="shadow-xl animate-scale-in">
+          <Card className="shadow-xl animate-scale-in overflow-hidden">
             <CardHeader>
               <CardTitle>{t('booking.checkAvailability')}</CardTitle>
               <CardDescription>
@@ -517,14 +517,14 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                     </FormItem>
                   )} />
 
-                  <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full">
                     <FormField control={form.control} name="checkIn" render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="min-w-0">
                         <FormLabel>{t('booking.checkIn')}</FormLabel>
                         <FormControl>
-                          <div className="relative">
-                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input type="date" className="pl-10" {...field} />
+                          <div className="relative min-w-0">
+                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+                            <Input type="date" className="pl-10 w-full" {...field} />
                           </div>
                         </FormControl>
                         {initialCheckIn && (
@@ -537,12 +537,12 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                     )} />
 
                     <FormField control={form.control} name="checkOut" render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="min-w-0">
                         <FormLabel>{t('booking.checkOut')}</FormLabel>
                         <FormControl>
-                          <div className="relative">
-                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input type="date" className="pl-10" {...field} />
+                          <div className="relative min-w-0">
+                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
+                            <Input type="date" className="pl-10 w-full" {...field} />
                           </div>
                         </FormControl>
                         {initialCheckOut && (
@@ -555,12 +555,12 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                     )} />
 
                     <FormField control={form.control} name="adults" render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="min-w-0">
                         <FormLabel>{t('booking.adults')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger>
-                              <Users className="h-4 w-4 mr-2" />
+                            <SelectTrigger className="w-full">
+                              <Users className="h-4 w-4 mr-2 flex-shrink-0" />
                               <SelectValue placeholder={t('booking.count')} />
                             </SelectTrigger>
                           </FormControl>
@@ -577,12 +577,12 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                     )} />
 
                     <FormField control={form.control} name="children" render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="min-w-0">
                         <FormLabel>{t('booking.children')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
-                            <SelectTrigger>
-                              <Users className="h-4 w-4 mr-2" />
+                            <SelectTrigger className="w-full">
+                              <Users className="h-4 w-4 mr-2 flex-shrink-0" />
                               <SelectValue placeholder={t('booking.count')} />
                             </SelectTrigger>
                           </FormControl>
