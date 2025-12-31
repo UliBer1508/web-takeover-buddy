@@ -41,6 +41,7 @@ interface GalleryImage {
   id: string;
   url: string;
   title: string;
+  title_en: string | null;
   category_id: string;
   season_id: string;
   house_id: string | null;
@@ -61,6 +62,7 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
+  const [titleEn, setTitleEn] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [seasonId, setSeasonId] = useState("");
 
@@ -106,6 +108,7 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
   useEffect(() => {
     if (image) {
       setTitle(image.title);
+      setTitleEn(image.title_en || "");
       setCategoryId(image.category_id || "");
       // Set season from image, or default to "Ganzjährig" if not set
       if (image.season_id) {
@@ -126,6 +129,7 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
         .from("gallery_images")
         .update({
           title,
+          title_en: titleEn || null,
           category_id: categoryId,
           season_id: seasonId,
         })
@@ -201,14 +205,25 @@ const ImageEditDialog = ({ open, onOpenChange, image, onSuccess }: ImageEditDial
             />
           </div>
 
-          {/* Title */}
+          {/* Title (German) */}
           <div className="space-y-2">
-            <Label htmlFor="title">{t('imageEdit.titleLabel')}</Label>
+            <Label htmlFor="title">{t('imageEdit.titleLabel')} (DE)</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={t('imageEdit.titlePlaceholder')}
+            />
+          </div>
+
+          {/* Title (English) */}
+          <div className="space-y-2">
+            <Label htmlFor="titleEn">{t('imageEdit.titleLabelEn')} (EN)</Label>
+            <Input
+              id="titleEn"
+              value={titleEn}
+              onChange={(e) => setTitleEn(e.target.value)}
+              placeholder={t('imageEdit.titlePlaceholderEn')}
             />
           </div>
 

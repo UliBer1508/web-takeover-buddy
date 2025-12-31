@@ -17,6 +17,7 @@ interface GalleryImage {
   id: string;
   url: string;
   title: string;
+  title_en: string | null;
   category_id: string | null;
   season_id: string;
   house_id: string | null;
@@ -38,7 +39,7 @@ interface GalleryProps {
 }
 
 const Gallery = ({ houseId }: GalleryProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const { isAdmin } = useAdmin();
   const canEdit = isAdmin;
@@ -53,6 +54,15 @@ const Gallery = ({ houseId }: GalleryProps) => {
   const getSeasonName = (season: { name: string; display_name: string }) => {
     const translated = t(`gallery.seasons.${season.name}`);
     return translated.startsWith('gallery.seasons.') ? season.display_name : translated;
+  };
+
+  // Helper function to get image title based on current language
+  const getImageTitle = (image: GalleryImage) => {
+    const currentLang = i18n.language;
+    if (currentLang === 'en' && image.title_en) {
+      return image.title_en;
+    }
+    return image.title;
   };
   
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -463,7 +473,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                     <p className="text-sm font-medium text-accent">{image.category ? getCategoryName(image.category) : t('gallery.noCategory')}</p>
-                    <p className="text-lg font-semibold">{image.title}</p>
+                    <p className="text-lg font-semibold">{getImageTitle(image)}</p>
                   </div>
                 </div>
               </div>
