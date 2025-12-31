@@ -276,7 +276,7 @@ const PromotionSettingsEmbedded = ({ houseId, houseName }: PromotionSettingsEmbe
         <p className="text-sm text-muted-foreground">{t('promotions.houseSpecific', { houseName })}</p>
 
         <div className="space-y-3">
-          <Button onClick={() => setShowForm(true)} variant="outline" size="sm" className="w-full gap-2">
+          <Button type="button" onClick={() => setShowForm(true)} variant="outline" size="sm" className="w-full gap-2">
             <Plus className="h-4 w-4" />
             {t('promotions.add')}
           </Button>
@@ -308,6 +308,7 @@ const PromotionSettingsEmbedded = ({ houseId, houseName }: PromotionSettingsEmbe
                         {!isGlobalPromo(promo) && (
                           <div className="flex gap-1 shrink-0">
                             <Button
+                              type="button"
                               variant="ghost"
                               size="icon"
                               className="h-6 w-6"
@@ -316,6 +317,7 @@ const PromotionSettingsEmbedded = ({ houseId, houseName }: PromotionSettingsEmbe
                               <Pencil className="h-3 w-3" />
                             </Button>
                             <Button
+                              type="button"
                               variant="ghost"
                               size="icon"
                               className="h-6 w-6 text-destructive hover:text-destructive"
