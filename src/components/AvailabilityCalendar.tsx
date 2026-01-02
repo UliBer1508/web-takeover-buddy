@@ -77,23 +77,22 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000) // Exponential Backoff
   });
 
-  // Calculate occupied dates and check-in-only dates
-  // Check-in-only = Tag an dem neue Gäste einchecken (15:00), OHNE dass vorher Gäste auschecken
-  // (vormittags komplett frei, nachmittags belegt)
-  const { occupiedDates, checkInOnlyDates } = useMemo(() => {
-    if (!data || data.length === 0) return { occupiedDates: [], checkInOnlyDates: [] };
+  // Calculate occupied dates and transition dates (check-in days)
+  // Transition = Tag an dem neue Gäste einchecken (15:00)
+  // - Reiner Check-in: vormittags komplett frei, ab 15:00 belegt
+  // - Gästewechsel: vormittags Check-out (bis 10:00), ab 15:00 neuer Check-in
+  const { occupiedDates, transitionDates } = useMemo(() => {
+    if (!data || data.length === 0) return { occupiedDates: [], transitionDates: [] };
     
     const occupied: Date[] = [];
     const checkIns = new Set<string>();
-    const checkOuts = new Set<string>();
     
     data.forEach(booking => {
       const start = new Date(booking.check_in);
       const end = new Date(booking.check_out);
       
-      // Check-in und Check-out Tage merken (als String für Set-Vergleich)
+      // Check-in Tage merken (als String für Set-Vergleich)
       checkIns.add(start.toDateString());
-      checkOuts.add(end.toDateString());
       
       // Belegte Tage: Tag NACH Check-in bis Tag VOR Check-out (Gäste übernachten, exklusive Check-in Tag selbst)
       let current = new Date(start);
@@ -104,16 +103,15 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
       }
     });
     
-    // Check-in-only Tage: Check-in OHNE Check-out am selben Tag
-    // (vormittags komplett frei bis 15:00, dann belegt)
-    const checkInOnly: Date[] = [];
+    // Übergangstage: ALLE Check-in-Tage bekommen diagonale Darstellung
+    // - Reiner Check-in: vormittags frei, ab 15:00 belegt
+    // - Gästewechsel: vormittags Check-out (bis 10:00), ab 15:00 neuer Check-in
+    const transitions: Date[] = [];
     checkIns.forEach(dateStr => {
-      if (!checkOuts.has(dateStr)) {
-        checkInOnly.push(new Date(dateStr));
-      }
+      transitions.push(new Date(dateStr));
     });
     
-    return { occupiedDates: occupied, checkInOnlyDates: checkInOnly };
+    return { occupiedDates: occupied, transitionDates: transitions };
   }, [data]);
 
   // Check if a date range is valid (no occupied dates in between)
@@ -172,11 +170,11 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
 
   const modifiers = { 
     occupied: occupiedDates,
-    checkInOnly: checkInOnlyDates 
+    transition: transitionDates 
   };
   const modifiersClassNames = {
     occupied: 'calendar-occupied',
-    checkInOnly: 'calendar-checkin-only',
+    transition: 'calendar-checkin-only',
   };
 
   return (
