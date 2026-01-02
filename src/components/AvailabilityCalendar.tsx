@@ -83,8 +83,8 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
   // - Gästewechsel: vormittags Check-out (bis 10:00), ab 15:00 neuer Check-in
   // CheckOut-only = Tag an dem Gäste auschecken OHNE neuen Check-in
   // - vormittags belegt (bis 10:00), nachmittags frei
-  const { occupiedDates, transitionDates, checkOutDates } = useMemo(() => {
-    if (!data || data.length === 0) return { occupiedDates: [], transitionDates: [], checkOutDates: [] };
+  const { occupiedDates, transitionDates, checkOutDates, changeoverDates } = useMemo(() => {
+    if (!data || data.length === 0) return { occupiedDates: [], transitionDates: [], checkOutDates: [], changeoverDates: [] };
     
     const occupied: Date[] = [];
     const checkIns = new Set<string>();
@@ -107,16 +107,23 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
       }
     });
     
-    // Übergangstage: ALLE Check-in-Tage bekommen diagonale Darstellung (weiß→rot)
-    // - Reiner Check-in: vormittags frei, ab 15:00 belegt
-    // - Gästewechsel: vormittags Check-out (bis 10:00), ab 15:00 neuer Check-in
-    const transitions: Date[] = [];
+    // Wechseltage: Check-out UND Check-in am selben Tag (beide Ecken rot)
+    const changeover: Date[] = [];
     checkIns.forEach(dateStr => {
-      transitions.push(new Date(dateStr));
+      if (checkOuts.has(dateStr)) {
+        changeover.push(new Date(dateStr));
+      }
     });
     
-    // Check-out-only Tage: Check-out OHNE neuen Check-in am selben Tag (rot→weiß)
-    // vormittags belegt (bis 10:00), nachmittags frei
+    // Reine Check-in-Tage: Check-in OHNE vorherigen Check-out (nur rechts rot)
+    const transitions: Date[] = [];
+    checkIns.forEach(dateStr => {
+      if (!checkOuts.has(dateStr)) {
+        transitions.push(new Date(dateStr));
+      }
+    });
+    
+    // Reine Check-out-Tage: Check-out OHNE neuen Check-in (nur links rot)
     const checkOutOnly: Date[] = [];
     checkOuts.forEach(dateStr => {
       if (!checkIns.has(dateStr)) {
@@ -124,7 +131,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
       }
     });
     
-    return { occupiedDates: occupied, transitionDates: transitions, checkOutDates: checkOutOnly };
+    return { occupiedDates: occupied, transitionDates: transitions, checkOutDates: checkOutOnly, changeoverDates: changeover };
   }, [data]);
 
   // Check if a date range is valid (no occupied dates in between)
@@ -184,12 +191,14 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
   const modifiers = { 
     occupied: occupiedDates,
     transition: transitionDates,
-    checkOut: checkOutDates
+    checkOut: checkOutDates,
+    changeover: changeoverDates
   };
   const modifiersClassNames = {
     occupied: 'calendar-occupied',
     transition: 'calendar-checkin-only',
     checkOut: 'calendar-checkout-only',
+    changeover: 'calendar-changeover',
   };
 
   return (
@@ -347,6 +356,29 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
+        /* Wechseltag: Beide Ecken rot, grauer Streifen in der Mitte */
+        /* Links-oben: Alter Gast (Check-out bis 10:00), Rechts-unten: Neuer Gast (Check-in ab 15:00) */
+        .calendar-premium .calendar-changeover {
+          background: linear-gradient(
+            135deg, 
+            #ef4444 0%, 
+            #ef4444 30%, 
+            #9ca3af 30%, 
+            #9ca3af 70%, 
+            #ef4444 70%, 
+            #ef4444 100%
+          ) !important;
+          color: hsl(var(--foreground)) !important;
+          font-weight: 700;
+          position: relative;
+          border: 2px solid #d1d5db;
+        }
+        
+        .calendar-premium .calendar-changeover:hover {
+          transform: scale(1.05);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
         .calendar-premium .rdp-day_today:not(.calendar-occupied) {
           border-color: hsl(var(--primary));
           background: hsl(var(--primary) / 0.1);
@@ -493,6 +525,13 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                     border: '2px solid #d1d5db'
                   }}></div>
                   <span className="font-medium sm:font-semibold text-xs sm:text-base">{t('calendar.checkOutDay')}</span>
+                </div>
+                <div className="flex items-center gap-1.5 sm:gap-3">
+                  <div className="w-5 h-5 sm:w-8 sm:h-8 rounded sm:rounded-lg shadow-sm relative overflow-hidden" style={{
+                    background: 'linear-gradient(135deg, #ef4444 0%, #ef4444 30%, #9ca3af 30%, #9ca3af 70%, #ef4444 70%, #ef4444 100%)',
+                    border: '2px solid #d1d5db'
+                  }}></div>
+                  <span className="font-medium sm:font-semibold text-xs sm:text-base">{t('calendar.changeoverDay')}</span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-3">
                   <div className="w-5 h-5 sm:w-8 sm:h-8 rounded sm:rounded-lg bg-muted opacity-30 shadow-sm"></div>
