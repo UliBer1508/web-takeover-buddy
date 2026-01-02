@@ -362,10 +362,10 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
           background: linear-gradient(
             135deg, 
             #ef4444 0%, 
-            #ef4444 30%, 
-            #9ca3af 30%, 
-            #9ca3af 70%, 
-            #ef4444 70%, 
+            #ef4444 42%, 
+            #9ca3af 42%, 
+            #9ca3af 58%, 
+            #ef4444 58%, 
             #ef4444 100%
           ) !important;
           color: hsl(var(--foreground)) !important;
@@ -528,7 +528,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-3">
                   <div className="w-5 h-5 sm:w-8 sm:h-8 rounded sm:rounded-lg shadow-sm relative overflow-hidden" style={{
-                    background: 'linear-gradient(135deg, #ef4444 0%, #ef4444 30%, #9ca3af 30%, #9ca3af 70%, #ef4444 70%, #ef4444 100%)',
+                    background: 'linear-gradient(135deg, #ef4444 0%, #ef4444 42%, #9ca3af 42%, #9ca3af 58%, #ef4444 58%, #ef4444 100%)',
                     border: '2px solid #d1d5db'
                   }}></div>
                   <span className="font-medium sm:font-semibold text-xs sm:text-base">{t('calendar.changeoverDay')}</span>
