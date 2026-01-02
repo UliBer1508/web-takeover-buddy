@@ -136,6 +136,7 @@
     "reset": "Reset",
     "available": "Available",
     "occupied": "Occupied",
+    "transition": "Changeover",
     "past": "Past",
     "confirmedBookings": "confirmed bookings",
     "confirmedBooking": "confirmed booking",
