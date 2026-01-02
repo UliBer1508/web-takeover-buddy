@@ -78,6 +78,8 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
   });
 
   // Calculate all occupied dates
+  // WICHTIG: Check-out-Tag wird NICHT als belegt markiert, da Gäste um 10:00 abreisen
+  // und neue Gäste um 15:00 einchecken können
   const occupiedDates = useMemo(() => {
     if (!data || data.length === 0) return [];
     
@@ -87,7 +89,8 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
       const end = new Date(booking.check_out);
       
       let current = new Date(start);
-      while (current <= end) {
+      // < statt <= : Check-out-Tag ist für neue Buchungen verfügbar
+      while (current < end) {
         dates.push(new Date(current));
         current.setDate(current.getDate() + 1);
       }
@@ -97,11 +100,13 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
   }, [data]);
 
   // Check if a date range is valid (no occupied dates in between)
+  // Prüft nur bis zum Tag VOR Check-out, da Check-out-Tag für neue Anreisen erlaubt ist
   const isRangeValid = (range: DateRange | undefined) => {
     if (!range?.from || !range?.to) return true;
     
     let current = new Date(range.from);
-    while (current <= range.to) {
+    // Prüfe nur bis zum Tag vor Check-out (< statt <=)
+    while (current < range.to) {
       if (occupiedDates.some(d => isSameDay(d, current))) {
         return false;
       }
