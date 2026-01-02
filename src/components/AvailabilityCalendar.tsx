@@ -427,8 +427,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                   disabled={{ before: new Date() }}
                   modifiers={modifiers}
                   modifiersClassNames={modifiersClassNames}
-                  showOutsideDays
-                  fixedWeeks
+                  showOutsideDays={false}
                   locale={dateLocale}
                 />
               </div>
