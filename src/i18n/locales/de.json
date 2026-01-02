@@ -137,6 +137,7 @@
     "available": "Verfügbar",
     "occupied": "Belegt",
     "checkInDay": "Anreise/Wechsel (ab 15:00)",
+    "checkOutDay": "Abreise (bis 10:00)",
     "past": "Vergangen",
     "confirmedBookings": "bestätigte Buchungen",
     "confirmedBooking": "bestätigte Buchung",

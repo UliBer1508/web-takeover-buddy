@@ -137,6 +137,7 @@
     "available": "Available",
     "occupied": "Occupied",
     "checkInDay": "Check-in/Changeover (from 3 PM)",
+    "checkOutDay": "Check-out (until 10 AM)",
     "past": "Past",
     "confirmedBookings": "confirmed bookings",
     "confirmedBooking": "confirmed booking",
