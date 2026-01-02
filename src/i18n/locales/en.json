@@ -136,7 +136,7 @@
     "reset": "Reset",
     "available": "Available",
     "occupied": "Occupied",
-    "transition": "Changeover",
+    "checkInDay": "Check-in day (from 3 PM)",
     "past": "Past",
     "confirmedBookings": "confirmed bookings",
     "confirmedBooking": "confirmed booking",

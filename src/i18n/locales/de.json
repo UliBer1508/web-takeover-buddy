@@ -136,7 +136,7 @@
     "reset": "Zurücksetzen",
     "available": "Verfügbar",
     "occupied": "Belegt",
-    "transition": "Wechseltag",
+    "checkInDay": "Anreisetag (ab 15:00)",
     "past": "Vergangen",
     "confirmedBookings": "bestätigte Buchungen",
     "confirmedBooking": "bestätigte Buchung",
