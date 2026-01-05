@@ -96,7 +96,11 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-primary-foreground/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/80">
-            <p>{t("footer.copyright")}</p>
+            <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+              <p>{t("footer.copyright")}</p>
+              <span className="hidden md:inline text-primary-foreground/60">•</span>
+              <span className="text-xs text-primary-foreground/60">v{__APP_VERSION__}</span>
+            </div>
             <div className="flex gap-6">
               <button className="hover:text-primary-foreground transition-colors">
                 {t("footer.imprint")}
