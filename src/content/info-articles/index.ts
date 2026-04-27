@@ -3,8 +3,22 @@ import type { InfoArticle, InfoTopic } from "./types";
 import tauernradweg from "./articles/tauernradweg";
 import alpeAdria from "./articles/alpe-adria";
 import pinzgauPongau from "./articles/pinzgau-pongau";
+import berndlalm from "./articles/berndlalm";
+import krimmlerWasserfaelle from "./articles/krimmler-wasserfaelle";
+import smaragdwegHabachtal from "./articles/smaragdweg-habachtal";
+import wildkogelGipfel from "./articles/wildkogel-gipfel";
+import kuersingerhuette from "./articles/kuersingerhuette";
 
-export const infoArticles: InfoArticle[] = [tauernradweg, alpeAdria, pinzgauPongau];
+export const infoArticles: InfoArticle[] = [
+  tauernradweg,
+  alpeAdria,
+  pinzgauPongau,
+  berndlalm,
+  krimmlerWasserfaelle,
+  smaragdwegHabachtal,
+  wildkogelGipfel,
+  kuersingerhuette,
+];
 
 export type TopicFilter = "all" | InfoTopic;
 

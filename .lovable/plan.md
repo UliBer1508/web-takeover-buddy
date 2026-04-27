@@ -1,65 +1,53 @@
-## Ziel
+## 5 Wanderrouten unter dem Tab „Wandern"
 
-Jede Info-Karte bekommt einen passenden, lizenzfreien Foto-Hintergrund, und der Detail-Dialog wird um eine kleine Bildergalerie (3–5 Bilder) ergänzt. Bildquelle: **Unsplash** (CC0 / Unsplash-Lizenz, kommerziell frei nutzbar, keine Attribution Pflicht).
+Alle Touren starten in oder unmittelbar bei **Neukirchen am Großvenediger** und sind so gewählt, dass für jeden Gast etwas dabei ist – von kinderwagentauglich bis hochalpin.
 
-## Auswahl der Bilder
+### 1. Wanderung zur Berndlalm (leicht, klassisch)
+- **Start:** Hopffeldboden / Obersulzbachtal-Parkplatz
+- **Länge / Höhenmeter / Dauer:** ca. 6 km · 350 hm · 2 h hin
+- **Charakter:** Familientauglich, breiter Almweg durch das wilde Obersulzbachtal, urige Alm mit Großvenediger-Blick
+- **Highlights:** Sulzbach-Wasserfälle · Berndlalm-Kapelle · einkehrfreundlich
+- **Quelle:** bergfex.at / outdooractive.com
 
-Pro Artikel ein Cover + 3–4 Galerie-Bilder, kuratiert nach Thema:
+### 2. Krimmler Wasserfälle – Wasserfallweg (leicht, ikonisch)
+- **Start:** Krimml, Eingang Wasserfälle
+- **Länge / Höhenmeter / Dauer:** ca. 4 km · 460 hm · 1,5–2 h
+- **Charakter:** Höchste Wasserfälle Österreichs (380 m), gut ausgebaute Aussichtskanzeln
+- **Highlights:** Drei Fallstufen · WasserWunderWelt · Tauernhaus oben als Einkehr
+- **Quelle:** wasserfaelle-krimml.at
 
-**Tauernradweg** (cycling)
-- Cover: Salzach-Flusslandschaft mit Alpen
-- Galerie: Krimmler Wasserfälle · Radfahrer am Fluss · Festung Hohenwerfen · Salzburg Altstadt
+### 3. Smaragdweg im Habachtal (leicht-mittel, für Familien & Schatzsucher)
+- **Start:** Habachtal-Parkplatz, Bramberg (Nachbarort)
+- **Länge / Höhenmeter / Dauer:** ca. 13 km · 500 hm · 4 h
+- **Charakter:** Themenweg entlang des Habachs durchs einzige Smaragdvorkommen Europas
+- **Highlights:** Mineralien-Stationen · Schaubergwerk-Atmosphäre · Thurnerkaser-Alm
+- **Quelle:** hohetauern.at / habachtal.at
 
-**Alpe-Adria-Radweg** (cycling)
-- Cover: Bergpass Richtung Süden / Alpenpanorama
-- Galerie: Großglockner-Region · Italienische Hügellandschaft · Adria-Küste bei Grado · Bahn-Begleitung
+### 4. Wildkogel-Gipfeltour (mittel, Panorama)
+- **Start:** Bergstation Smaragdbahn (Auffahrt empfohlen) oder Talstation Neukirchen
+- **Länge / Höhenmeter / Dauer:** ab Bergstation ca. 5 km · 350 hm · 2 h Rundweg
+- **Charakter:** 360°-Panorama auf Hohe Tauern und Großvenediger
+- **Highlights:** Gipfelkreuz Wildkogel (2.224 m) · Geißstein-Blick · Erlebniswelt am Berg
+- **Quelle:** wildkogel-arena.at
 
-**Pinzgau & Pongau** (culture / region)
-- Cover: Pinzgauer Bergpanorama
-- Galerie: Almlandschaft · Bergsee · Traditionelles Bauernhaus · Wanderweg
+### 5. Kürsingerhütte über Berndlalm (anspruchsvoll, hochalpin)
+- **Start:** Hopffeldboden / Obersulzbachtal
+- **Länge / Höhenmeter / Dauer:** ca. 13 km · 1.400 hm · 5–6 h hin
+- **Charakter:** Aufstieg zur Schutzhütte (2.558 m) am Großvenediger – für trittsichere, geübte Wanderer
+- **Highlights:** Großvenediger-Blick · Gletscherzunge · Übernachtung auf der Hütte möglich
+- **Quelle:** bergwelten.com / outdooractive.com
 
-Alle URLs werden direkt von `images.unsplash.com` geladen (mit `?w=…&q=80&auto=format` Parametern für Performance). Quellen werden im Code kommentiert dokumentiert.
+## Umsetzung
 
-## Technische Umsetzung
+Pro Tour ein TS-Modul wie bei den Radtouren (`src/content/info-articles/articles/`):
+- `topic: "hiking"`
+- `icon`: passend (`Footprints`, `Mountain`, `Droplet`/`Waves`, `Gem`, `Trees`)
+- `gradient`: Fallback-Farbverlauf
+- `coverImage` + 4-Bilder-Galerie (Unsplash, lizenzfrei)
+- `stats`: Länge · Höhenmeter · Dauer · Schwierigkeit
+- `sections`: Streckenverlauf · Highlights · Gut zu wissen
+- `externalUrl`: Link zur Originalquelle (bergfex / wildkogel-arena / hohetauern.at etc.)
 
-### 1. Datenmodell erweitern (`src/content/info-articles/types.ts`)
+Keine Datenbankänderung nötig – die statische TS-Struktur bleibt erhalten (3. Normalform der DB unangetastet). Die Karten erscheinen automatisch unter dem **Wandern**-Tab in der Infogalerie und der Counter springt von 0 auf 5.
 
-```ts
-export interface InfoArticle {
-  // ... bestehend
-  coverImage: string;           // Unsplash URL für Karten-Hintergrund + Dialog-Header
-  gallery: {
-    url: string;
-    caption: LocalizedText;
-  }[];                          // 3-5 Bilder pro Artikel
-}
-```
-
-`gradient` und `icon` bleiben als Fallback erhalten (z. B. wenn ein Bild nicht lädt → `onError` zeigt Gradient).
-
-### 2. Bilder in jeden Artikel ergänzen
-`tauernradweg.ts`, `alpe-adria.ts`, `pinzgau-pongau.ts` bekommen jeweils `coverImage` und `gallery: [...]` mit kuratierten Unsplash-URLs und bilingualen Captions.
-
-### 3. `InfoGallery.tsx` – Karten mit Bildhintergrund
-- `<img src={article.coverImage} ... className="absolute inset-0 w-full h-full object-cover" />` statt Gradient-Wrapper.
-- Icon klein oben links als Badge auf dem Bild (mit Backdrop-Blur), Topic-Label + Titel + Kurzbeschreibung im unteren Verlauf wie bisher.
-- `loading="lazy"` für Performance.
-- Hover: bestehender Scale-Effekt bleibt, wirkt mit Foto noch stärker.
-
-### 4. `InfoArticleDialog.tsx` – Header-Bild + Mini-Galerie
-- Oben: großes Cover-Bild (`aspect-[16/9]`) mit Titel-Overlay.
-- Nach den Sections, vor dem External-Link: neuer Block "Impressionen" mit 3-spaltigem Grid (mobil 2 Spalten) der Galerie-Bilder; Klick auf ein Bild öffnet es im bestehenden Lightbox-Stil (kleine eigene Lightbox im Dialog).
-- Captions als Bildunterschrift sichtbar (klein, muted).
-
-### 5. i18n-Ergänzung
-Neue Keys in `de.json` / `en.json`:
-- `infoGallery.dialog.impressions` → "Impressionen" / "Impressions"
-- `infoGallery.dialog.imageSource` → "Bilder: Unsplash" / "Images: Unsplash"
-
-### 6. Datenbank
-Keine Änderungen — Inhalte bleiben statische TS-Module (3. Normalform der DB unangetastet).
-
-## Was bleibt unverändert
-- Toggle Bilder/Infos, Themen-Filter, externe Links zu offiziellen Seiten.
-- Bestehende Bildergalerie und Booking-Flow.
-- Komplette Bilingualität.
+Sind die fünf Touren so passend? Falls du andere Routen bevorzugst (z. B. Postalm, Thüringer Hütte, Untersulzbachtal mit Wasserfall, Tauernhöhenweg-Etappe), einfach sagen – dann tauschen wir aus, bevor ich umsetze.
