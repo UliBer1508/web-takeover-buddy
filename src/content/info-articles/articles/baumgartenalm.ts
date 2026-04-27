@@ -1,8 +1,7 @@
 import { Flower2 } from "lucide-react";
 import type { InfoArticle } from "../types";
-// Real photos from Wikimedia Commons – authentic Pinzgau alpine pastures.
-// No specific Baumgartenalm photo is freely licensed; we use representative
-// regional alm images: Trattenbachalm (Pinzgau) and Wildkogel from Hollersbach.
+// Real photo of Baumgartenalm (provided by user) plus regional Pinzgau imagery.
+import baumgartenalmCover from "@/assets/hiking/baumgartenalm-cover.jpg";
 import trattenbachalm from "@/assets/hiking/trattenbachalm.jpg";
 import wildkogelView from "@/assets/hiking/wildkogel-view.jpg";
 
@@ -11,11 +10,15 @@ const article: InfoArticle = {
   topic: "hiking",
   icon: Flower2,
   gradient: "from-wood to-primary",
-  coverImage: trattenbachalm,
+  coverImage: baumgartenalmCover,
   gallery: [
     {
+      url: baumgartenalmCover,
+      caption: { de: "Einkehr auf der Baumgartenalm – Pinzgauer Bierkäse & Almjause", en: "Stop at Baumgartenalm – Pinzgau beer cheese & alpine snack" },
+    },
+    {
       url: trattenbachalm,
-      caption: { de: "Pinzgauer Almlandschaft (Trattenbachalm)", en: "Pinzgau alpine landscape (Trattenbachalm)" },
+      caption: { de: "Pinzgauer Almlandschaft", en: "Pinzgau alpine landscape" },
     },
     {
       url: wildkogelView,
