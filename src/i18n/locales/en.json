@@ -77,6 +77,7 @@
     "title": "Guest Reviews",
     "subtitle": "What our guests say about their stay",
     "newReview": "New Review",
+    "addReview": "Write Review",
     "readMore": "Read More",
     "showLess": "Show Less",
     "noReviews": "No reviews yet.",
@@ -275,16 +276,6 @@
     "noAccount": "No account yet? Register",
     "hasAccount": "Already registered? Sign In"
   },
-  "testimonials": {
-    "title": "Guest Reviews",
-    "subtitle": "What our guests say about their stay",
-    "newReview": "New Review",
-    "addReview": "Write Review",
-    "readMore": "Read More",
-    "showLess": "Show Less",
-    "noReviews": "No reviews yet.",
-    "hidden": "Hidden"
-  },
   "reviewEdit": {
     "title": "Edit Review",
     "name": "Name",
@@ -458,5 +449,19 @@
     "deleteConfirmDesc": "This action cannot be undone.",
     "appliedDiscount": "Discount",
     "originalPrice": "Original price"
+  },
+  "infoGallery": {
+    "title": "Info Gallery",
+    "subtitle": "Tips and official sources for the region – from cycle paths to culture.",
+    "source": "Source",
+    "visitOfficial": "Visit official website",
+    "comingSoon": "Coming soon",
+    "topics": {
+      "all": "All",
+      "cycling": "Cycling",
+      "hiking": "Hiking",
+      "skiing": "Skiing",
+      "culture": "Culture"
+    }
   }
 }

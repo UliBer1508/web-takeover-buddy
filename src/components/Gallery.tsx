@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ImageUploadDialog from "./ImageUploadDialog";
 import ImageEditDialog from "./ImageEditDialog";
+import InfoGallery from "./InfoGallery";
 import { Badge } from "@/components/ui/badge";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useTranslation } from "react-i18next";
@@ -480,6 +481,8 @@ const Gallery = ({ houseId }: GalleryProps) => {
             ))}
           </div>
         )}
+
+        <InfoGallery />
       </div>
 
       {/* Upload Dialog */}

@@ -77,6 +77,7 @@
     "title": "Gästebewertungen",
     "subtitle": "Was unsere Gäste über ihren Aufenthalt sagen",
     "newReview": "Neue Bewertung",
+    "addReview": "Bewertung schreiben",
     "readMore": "Weiterlesen",
     "showLess": "Weniger anzeigen",
     "noReviews": "Noch keine Bewertungen vorhanden.",
@@ -275,16 +276,6 @@
     "noAccount": "Noch kein Konto? Registrieren",
     "hasAccount": "Bereits registriert? Anmelden"
   },
-  "testimonials": {
-    "title": "Gästebewertungen",
-    "subtitle": "Was unsere Gäste über ihren Aufenthalt sagen",
-    "newReview": "Neue Bewertung",
-    "addReview": "Bewertung schreiben",
-    "readMore": "Weiterlesen",
-    "showLess": "Weniger anzeigen",
-    "noReviews": "Noch keine Bewertungen vorhanden.",
-    "hidden": "Ausgeblendet"
-  },
   "reviewEdit": {
     "title": "Bewertung bearbeiten",
     "name": "Name",
@@ -458,5 +449,19 @@
     "deleteConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
     "appliedDiscount": "Rabatt",
     "originalPrice": "Originalpreis"
+  },
+  "infoGallery": {
+    "title": "Info-Galerie",
+    "subtitle": "Tipps und offizielle Quellen rund um die Region – von Radwegen bis Kultur.",
+    "source": "Quelle",
+    "visitOfficial": "Zur offiziellen Webseite",
+    "comingSoon": "Bald verfügbar",
+    "topics": {
+      "all": "Alle",
+      "cycling": "Radwege",
+      "hiking": "Wandern",
+      "skiing": "Ski",
+      "culture": "Kultur"
+    }
   }
 }
