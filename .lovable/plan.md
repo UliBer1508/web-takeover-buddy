@@ -1,52 +1,40 @@
-# Info-Galerie mit verlinkten Tour-Karten
+# Info-Galerie umsetzen
 
-Neue Sektion **Info Galerie** unterhalb der Bildergalerie – im exakt gleichen Layout (Themen-Tabs + Karten-Grid + Detail-Dialog wie das Lightbox-Pattern).
+Setze den bereits erstellten Plan (`.lovable/plan.md`) vollständig um. Inhalte und Datentypen sind bereits angelegt – jetzt folgen UI-Komponenten, Integration und Übersetzungen.
 
-## Erste drei Karten (Thema „Radwege")
+## Schritte
 
-| Karte | Quelle (externer Link) |
-|---|---|
-| Tauernradweg | tauernradweg.at |
-| Alpe-Adria-Radweg | alpe-adria-radweg.com |
-| Radregion Pinzgau & Pongau | salzburgerland.com |
+1. **Content-Module finalisieren** (`src/content/info-articles/`)
+   - Sicherstellen, dass `tauernradweg.ts`, `alpe-adria.ts`, `pinzgau-pongau.ts` vollständige Daten enthalten (Eckdaten, Sections, Bullets, externer Link, Quellen-Attribution).
+   - `index.ts` exportiert Artikel-Liste + Topic-Definition (`all | cycling | hiking | skiing | culture`).
 
-Jede Karte zeigt eigene Kurzbeschreibung, Eckdaten (km, Etappen, Schwierigkeit), Highlight-Liste und einen prominenten Button **„Zur offiziellen Webseite ↗"** mit `target="_blank" rel="noopener noreferrer"`. Quellen-Attribution sichtbar im Dialog.
+2. **`InfoArticleDialog.tsx`** (neu)
+   - Basiert auf `Dialog` (`max-w-3xl`, scrollbarer Body).
+   - Header: Gradient-Cover mit großem Lucide-Icon, Titel, Untertitel.
+   - Body: Stat-Badges (km, Etappen, Schwierigkeit), Sections (Heading + Text/Bullets).
+   - Footer: prominenter Button „Zur offiziellen Webseite ↗" (`target="_blank" rel="noopener noreferrer"`) + sichtbare Quellen-Attribution.
 
-## Themen-Tabs
+3. **`InfoGallery.tsx`** (neu)
+   - Topic-Tabs als Buttons (gleiches Pattern wie bestehende Bildergalerie: `variant="default"|"outline"`, Count-Badge).
+   - Grid `grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4`, Karten `aspect-[4/3]` mit Hover-Zoom + Gradient-Overlay.
+   - Karte zeigt Icon, Titel, Kurzbeschreibung; Klick öffnet `InfoArticleDialog`.
+   - Leere Topics zeigen „Bald verfügbar".
 
-`Alle | Radwege | Wandern | Ski | Kultur` – Phase 1 nur „Radwege" befüllt; leere Tabs zeigen „Bald verfügbar".
+4. **Integration in `Gallery.tsx`**
+   - `<InfoGallery />` am Ende der Sektion `#galerie` einfügen, mit eigenem Sub-Header (Titel + Untertitel über i18n).
 
-## Neue Dateien
+5. **i18n** (`src/i18n/locales/de.json` + `en.json`)
+   - Neuer Block `infoGallery`: Section-Titel, Subtitle, Topic-Labels, Stats-Labels, „Bald verfügbar", „Zur offiziellen Webseite", „Quelle".
+   - Artikel-Inhalte (Titel, Untertitel, alle Sections + Bullets) für DE und EN.
 
-- `src/content/info-articles/types.ts` – TypeScript-Typen
-- `src/content/info-articles/articles/tauernradweg.ts`
-- `src/content/info-articles/articles/alpe-adria.ts`
-- `src/content/info-articles/articles/pinzgau-pongau.ts`
-- `src/content/info-articles/index.ts` – Registry + Topic-Liste
-- `src/components/InfoGallery.tsx` – Tabs + Grid (gleiches Pattern wie `Gallery.tsx`)
-- `src/components/InfoArticleDialog.tsx` – Detail-Dialog
+## Technische Hinweise
 
-## Geänderte Dateien
+- Keine externen Bilder → keine Lizenzprobleme. Cover ist Tailwind-Gradient + Lucide-Icon.
+- Alle Farben über semantische Tokens (`--primary`, `--accent`, `--wood`, `--mountain-blue`).
+- Datenmodell bleibt Phase 1 (statische TS-Module, mehrsprachig via `useTranslation`). Eine spätere Migration auf normalisierte DB-Tabellen (3NF: `info_topics`, `info_articles`, `info_article_sections`) ist im Plan dokumentiert, aber nicht Teil dieser Umsetzung.
 
-- `src/components/Gallery.tsx` – `<InfoGallery />` am Ende der Sektion `#galerie` einbinden
-- `src/i18n/locales/de.json` + `en.json` – neuer `infoGallery`-Block (Titel, Untertitel, Topics, Stats-Labels, Artikel-Inhalte mit Sections + Bullets)
-
-## Layout & Design
-
-- Identische Tab-Buttons (`variant="default"|"outline"`, Count-Badge)
-- Grid: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4`
-- Karten: `aspect-[4/3]`, abgerundete Ecken, Hover-Zoom, Gradient-Overlay
-- Cover als gestalteter Gradient-Hintergrund mit großem Lucide-Icon (kein fremdes Bildmaterial → keine Lizenzprobleme)
-- Alle Farben über semantische Tokens (`--primary`, `--accent`, `--wood`, `--mountain-blue`)
-- Detail-Dialog im Stil des Lightbox: `max-w-3xl`, scrollbarer Body, Header mit Cover-Gradient
-
-## Datenmodell
-
-Phase 1: Statisch als TS-Module (volle Designkontrolle, mehrsprachig via `useTranslation`).
-Phase 2 (optional, bei Bedarf): Migration auf normalisierte Tabellen `info_topics` (Stammdaten) + `info_articles` (mit `topic_id` FK) + `info_article_sections` – 3NF, vollständig relational.
-
-## Out of Scope (Phase 1)
+## Out of Scope
 
 - Admin-UI zum Bearbeiten der Artikel
-- Eigenes Cover-Foto-Upload (kommt später, falls gewünscht)
-- Inhalte für Wandern/Ski/Kultur (Tabs nur als Vorschau)
+- Eigene Cover-Fotos
+- Inhalte für Wandern / Ski / Kultur (Tabs nur als Vorschau mit „Bald verfügbar")
