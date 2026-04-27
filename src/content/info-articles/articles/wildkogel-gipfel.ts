@@ -1,32 +1,25 @@
 import { Mountain } from "lucide-react";
 import type { InfoArticle } from "../types";
-
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Real photos from Wikimedia Commons (CC BY-SA)
+// Wildkogel-Gipfelkreuz by Erwinnindl (CC BY-SA 3.0)
+// Wildkogel from Hollersbach by Herzi Pinki (CC BY-SA 4.0)
+import wildkogelGipfel from "@/assets/hiking/wildkogel-gipfel.jpg";
+import wildkogelView from "@/assets/hiking/wildkogel-view.jpg";
 
 const article: InfoArticle = {
   id: "wildkogel-gipfel",
   topic: "hiking",
   icon: Mountain,
   gradient: "from-mountain-blue to-accent",
-  coverImage: UNSPLASH("photo-1519681393784-d120267933ba", 1600),
+  coverImage: wildkogelGipfel,
   gallery: [
     {
-      url: UNSPLASH("photo-1469474968028-56623f02e42e"),
-      caption: { de: "Sonniger Gipfelblick über den Hohen Tauern", en: "Sunny summit view across the Hohe Tauern" },
+      url: wildkogelGipfel,
+      caption: { de: "Gipfelkreuz am Wildkogel auf 2.224 m", en: "Summit cross at the Wildkogel (2,224 m)" },
     },
     {
-      url: UNSPLASH("photo-1470770841072-f978cf4d019e"),
-      caption: { de: "Bergsee am Wildkogel-Höhenweg", en: "Mountain lake along the Wildkogel high trail" },
-    },
-    {
-      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
-      caption: { de: "Almenrausch und Bergblumen", en: "Alpenrose and mountain flowers" },
-    },
-    {
-      url: UNSPLASH("photo-1464822759023-fed622ff2c3b"),
-      caption: { de: "Großvenediger im Hintergrund", en: "Großvenediger in the distance" },
+      url: wildkogelView,
+      caption: { de: "Wildkogel-Massiv vom Tal aus gesehen", en: "Wildkogel massif seen from the valley" },
     },
   ],
   title: { de: "Wildkogel-Gipfeltour", en: "Wildkogel Summit Hike" },

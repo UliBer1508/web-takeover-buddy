@@ -1,32 +1,25 @@
 import { Trees } from "lucide-react";
 import type { InfoArticle } from "../types";
-
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Real photos from Wikimedia Commons – no specific Wildalm photo is freely
+// licensed, so we use authentic regional images: Berndlalm (Obersulzbachtal,
+// Whgler CC BY-SA) and Trattenbachalm (Woelle ffm CC BY-SA 3.0).
+import berndlalmView from "@/assets/hiking/berndlalm-view.jpg";
+import trattenbachalm from "@/assets/hiking/trattenbachalm.jpg";
 
 const article: InfoArticle = {
   id: "wildalm",
   topic: "hiking",
   icon: Trees,
   gradient: "from-primary to-wood",
-  coverImage: UNSPLASH("photo-1502082553048-f009c37129b9", 1600),
+  coverImage: berndlalmView,
   gallery: [
     {
-      url: UNSPLASH("photo-1506905925346-21bda4d32df4"),
-      caption: { de: "Klarer Bergbach im Untersulzbachtal", en: "Clear mountain stream in the Untersulzbach Valley" },
+      url: berndlalmView,
+      caption: { de: "Sulzbachtal – typische Almlandschaft des Nationalparks", en: "Sulzbach Valley – typical alpine landscape of the national park" },
     },
     {
-      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
-      caption: { de: "Blühende Almwiesen", en: "Blooming alpine meadows" },
-    },
-    {
-      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
-      caption: { de: "Urige Wildalm mit Sonnenterrasse", en: "Rustic Wildalm with sun terrace" },
-    },
-    {
-      url: UNSPLASH("photo-1464822759023-fed622ff2c3b"),
-      caption: { de: "Hochalpine Kulisse rund um die Alm", en: "High alpine backdrop around the alm" },
+      url: trattenbachalm,
+      caption: { de: "Urige Pinzgauer Alm (Trattenbachalm)", en: "Rustic Pinzgau alm (Trattenbachalm)" },
     },
   ],
   title: { de: "Wildalm im Untersulzbachtal", en: "Wildalm in the Untersulzbach Valley" },

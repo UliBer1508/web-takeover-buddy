@@ -1,32 +1,25 @@
 import { Flower2 } from "lucide-react";
 import type { InfoArticle } from "../types";
-
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Real photos from Wikimedia Commons – authentic Pinzgau alpine pastures.
+// No specific Baumgartenalm photo is freely licensed; we use representative
+// regional alm images: Trattenbachalm (Pinzgau) and Wildkogel from Hollersbach.
+import trattenbachalm from "@/assets/hiking/trattenbachalm.jpg";
+import wildkogelView from "@/assets/hiking/wildkogel-view.jpg";
 
 const article: InfoArticle = {
   id: "baumgartenalm",
   topic: "hiking",
   icon: Flower2,
   gradient: "from-wood to-primary",
-  coverImage: UNSPLASH("photo-1486870591958-9b9d0d1dda99", 1600),
+  coverImage: trattenbachalm,
   gallery: [
     {
-      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
-      caption: { de: "Blühende Almwiesen rund um die Hütte", en: "Blooming alpine meadows around the hut" },
+      url: trattenbachalm,
+      caption: { de: "Pinzgauer Almlandschaft (Trattenbachalm)", en: "Pinzgau alpine landscape (Trattenbachalm)" },
     },
     {
-      url: UNSPLASH("photo-1502082553048-f009c37129b9"),
-      caption: { de: "Schattige Waldpassage am Aufstieg", en: "Shady forest section on the way up" },
-    },
-    {
-      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
-      caption: { de: "Almpanorama mit Bramberg im Tal", en: "Alm panorama with Bramberg in the valley" },
-    },
-    {
-      url: UNSPLASH("photo-1464822759023-fed622ff2c3b"),
-      caption: { de: "Bergblick Richtung Hohe Tauern", en: "Mountain view towards the Hohe Tauern" },
+      url: wildkogelView,
+      caption: { de: "Wildkogel-Massiv über Bramberg", en: "Wildkogel massif above Bramberg" },
     },
   ],
   title: { de: "Baumgartenalm Bramberg", en: "Baumgartenalm in Bramberg" },

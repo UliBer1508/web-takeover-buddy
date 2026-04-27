@@ -1,32 +1,19 @@
 import { Mountain } from "lucide-react";
 import type { InfoArticle } from "../types";
-
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Real photo from Wikimedia Commons (CC BY-SA 4.0)
+// Ciclovia Alpe Adria in spring 2016 by Mat_Iskrz
+import alpeAdria from "@/assets/bike-routes/alpe-adria-real.jpg";
 
 const article: InfoArticle = {
   id: "alpe-adria",
   topic: "cycling",
   icon: Mountain,
   gradient: "from-accent to-wood",
-  coverImage: UNSPLASH("photo-1571068316344-75bc76f77890", 1600),
+  coverImage: alpeAdria,
   gallery: [
     {
-      url: UNSPLASH("photo-1505705694340-019e1e335916"),
-      caption: { de: "Rennrad-Etappe über sonnige Alpenpässe", en: "Road bike stage across sunny alpine passes" },
-    },
-    {
-      url: UNSPLASH("photo-1470770841072-f978cf4d019e"),
-      caption: { de: "Glasklarer Bergsee in Kärnten", en: "Crystal-clear mountain lake in Carinthia" },
-    },
-    {
-      url: UNSPLASH("photo-1518609878373-06d740f60d8b"),
-      caption: { de: "Eindrucksvolle Brückenpassage mit Bergblick", en: "Impressive bridge crossing with mountain view" },
-    },
-    {
-      url: UNSPLASH("photo-1469474968028-56623f02e42e"),
-      caption: { de: "Sonniger Süden – Ankunft an der Adria", en: "Sunny south – arriving at the Adriatic" },
+      url: alpeAdria,
+      caption: { de: "Ciclovia Alpe Adria im Frühling", en: "Ciclovia Alpe Adria in spring" },
     },
   ],
   title: { de: "Alpe-Adria-Radweg", en: "Alpe Adria Cycle Path" },
