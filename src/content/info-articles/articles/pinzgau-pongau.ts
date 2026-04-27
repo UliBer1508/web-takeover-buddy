@@ -1,33 +1,22 @@
 import { MapPin } from "lucide-react";
 import type { InfoArticle } from "../types";
+import cover from "@/assets/bike-routes/pinzgau-pongau-cover.jpg";
+import g1 from "@/assets/bike-routes/pinzgau-pongau-g1.jpg";
+import g2 from "@/assets/bike-routes/pinzgau-pongau-g2.jpg";
+import g3 from "@/assets/bike-routes/pinzgau-pongau-g3.jpg";
 
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Image source: Wikimedia Commons (CC BY-SA) - authentic Pinzgau region photography
 
 const article: InfoArticle = {
   id: "pinzgau-pongau",
   topic: "cycling",
   icon: MapPin,
   gradient: "from-primary to-accent",
-  coverImage: UNSPLASH("photo-1571068316344-75bc76f77890", 1600),
+  coverImage: cover,
   gallery: [
-    {
-      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
-      caption: { de: "Pinzgauer Bergdorf im Sonnenlicht", en: "Pinzgau mountain village in the sunlight" },
-    },
-    {
-      url: UNSPLASH("photo-1470770841072-f978cf4d019e"),
-      caption: { de: "Glasklarer Bergsee in der Region", en: "Crystal-clear mountain lake in the region" },
-    },
-    {
-      url: UNSPLASH("photo-1517649763962-0c623066013b"),
-      caption: { de: "Mit dem Rad durch sonnige Täler", en: "Cycling through sunny valleys" },
-    },
-    {
-      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
-      caption: { de: "Blühende Almwiesen entlang der Strecke", en: "Blooming alpine meadows along the route" },
-    },
+    { url: g1, caption: { de: "Salzach bei Bramberg am Wildkogel", en: "Salzach river near Bramberg am Wildkogel" } },
+    { url: g2, caption: { de: "Wildkogel-Massiv über Hollersbach", en: "Wildkogel massif above Hollersbach" } },
+    { url: g3, caption: { de: "Almlandschaft bei Neukirchen am Großvenediger", en: "Alpine pasture near Neukirchen am Großvenediger" } },
   ],
   title: { de: "Radregion Pinzgau & Pongau", en: "Pinzgau & Pongau Cycling Region" },
   subtitle: {

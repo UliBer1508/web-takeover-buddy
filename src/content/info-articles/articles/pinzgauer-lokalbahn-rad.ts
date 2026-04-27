@@ -1,20 +1,22 @@
 import { Train } from "lucide-react";
 import type { InfoArticle } from "../types";
+import cover from "@/assets/bike-routes/lokalbahn-cover.jpg";
+import g1 from "@/assets/bike-routes/lokalbahn-g1.jpg";
+import g2 from "@/assets/bike-routes/lokalbahn-g2.jpg";
+import g3 from "@/assets/bike-routes/lokalbahn-g3.jpg";
 
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Image source: Wikimedia Commons (CC BY-SA) - authentic Pinzgau Local Railway region
 
 const article: InfoArticle = {
   id: "pinzgauer-lokalbahn-rad",
   topic: "cycling",
   icon: Train,
   gradient: "from-mountain-blue to-accent",
-  coverImage: UNSPLASH("photo-1517649763962-0c623066013b", 1600),
+  coverImage: cover,
   gallery: [
-    { url: UNSPLASH("photo-1571333250630-f0230c320b6d"), caption: { de: "Genussradeln entlang der Salzach", en: "Leisure cycling along the Salzach" } },
-    { url: UNSPLASH("photo-1502784444187-359ac186c5bb"), caption: { de: "Pinzgauer Bergdörfer am Wegesrand", en: "Pinzgau mountain villages along the way" } },
-    { url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"), caption: { de: "Sonnige Almwiesen im Salzachtal", en: "Sunny alpine meadows in the Salzach Valley" } },
-    { url: UNSPLASH("photo-1464822759023-fed622ff2c3b"), caption: { de: "Bergpanorama auf der Genussetappe", en: "Mountain panorama on the leisure stage" } },
+    { url: g1, caption: { de: "Landschaft am Bahnhof Krimml", en: "Landscape near Krimml station" } },
+    { url: g2, caption: { de: "Lokalbahnstrecke bei Neukirchen am Großvenediger", en: "Local railway line near Neukirchen am Großvenediger" } },
+    { url: g3, caption: { de: "Salzach bei Bramberg am Wildkogel", en: "Salzach river near Bramberg am Wildkogel" } },
   ],
   title: { de: "Pinzgauer Lokalbahn-Tour", en: "Pinzgau Local Train Cycling Tour" },
   subtitle: { de: "Mit der Schmalspurbahn hin – entspannt zurückradeln", en: "Take the narrow-gauge train one way – cycle back at your own pace" },

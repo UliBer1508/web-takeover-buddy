@@ -1,20 +1,22 @@
 import { Bike } from "lucide-react";
 import type { InfoArticle } from "../types";
+import cover from "@/assets/bike-routes/bike-trail-cover.jpg";
+import g1 from "@/assets/bike-routes/bike-trail-g1.jpg";
+import g2 from "@/assets/bike-routes/bike-trail-g2.jpg";
+import g3 from "@/assets/bike-routes/bike-trail-g3.jpg";
 
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Image source: Wikimedia Commons (CC BY-SA) - authentic Obersulzbachtal photography
 
 const article: InfoArticle = {
   id: "hohe-tauern-bike-trail-et12",
   topic: "cycling",
   icon: Bike,
   gradient: "from-primary to-mountain-blue",
-  coverImage: UNSPLASH("photo-1505705694340-019e1e335916", 1600),
+  coverImage: cover,
   gallery: [
-    { url: UNSPLASH("photo-1541625602330-2277a4c46182"), caption: { de: "Sportliche MTB-Etappe ab Neukirchen", en: "Sporty MTB stage starting in Neukirchen" } },
-    { url: UNSPLASH("photo-1502082553048-f009c37129b9"), caption: { de: "Trail durch lichten Bergwald", en: "Trail through bright mountain forest" } },
-    { url: UNSPLASH("photo-1506905925346-21bda4d32df4"), caption: { de: "Wilder Sulzbach im Obersulzbachtal", en: "Wild Sulzbach river in the Obersulzbach Valley" } },
-    { url: UNSPLASH("photo-1464822759023-fed622ff2c3b"), caption: { de: "Etappenziel Wald im Pinzgau", en: "Stage destination Wald im Pinzgau" } },
+    { url: g1, caption: { de: "Hinteres Obersulzbachtal mit Großvenediger-Massiv", en: "Inner Obersulzbach valley with Großvenediger massif" } },
+    { url: g2, caption: { de: "Blick ins Obersulzbachtal von der Postalm", en: "View into the Obersulzbach valley from the Postalm" } },
+    { url: g3, caption: { de: "Schiedhofalm im Obersulzbachtal", en: "Schiedhofalm in the Obersulzbach valley" } },
   ],
   title: { de: "Hohe Tauern Bike Trail – Etappe 12", en: "Hohe Tauern Bike Trail – Stage 12" },
   subtitle: { de: "Anspruchsvolle MTB-Etappe direkt ab Neukirchen", en: "Challenging MTB stage starting right in Neukirchen" },
