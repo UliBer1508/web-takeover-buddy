@@ -1,5 +1,6 @@
 import { Footprints } from "lucide-react";
 import type { InfoArticle } from "../types";
+import berndlalmCover from "@/assets/hiking/berndlalm-cover.jpg";
 
 // Image source: Unsplash (free to use under the Unsplash License)
 const UNSPLASH = (id: string, w = 1200) =>
@@ -10,7 +11,7 @@ const article: InfoArticle = {
   topic: "hiking",
   icon: Footprints,
   gradient: "from-wood to-accent",
-  coverImage: UNSPLASH("photo-1418065460487-3e41a6c84dc5", 1600),
+  coverImage: berndlalmCover,
   gallery: [
     {
       url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
