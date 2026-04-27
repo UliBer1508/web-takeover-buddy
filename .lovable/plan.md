@@ -1,44 +1,37 @@
-# 4 zusätzliche Hüttenwanderungen mit Einkehr
+# Cover Pinzgau & Pongau tauschen + 3 neue Radtouren
 
-Vier neue Wanderartikel werden im Info-Bereich unter "Wandern" hinzugefügt – alle mit garantierter Einkehrmöglichkeit, abgestimmt auf unterschiedliche Schwierigkeitsgrade und Gästetypen.
+## Cover-Bild Pinzgau & Pongau ersetzen
+Das aktuelle Bild zeigt eine kurvige Bergstraße (eher Motorrad-Motiv). Wird ersetzt durch ein **echtes Fahrrad-Motiv**: Gravelbike vor sonnigem Alpenpanorama (`photo-1571068316344-75bc76f77890`).
 
-## Neue Touren
+## 3 neue Radtouren – passend zum Chalet
 
-### 1. Stockenbaumalm via Sonnenweg (leicht)
-- **Einkehr**: Gasthof Stockenbaum (ganzjährig bewirtschaftet)
-- 3,5 km · 150 hm · 1–1,5 h
-- Aussichtsreicher Höhenweg auf halber Höhe von Neukirchen, ideal für Familien & Genießer
+### 1. Pinzgauer Lokalbahn-Tour (leicht) 🚂🚴
+- **Familienfreundlich**: Mit der historischen Schmalspurbahn (Fahrradmitnahme) nach Zell am See, gemütlich zurückradeln entlang der Salzach
+- ~40 km · 100 hm · 3–4 h
+- Nostalgie + flacher Tauernradweg, Ausstieg jederzeit möglich
 
-### 2. Baumgartenalm Bramberg (leicht)
-- **Einkehr**: Baumgartenalm (hausgemachte Mehlspeisen, Almkäse)
-- 5 km · 350 hm · 2 h
-- Familienfreundlich durch Wälder und blühende Almwiesen, ruhige Alternative
+### 2. Hohe Tauern Bike Trail – Etappe 12 (schwer) 🚵
+- Offizielle MTB-Etappe ab Neukirchen durchs Obersulzbachtal nach Wald im Pinzgau
+- ~30 km · 900 hm · 4–5 h
+- Sportliches Highlight für ambitionierte Mountainbiker
 
-### 3. Wildalm im Untersulzbachtal (mittel)
-- **Einkehr**: Wildalm (urige Hütte, Buttermilch & Kaspressknödel)
-- 7 km · 450 hm · 2,5 h
-- Romantische Almwanderung im Naturschutzgebiet, klassische "Jausen-Tour"
-
-### 4. Wildkogelalm vom Gipfel (leicht, mit Bergbahn)
-- **Einkehr**: Wildkogelalm (2.089 m, große Sonnenterrasse)
-- 4 km · 100 hm · 2 h
-- Bequeme Smaragdbahn-Auffahrt, 360°-Panorama – perfekt für ältere Gäste
+### 3. Salzachtal: Krimml → Mittersill (leicht, E-Bike) 🚴
+- Klassische Genussetappe entlang der Salzach, fast flach, asphaltiert
+- ~25 km · 50 hm · 2 h
+- Halbtagestour direkt am Chalet vorbei, Rückfahrt mit Lokalbahn möglich
 
 ## Technische Umsetzung
 
-- **4 neue Module** in `src/content/info-articles/articles/`:
-  - `stockenbaumalm.ts`
-  - `baumgartenalm.ts`
-  - `wildalm.ts`
-  - `wildkogelalm.ts`
-- Jeder Artikel folgt dem `InfoArticle`-Schema (id, topic="hiking", icon, gradient, coverImage, gallery 4 Bilder, title, subtitle, shortDescription, stats, sections, externalUrl, sourceLabel) – DE/EN
-- **Icons** (Lucide): `Sun`, `Flower2`, `Trees`, `Mountain`
-- **Bilder**: helle Unsplash-Naturbilder im bewährten Stil (Almwiesen, Bergwald, Panoramen)
-- **Quellen verlinkt**: wildkogel-arena.at, bergfex.at, outdooractive.com, sentres.com
-- **Registrierung** in `src/content/info-articles/index.ts` – Reihenfolge: leicht → mittel, gruppiert mit bestehenden Touren
+- **Geänderte Datei**:
+  - `src/content/info-articles/articles/pinzgau-pongau.ts` (Zeile 13: `coverImage` ersetzen)
+- **3 neue Module** in `src/content/info-articles/articles/`:
+  - `pinzgauer-lokalbahn-rad.ts` (icon: `Train`)
+  - `hohe-tauern-bike-trail-et12.ts` (icon: `Bike`)
+  - `salzachtal-krimml-mittersill.ts` (icon: `Bike`)
+- Alle folgen dem `InfoArticle`-Schema mit DE/EN-Inhalten, hellen Unsplash-Radsport-Bildern, Stats, Sektionen und externen Quellen-Links
+- **Registrierung** in `src/content/info-articles/index.ts`: neue Imports + Aufnahme im `infoArticles`-Array direkt nach den bestehenden Radtouren
+- Validierung per `tsc --noEmit`
 
 ## Was unberührt bleibt
 
-- Bestehende 5 Wandertouren (Berndlalm, Krimml, Smaragdweg, Wildkogel-Gipfel, Kürsingerhütte) – unverändert
-- Komponenten, Layouts, Lokalisierungsdateien – keine Änderungen nötig
-- Validierung per `tsc --noEmit`
+- Restliche Cover-/Galeriebilder, Komponenten, Lokalisierung, alle Wandertouren

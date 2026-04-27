@@ -10,7 +10,7 @@ const article: InfoArticle = {
   topic: "cycling",
   icon: MapPin,
   gradient: "from-primary to-accent",
-  coverImage: UNSPLASH("photo-1558981806-ec527fa84c39", 1600),
+  coverImage: UNSPLASH("photo-1571068316344-75bc76f77890", 1600),
   gallery: [
     {
       url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
