@@ -460,6 +460,10 @@
     "source": "Quelle",
     "visitOfficial": "Zur offiziellen Webseite",
     "comingSoon": "Bald verfügbar",
+    "dialog": {
+      "impressions": "Impressionen",
+      "imageSource": "Bilder: Unsplash"
+    },
     "topics": {
       "all": "Alle",
       "cycling": "Radwege",
