@@ -10,23 +10,23 @@ const article: InfoArticle = {
   topic: "cycling",
   icon: MapPin,
   gradient: "from-primary to-accent",
-  coverImage: UNSPLASH("photo-1770589019079-26b2e577acd2", 1600),
+  coverImage: UNSPLASH("photo-1558981806-ec527fa84c39", 1600),
   gallery: [
     {
-      url: UNSPLASH("photo-1751229288367-48227cbfa742"),
-      caption: { de: "Bergdorf inmitten der Alpen", en: "Mountain village among the Alps" },
+      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
+      caption: { de: "Pinzgauer Bergdorf im Sonnenlicht", en: "Pinzgau mountain village in the sunlight" },
     },
     {
-      url: UNSPLASH("photo-1768161680835-c8e0cca76c22"),
-      caption: { de: "Klarer Bergsee bei einer Wanderung", en: "Clear mountain lake on a hike" },
+      url: UNSPLASH("photo-1470770841072-f978cf4d019e"),
+      caption: { de: "Glasklarer Bergsee in der Region", en: "Crystal-clear mountain lake in the region" },
     },
     {
-      url: UNSPLASH("photo-1668936132313-2c3105eef631"),
-      caption: { de: "Mit dem Rad durch die Region", en: "Cycling through the region" },
+      url: UNSPLASH("photo-1517649763962-0c623066013b"),
+      caption: { de: "Mit dem Rad durch sonnige Täler", en: "Cycling through sunny valleys" },
     },
     {
-      url: UNSPLASH("photo-1768395594632-6d6af13cfd7e"),
-      caption: { de: "Wasserfall im Salzburger Land", en: "Waterfall in Salzburg country" },
+      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
+      caption: { de: "Blühende Almwiesen entlang der Strecke", en: "Blooming alpine meadows along the route" },
     },
   ],
   title: { de: "Radregion Pinzgau & Pongau", en: "Pinzgau & Pongau Cycling Region" },
