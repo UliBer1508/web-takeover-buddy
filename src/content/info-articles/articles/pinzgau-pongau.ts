@@ -1,9 +1,9 @@
 import { MapPin } from "lucide-react";
 import type { InfoArticle } from "../types";
-import cover from "@/assets/bike-routes/pinzgau-pongau-cover.jpg";
+import cover from "@/assets/bike-routes/pinzgau-pongau-g3.jpg";
 import g1 from "@/assets/bike-routes/pinzgau-pongau-g1.jpg";
 import g2 from "@/assets/bike-routes/pinzgau-pongau-g2.jpg";
-import g3 from "@/assets/bike-routes/pinzgau-pongau-g3.jpg";
+import g3 from "@/assets/bike-routes/pinzgau-pongau-cover.jpg";
 
 // Image source: Wikimedia Commons (CC BY-SA) - authentic Pinzgau region photography
 
