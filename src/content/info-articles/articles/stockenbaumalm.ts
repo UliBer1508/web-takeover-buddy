@@ -1,25 +1,24 @@
 import { Sun } from "lucide-react";
 import type { InfoArticle } from "../types";
-// Real photos from Wikimedia Commons (CC BY-SA)
-// Wildkogel from Hollersbach by Herzi Pinki; Trattenbachalm by Woelle ffm
-import stockenbaumalmCover from "@/assets/hiking/stockenbaumalm-cover.jpg";
-import wildkogelView from "@/assets/hiking/wildkogel-view.jpg";
-import trattenbachalm from "@/assets/hiking/trattenbachalm.jpg";
+// Real photos from Alpengasthof Stockenbaum (stockenbaum.at) – used for promotional purposes
+import stockenbaumPanoramaweg from "@/assets/hiking/stockenbaum-panoramaweg.jpg";
+import stockenbaumAussicht from "@/assets/hiking/stockenbaum-aussicht.jpg";
+import stockenbaumTerrasse from "@/assets/hiking/stockenbaum-terrasse.jpg";
 
 const article: InfoArticle = {
   id: "stockenbaumalm",
   topic: "hiking",
   icon: Sun,
   gradient: "from-accent to-wood",
-  coverImage: stockenbaumalmCover,
+  coverImage: stockenbaumPanoramaweg,
   gallery: [
     {
-      url: wildkogelView,
-      caption: { de: "Wildkogel-Massiv über dem Sonnenweg", en: "Wildkogel massif above the Sun Trail" },
+      url: stockenbaumAussicht,
+      caption: { de: "Panoramablick über das Salzachtal zu den Hohen Tauern", en: "Panoramic view across the Salzach valley to the Hohe Tauern" },
     },
     {
-      url: trattenbachalm,
-      caption: { de: "Pinzgauer Almlandschaft am Höhenweg", en: "Pinzgau alpine landscape along the high trail" },
+      url: stockenbaumTerrasse,
+      caption: { de: "Sonnenterrasse des Alpengasthofs Stockenbaum", en: "Sun terrace of Alpengasthof Stockenbaum" },
     },
   ],
   title: { de: "Stockenbaumalm via Sonnenweg", en: "Stockenbaumalm via Sun Trail" },
