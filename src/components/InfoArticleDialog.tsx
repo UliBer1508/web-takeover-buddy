@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, X } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { InfoArticle } from "@/content/info-articles";
 
