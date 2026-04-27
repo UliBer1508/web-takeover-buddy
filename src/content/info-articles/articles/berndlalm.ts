@@ -10,22 +10,22 @@ const article: InfoArticle = {
   topic: "hiking",
   icon: Footprints,
   gradient: "from-wood to-accent",
-  coverImage: UNSPLASH("photo-1761384140398-88c88e648fcb", 1600),
+  coverImage: UNSPLASH("photo-1418065460487-3e41a6c84dc5", 1600),
   gallery: [
     {
-      url: UNSPLASH("photo-1769029299328-31fa8472ef67"),
-      caption: { de: "Holzhütten am Berg – urige Almatmosphäre", en: "Wooden huts in the mountains – cosy alpine pasture vibe" },
+      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
+      caption: { de: "Sonnige Almwiesen mit Bergpanorama", en: "Sunny alpine meadows with mountain panorama" },
     },
     {
-      url: UNSPLASH("photo-1757330878339-0b0c3b02d9b5"),
-      caption: { de: "Wanderpfad durch Almwiesen", en: "Trail through alpine meadows" },
+      url: UNSPLASH("photo-1486870591958-9b9d0d1dda99"),
+      caption: { de: "Heller Wanderpfad durch das Tal", en: "Bright hiking trail through the valley" },
     },
     {
-      url: UNSPLASH("photo-1768395594632-6d6af13cfd7e"),
-      caption: { de: "Sulzbach-Wasserfälle entlang des Weges", en: "Sulzbach waterfalls along the trail" },
+      url: UNSPLASH("photo-1506905925346-21bda4d32df4"),
+      caption: { de: "Klarer Bergbach am Wegesrand", en: "Clear mountain stream along the path" },
     },
     {
-      url: UNSPLASH("photo-1750526927596-654bdccacc3c"),
+      url: UNSPLASH("photo-1464822759023-fed622ff2c3b"),
       caption: { de: "Blick zum Großvenediger", en: "View towards the Großvenediger" },
     },
   ],

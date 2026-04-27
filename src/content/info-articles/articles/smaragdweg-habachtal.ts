@@ -10,23 +10,23 @@ const article: InfoArticle = {
   topic: "hiking",
   icon: Gem,
   gradient: "from-primary to-mountain-blue",
-  coverImage: UNSPLASH("photo-1757330878339-0b0c3b02d9b5", 1600),
+  coverImage: UNSPLASH("photo-1502082553048-f009c37129b9", 1600),
   gallery: [
     {
-      url: UNSPLASH("photo-1768395594632-6d6af13cfd7e"),
-      caption: { de: "Stäubender Habach entlang des Themenwegs", en: "The Habach river spraying along the theme trail" },
+      url: UNSPLASH("photo-1506905925346-21bda4d32df4"),
+      caption: { de: "Klarer Habach entlang des Themenwegs", en: "Clear Habach river along the theme trail" },
     },
     {
-      url: UNSPLASH("photo-1761384140398-88c88e648fcb"),
+      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
       caption: { de: "Blühende Almwiesen im Habachtal", en: "Flowering alpine meadows in the Habach Valley" },
     },
     {
-      url: UNSPLASH("photo-1769029299328-31fa8472ef67"),
+      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
       caption: { de: "Thurnerkaser-Alm zum Einkehren", en: "Thurnerkaser alm for a break" },
     },
     {
-      url: UNSPLASH("photo-1756846036941-36644e2dff7a"),
-      caption: { de: "Naturbelassenes Hochtal", en: "Untouched high alpine valley" },
+      url: UNSPLASH("photo-1486870591958-9b9d0d1dda99"),
+      caption: { de: "Naturbelassenes Hochtal im Sonnenlicht", en: "Untouched high alpine valley in sunlight" },
     },
   ],
   title: { de: "Smaragdweg im Habachtal", en: "Emerald Trail in the Habach Valley" },

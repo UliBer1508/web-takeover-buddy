@@ -10,22 +10,22 @@ const article: InfoArticle = {
   topic: "hiking",
   icon: Mountain,
   gradient: "from-mountain-blue to-accent",
-  coverImage: UNSPLASH("photo-1735410162712-f42fe3b173e4", 1600),
+  coverImage: UNSPLASH("photo-1519681393784-d120267933ba", 1600),
   gallery: [
     {
-      url: UNSPLASH("photo-1658242662484-611a2c472780"),
-      caption: { de: "Gipfelkreuz über den Hohen Tauern", en: "Summit cross above the Hohe Tauern" },
+      url: UNSPLASH("photo-1469474968028-56623f02e42e"),
+      caption: { de: "Sonniger Gipfelblick über den Hohen Tauern", en: "Sunny summit view across the Hohe Tauern" },
     },
     {
-      url: UNSPLASH("photo-1756846036941-36644e2dff7a"),
+      url: UNSPLASH("photo-1470770841072-f978cf4d019e"),
       caption: { de: "Bergsee am Wildkogel-Höhenweg", en: "Mountain lake along the Wildkogel high trail" },
     },
     {
-      url: UNSPLASH("photo-1761384140398-88c88e648fcb"),
+      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
       caption: { de: "Almenrausch und Bergblumen", en: "Alpenrose and mountain flowers" },
     },
     {
-      url: UNSPLASH("photo-1750526927596-654bdccacc3c"),
+      url: UNSPLASH("photo-1464822759023-fed622ff2c3b"),
       caption: { de: "Großvenediger im Hintergrund", en: "Großvenediger in the distance" },
     },
   ],

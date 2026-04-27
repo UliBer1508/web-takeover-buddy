@@ -10,23 +10,23 @@ const article: InfoArticle = {
   topic: "hiking",
   icon: Tent,
   gradient: "from-primary to-wood",
-  coverImage: UNSPLASH("photo-1750526927596-654bdccacc3c", 1600),
+  coverImage: UNSPLASH("photo-1464822759023-fed622ff2c3b", 1600),
   gallery: [
     {
-      url: UNSPLASH("photo-1761384140398-88c88e648fcb"),
+      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
       caption: { de: "Aufstieg über blühende Almen", en: "Ascent across flowering pastures" },
     },
     {
-      url: UNSPLASH("photo-1769029299328-31fa8472ef67"),
+      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
       caption: { de: "Berndlalm als Zwischenstopp", en: "Berndlalm as a midway stop" },
     },
     {
-      url: UNSPLASH("photo-1756846036941-36644e2dff7a"),
+      url: UNSPLASH("photo-1470770841072-f978cf4d019e"),
       caption: { de: "Hochalpiner Bergsee am Weg", en: "High alpine lake along the trail" },
     },
     {
-      url: UNSPLASH("photo-1658242662484-611a2c472780"),
-      caption: { de: "Gipfelblick aus der Venedigergruppe", en: "Summit view from the Venediger group" },
+      url: UNSPLASH("photo-1469474968028-56623f02e42e"),
+      caption: { de: "Sonniger Gipfelblick aus der Venedigergruppe", en: "Sunny summit view from the Venediger group" },
     },
   ],
   title: { de: "Kürsingerhütte über Berndlalm", en: "Kürsingerhütte via Berndlalm" },
