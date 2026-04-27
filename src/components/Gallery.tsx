@@ -506,8 +506,14 @@ const Gallery = ({ houseId }: GalleryProps) => {
             ))}
           </div>
         )}
+          </div>
+        )}
 
-        <InfoGallery />
+        {view === "info" && (
+          <div className="animate-fade-in">
+            <InfoGallery />
+          </div>
+        )}
       </div>
 
       {/* Upload Dialog */}
