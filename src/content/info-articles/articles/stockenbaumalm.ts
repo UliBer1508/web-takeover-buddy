@@ -1,5 +1,6 @@
 import { Sun } from "lucide-react";
 import type { InfoArticle } from "../types";
+import stockenbaumalmCover from "@/assets/hiking/stockenbaumalm-cover.jpg";
 
 // Image source: Unsplash (free to use under the Unsplash License)
 const UNSPLASH = (id: string, w = 1200) =>
@@ -10,7 +11,7 @@ const article: InfoArticle = {
   topic: "hiking",
   icon: Sun,
   gradient: "from-accent to-wood",
-  coverImage: UNSPLASH("photo-1502784444187-359ac186c5bb", 1600),
+  coverImage: stockenbaumalmCover,
   gallery: [
     {
       url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
