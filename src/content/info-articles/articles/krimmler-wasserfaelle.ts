@@ -1,32 +1,23 @@
 import { Droplets } from "lucide-react";
 import type { InfoArticle } from "../types";
-
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Real photos from Wikimedia Commons (CC BY-SA 4.0) by Ohelwig
+import krimmlCover from "@/assets/hiking/krimmler-wasserfaelle-cover.jpg";
+import krimml2 from "@/assets/hiking/krimmler-wasserfaelle-2.jpg";
 
 const article: InfoArticle = {
   id: "krimmler-wasserfaelle",
   topic: "hiking",
   icon: Droplets,
   gradient: "from-mountain-blue to-primary",
-  coverImage: UNSPLASH("photo-1506260408121-e353d10b87c7", 1600),
+  coverImage: krimmlCover,
   gallery: [
     {
-      url: UNSPLASH("photo-1502082553048-f009c37129b9"),
-      caption: { de: "Sonniger Waldweg entlang der Fälle", en: "Sunny forest path along the falls" },
+      url: krimmlCover,
+      caption: { de: "Krimmler Wasserfälle – obere Fallstufe", en: "Krimml Waterfalls – upper cascade" },
     },
     {
-      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
-      caption: { de: "Bergblumen oberhalb der Fälle", en: "Mountain flowers above the falls" },
-    },
-    {
-      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
-      caption: { de: "Almwiese am oberen Ende", en: "Alpine meadow at the top" },
-    },
-    {
-      url: UNSPLASH("photo-1500534314209-a25ddb2bd429"),
-      caption: { de: "Helle alpine Landschaft im Achental", en: "Bright alpine scenery in the Achen Valley" },
+      url: krimml2,
+      caption: { de: "Mächtige Gischt am Wasserfallweg", en: "Powerful spray along the waterfall trail" },
     },
   ],
   title: { de: "Krimmler Wasserfälle – Wasserfallweg", en: "Krimml Waterfalls – Waterfall Trail" },

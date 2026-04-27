@@ -1,32 +1,25 @@
 import { Tent } from "lucide-react";
 import type { InfoArticle } from "../types";
-
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Real photos from Wikimedia Commons
+// Kürsingerhütte 2007 (Public domain) by User:Fleece
+// Berndlalm view by Whgler (CC BY-SA)
+import kuersinger from "@/assets/hiking/kuersingerhuette.jpg";
+import berndlalmView from "@/assets/hiking/berndlalm-view.jpg";
 
 const article: InfoArticle = {
   id: "kuersingerhuette",
   topic: "hiking",
   icon: Tent,
   gradient: "from-primary to-wood",
-  coverImage: UNSPLASH("photo-1464822759023-fed622ff2c3b", 1600),
+  coverImage: kuersinger,
   gallery: [
     {
-      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
-      caption: { de: "Aufstieg über blühende Almen", en: "Ascent across flowering pastures" },
+      url: kuersinger,
+      caption: { de: "Kürsingerhütte auf 2.558 m am Großvenediger", en: "Kürsingerhütte at 2,558 m at the Großvenediger" },
     },
     {
-      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
-      caption: { de: "Berndlalm als Zwischenstopp", en: "Berndlalm as a midway stop" },
-    },
-    {
-      url: UNSPLASH("photo-1470770841072-f978cf4d019e"),
-      caption: { de: "Hochalpiner Bergsee am Weg", en: "High alpine lake along the trail" },
-    },
-    {
-      url: UNSPLASH("photo-1469474968028-56623f02e42e"),
-      caption: { de: "Sonniger Gipfelblick aus der Venedigergruppe", en: "Sunny summit view from the Venediger group" },
+      url: berndlalmView,
+      caption: { de: "Berndlalm im Obersulzbachtal als Zwischenstopp", en: "Berndlalm in the Obersulzbach Valley as a midway stop" },
     },
   ],
   title: { de: "Kürsingerhütte über Berndlalm", en: "Kürsingerhütte via Berndlalm" },

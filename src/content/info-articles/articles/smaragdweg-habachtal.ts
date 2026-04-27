@@ -1,32 +1,24 @@
 import { Gem } from "lucide-react";
 import type { InfoArticle } from "../types";
-
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Real photos from Wikimedia Commons (CC BY-SA 3.0)
+// Moa Alm im Habachtal by Whgler; Smaragd Habachtal by Mayer Bruno
+import moaAlm from "@/assets/hiking/habachtal-moaalm.jpg";
+import smaragd from "@/assets/hiking/habachtal-smaragd.jpg";
 
 const article: InfoArticle = {
   id: "smaragdweg-habachtal",
   topic: "hiking",
   icon: Gem,
   gradient: "from-primary to-mountain-blue",
-  coverImage: UNSPLASH("photo-1502082553048-f009c37129b9", 1600),
+  coverImage: moaAlm,
   gallery: [
     {
-      url: UNSPLASH("photo-1506905925346-21bda4d32df4"),
-      caption: { de: "Klarer Habach entlang des Themenwegs", en: "Clear Habach river along the theme trail" },
+      url: moaAlm,
+      caption: { de: "Moa-Alm im Habachtal", en: "Moa-Alm in the Habach Valley" },
     },
     {
-      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
-      caption: { de: "Blühende Almwiesen im Habachtal", en: "Flowering alpine meadows in the Habach Valley" },
-    },
-    {
-      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
-      caption: { de: "Thurnerkaser-Alm zum Einkehren", en: "Thurnerkaser alm for a break" },
-    },
-    {
-      url: UNSPLASH("photo-1486870591958-9b9d0d1dda99"),
-      caption: { de: "Naturbelassenes Hochtal im Sonnenlicht", en: "Untouched high alpine valley in sunlight" },
+      url: smaragd,
+      caption: { de: "Smaragdvorkommen im Habachtal", en: "Emerald deposit in the Habach Valley" },
     },
   ],
   title: { de: "Smaragdweg im Habachtal", en: "Emerald Trail in the Habach Valley" },

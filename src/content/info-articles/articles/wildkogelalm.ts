@@ -1,32 +1,25 @@
 import { Mountain } from "lucide-react";
 import type { InfoArticle } from "../types";
-
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Real photos from Wikimedia Commons (CC BY-SA)
+// Wildkogel from Hollersbach by Herzi Pinki (CC BY-SA 4.0)
+// Wildkogel-Gipfelkreuz by Erwinnindl (CC BY-SA 3.0)
+import wildkogelView from "@/assets/hiking/wildkogel-view.jpg";
+import wildkogelGipfel from "@/assets/hiking/wildkogel-gipfel.jpg";
 
 const article: InfoArticle = {
   id: "wildkogelalm",
   topic: "hiking",
   icon: Mountain,
   gradient: "from-mountain-blue to-primary",
-  coverImage: UNSPLASH("photo-1519681393784-d120267933ba", 1600),
+  coverImage: wildkogelView,
   gallery: [
     {
-      url: UNSPLASH("photo-1469474968028-56623f02e42e"),
-      caption: { de: "360°-Panorama von der Sonnenterrasse", en: "360° panorama from the sun terrace" },
+      url: wildkogelGipfel,
+      caption: { de: "Wildkogel-Gipfelkreuz mit Panoramablick", en: "Wildkogel summit cross with panoramic view" },
     },
     {
-      url: UNSPLASH("photo-1470770841072-f978cf4d019e"),
-      caption: { de: "Bergsee unterhalb des Wildkogels", en: "Mountain lake below the Wildkogel" },
-    },
-    {
-      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
-      caption: { de: "Almenrausch entlang des Höhenwegs", en: "Alpenrose along the high trail" },
-    },
-    {
-      url: UNSPLASH("photo-1464822759023-fed622ff2c3b"),
-      caption: { de: "Blick zu den Hohen Tauern", en: "View towards the Hohe Tauern" },
+      url: wildkogelView,
+      caption: { de: "Blick auf den Wildkogel von Hollersbach", en: "View of the Wildkogel from Hollersbach" },
     },
   ],
   title: { de: "Wildkogelalm vom Gipfel", en: "Wildkogelalm from the Summit" },
