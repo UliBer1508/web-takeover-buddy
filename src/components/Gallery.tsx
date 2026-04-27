@@ -501,10 +501,10 @@ const Gallery = ({ houseId }: GalleryProps) => {
       {/* Lightbox Dialog */}
       <Dialog open={selectedImageIndex !== null} onOpenChange={closeLightbox}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
-          <VisuallyHidden>
+          <div className="sr-only">
             <DialogTitle>{t('gallery.ariaLightboxTitle')}</DialogTitle>
             <DialogDescription>{t('gallery.ariaLightboxDesc')}</DialogDescription>
-          </VisuallyHidden>
+          </div>
           <button
             onClick={closeLightbox}
             className="absolute top-4 right-4 z-50 text-white hover:text-accent transition-colors"
