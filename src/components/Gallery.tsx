@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff, GripVertical, Pencil } from "lucide-react";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+// VisuallyHidden import removed; using sr-only utility instead
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -501,10 +501,10 @@ const Gallery = ({ houseId }: GalleryProps) => {
       {/* Lightbox Dialog */}
       <Dialog open={selectedImageIndex !== null} onOpenChange={closeLightbox}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
-          <VisuallyHidden>
+          <div className="sr-only">
             <DialogTitle>{t('gallery.ariaLightboxTitle')}</DialogTitle>
             <DialogDescription>{t('gallery.ariaLightboxDesc')}</DialogDescription>
-          </VisuallyHidden>
+          </div>
           <button
             onClick={closeLightbox}
             className="absolute top-4 right-4 z-50 text-white hover:text-accent transition-colors"
