@@ -15,6 +15,12 @@ import stockenbaumalm from "./articles/stockenbaumalm";
 import wildalm from "./articles/wildalm";
 import wildkogelalm from "./articles/wildkogelalm";
 import baumgartenalm from "./articles/baumgartenalm";
+import skiarenaWildkogel from "./articles/skiarena-wildkogel";
+import zillertalArena from "./articles/zillertal-arena";
+import saalbachHinterglemm from "./articles/saalbach-hinterglemm";
+import nationalparkzentrum from "./articles/nationalparkzentrum";
+import museumBramberg from "./articles/museum-bramberg";
+import felberturm from "./articles/felberturm";
 
 export const infoArticles: InfoArticle[] = [
   tauernradweg,
@@ -32,6 +38,12 @@ export const infoArticles: InfoArticle[] = [
   smaragdwegHabachtal,
   wildkogelGipfel,
   kuersingerhuette,
+  skiarenaWildkogel,
+  zillertalArena,
+  saalbachHinterglemm,
+  nationalparkzentrum,
+  museumBramberg,
+  felberturm,
 ];
 
 export type TopicFilter = "all" | InfoTopic;
