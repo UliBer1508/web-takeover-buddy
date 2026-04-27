@@ -1,46 +1,40 @@
 ## Ziel
 
-In der Info-Galerie erscheinen aktuell nur Rad- und Wander-Karten. Die Filter "Skifahren" und "Kultur" sind leer. Wir ergänzen je **3 Karten** mit **echten Fotos** der Skigebiete bzw. Kulturziele in der Region rund um Neukirchen am Großvenediger.
+Zusätzlich zu den 3 bestehenden Skigebieten (Wildkogel, Zillertal Arena/Königsleiten, Saalbach) **9 weitere Skigebiete** als Karten in der Info-Galerie ergänzen — jeweils mit echten Fotos (CC-lizenziert von Wikimedia Commons).
 
-## Neue Artikel
+## Neue Skigebiete
 
-### Skifahren (3 Karten)
-1. **Skiarena Wildkogel** – Hausberg-Skigebiet von Neukirchen/Bramberg, 75 km Pisten
-2. **Smaragd-Skischaukel Königsleiten–Gerlos (Zillertal Arena)** – verbundenes Großskigebiet
-3. **Weltcuporte Hinterglemm/Saalbach** – Skicircus, ca. 45 Min. Anfahrt
+| # | Skigebiet | Entfernung | Besonderheit |
+|---|-----------|------------|--------------|
+| 1 | KitzSki – Kitzbühel & Kirchberg | ~60 km | Hahnenkamm, 233 km Pisten |
+| 2 | Kitzsteinhorn Kaprun | ~50 km | Gletscher, ganzjährig, 3.029 m |
+| 3 | Schmittenhöhe Zell am See | ~45 km | Seenpanorama, 77 km |
+| 4 | Hochkönig (Maria Alm/Dienten/Mühlbach) | ~70 km | Königstour, Ski amadé |
+| 5 | Großarltal & Dorfgastein | ~90 km | „Tal der Almen" |
+| 6 | Mayrhofen & Hintertuxer Gletscher | ~80 km | Harakiri, Ski 365 Tage |
+| 7 | Obertauern | ~130 km | Schneesicherstes A-Gebiet |
+| 8 | Skigebiet Rauris (Hochalmbahnen) | ~75 km | Familiär, Nationalpark |
+| 9 | Snow Space Salzburg (Flachau/Wagrain/St. Johann) | ~110 km | FIS Nightrace, Ski amadé |
 
-### Kultur (3 Karten)
-1. **Nationalparkzentrum Hohe Tauern (Mittersill)** – interaktive Erlebnisausstellung
-2. **Bramberg Smaragd- & Heimatmuseum** – größte Bergkristall-/Smaragd-Sammlung Europas
-3. **Felberturm-Museum Mittersill** – ältestes Heimatmuseum des Pinzgaus, Saumhandel über die Tauern
+## Bilder
 
-## Bildquellen (echte Fotos)
+Bereits heruntergeladen (CC-lizenziert von Wikimedia Commons, valide JPG-Dateien zwischen 170 KB – 920 KB) in `src/assets/skiing/`:
+- `kitzbuehel-hahnenkamm.jpg`, `kitzbuehel-may.jpg`
+- `kitzsteinhorn.jpg`
+- `schmittenhoehe.jpg`, `schmittenhoehe-zellsee.jpg`
+- `hochkoenig-mariaalm.jpg`
+- `grossarltal.jpg`
+- `mayrhofen-penken.jpg`, `hintertux-gletscher.jpg`, `hintertux-piste.jpg`
+- `obertauern.jpg`
+- `rauris-hochalm.jpg`
+- `flachau.jpg`
 
-Für jede Karte 3–5 reale Fotos – analog zum bisherigen Vorgehen mit Stockenbaumalm/Baumgartenalm:
+## Technische Umsetzung
 
-| Artikel | Quelle |
-|---|---|
-| Skiarena Wildkogel | wildkogel-arena.at (offizielle Bildergalerie) |
-| Königsleiten/Gerlos | zillertalarena.com / koenigsleiten.com |
-| Saalbach Hinterglemm | saalbach.com (Mediencenter) |
-| Nationalparkzentrum | nationalparkzentrum.at |
-| Bramberg Museum | museumbramberg.at |
-| Felberturm | felberturmmuseum.at |
+1. **9 neue Artikel-Dateien** in `src/content/info-articles/articles/` (`kitzski-kitzbuehel.ts`, `kitzsteinhorn.ts`, `schmittenhoehe.ts`, `hochkoenig.ts`, `grossarltal.ts`, `mayrhofen-hintertux.ts`, `obertauern.ts`, `rauris.ts`, `snow-space-flachau.ts`) — alle mit `topic: "skiing"`, lokalisierten Titeln, Stats (Pisten-km, Höhenmeter, Entfernung), Highlights und externem Link zur offiziellen Tourismus-Webseite.
+2. **Registrierung** in `src/content/info-articles/index.ts`: 9 Imports + 9 Einträge im `infoArticles`-Array.
+3. **Quellenangabe**: jede Karte zeigt `sourceLabel` (offizielle Webseite + Wikimedia Commons).
 
-Falls ein Quellbild nicht abrufbar ist, weiche ich auf Wikimedia Commons (CC BY-SA) für das jeweilige Motiv aus.
+## Ergebnis
 
-## Vorgehen technisch
-
-1. Fotos je Quelle herunterladen → `src/assets/skiing/` und `src/assets/culture/` (neue Ordner)
-2. Pro Artikel eine Datei in `src/content/info-articles/articles/` anlegen, identische Struktur wie bestehende Artikel:
-   - `topic: "skiing"` bzw. `"culture"`
-   - passendes Lucide-Icon (z. B. `Snowflake`, `Mountain`, `Landmark`, `Gem`)
-   - `coverImage`, `gallery` (3–4 Bilder), `stats`, `sections`, `externalUrl`
-3. Alle 6 Artikel in `src/content/info-articles/index.ts` registrieren
-4. TypeScript-Build prüfen (`bunx tsc --noEmit`)
-
-Keine Änderungen an UI-Komponenten oder Filterlogik nötig – die Karten erscheinen automatisch unter den Filtern „Skifahren" und „Kultur".
-
-## Bestätigung
-
-Soll ich mit diesen 6 Artikeln (3 Ski + 3 Kultur) und den genannten Quellen starten? Falls du andere Skigebiete oder Kulturziele bevorzugst (z. B. Kitzbüheler Alpen, Krimmler Tauernhaus, Talmuseum Wald), sag kurz Bescheid.
+Nach der Implementierung enthält die Info-Galerie unter Filter „Ski" **12 Karten** statt bisher 3.
