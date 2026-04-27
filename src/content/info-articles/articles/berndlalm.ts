@@ -1,7 +1,9 @@
 import { Footprints } from "lucide-react";
 import type { InfoArticle } from "../types";
 import berndlalmCover from "@/assets/hiking/berndlalm-cover.jpg";
+import berndlalmView from "@/assets/hiking/berndlalm-view.jpg";
 
+// Cover & gallery photo "berndlalm-view" by Whgler, Wikimedia Commons, CC BY-SA
 // Image source: Unsplash (free to use under the Unsplash License)
 const UNSPLASH = (id: string, w = 1200) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
@@ -14,12 +16,12 @@ const article: InfoArticle = {
   coverImage: berndlalmCover,
   gallery: [
     {
-      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
-      caption: { de: "Sonnige Almwiesen mit Bergpanorama", en: "Sunny alpine meadows with mountain panorama" },
+      url: berndlalmView,
+      caption: { de: "Blick von der Berndlalm ins Obersulzbachtal", en: "View from Berndlalm into the Obersulzbach Valley" },
     },
     {
-      url: UNSPLASH("photo-1486870591958-9b9d0d1dda99"),
-      caption: { de: "Heller Wanderpfad durch das Tal", en: "Bright hiking trail through the valley" },
+      url: UNSPLASH("photo-1502082553048-f009c37129b9"),
+      caption: { de: "Schattige Waldpassage am Aufstieg", en: "Shady forest section on the way up" },
     },
     {
       url: UNSPLASH("photo-1506905925346-21bda4d32df4"),
