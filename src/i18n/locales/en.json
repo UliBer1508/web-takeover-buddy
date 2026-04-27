@@ -84,8 +84,12 @@
     "hidden": "Hidden"
   },
   "gallery": {
-    "title": "Image Gallery",
-    "subtitle": "Discover the luxurious amenities and stunning location of our chalet",
+    "title": "Gallery",
+    "subtitle": "Impressions and useful info around your stay",
+    "viewToggle": {
+      "photos": "Photos",
+      "info": "Info"
+    },
     "addImages": "Add Images",
     "noImages": "No images yet",
     "noImagesForSeason": "No images for \"{{season}}\" available",
