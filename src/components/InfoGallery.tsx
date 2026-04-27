@@ -24,6 +24,21 @@ const InfoGallery = () => {
         <p className="text-muted-foreground max-w-2xl mx-auto">{t("infoGallery.subtitle")}</p>
       </div>
 
+      {/* Region pitch / call-to-action */}
+      <div className="max-w-3xl mx-auto mb-10">
+        <div className="rounded-2xl border bg-card/60 backdrop-blur-sm shadow-sm p-6 md:p-8 text-center">
+          <h3 className="text-2xl md:text-3xl font-bold mb-3 text-foreground">
+            {t("infoGallery.pitch.heading")}
+          </h3>
+          <p className="text-muted-foreground leading-relaxed mb-6">
+            {t("infoGallery.pitch.body")}
+          </p>
+          <Button asChild size="lg" className="gap-2">
+            <a href="#booking">{t("infoGallery.pitch.cta")}</a>
+          </Button>
+        </div>
+      </div>
+
       {/* Topic Tabs */}
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         {infoTopics.map((topic) => {
