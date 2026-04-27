@@ -73,6 +73,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
   const [draggedImage, setDraggedImage] = useState<GalleryImage | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [imageToEdit, setImageToEdit] = useState<GalleryImage | null>(null);
+  const [view, setView] = useState<"photos" | "info">("photos");
 
   // Fetch seasons from database
   const { data: seasons = [] } = useQuery({
