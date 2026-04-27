@@ -344,6 +344,30 @@ const Gallery = ({ houseId }: GalleryProps) => {
           </p>
         </div>
 
+        {/* View Toggle: Photos vs Info */}
+        <div className="flex justify-center gap-2 mb-8">
+          <Button
+            variant={view === "photos" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setView("photos")}
+            className="gap-2"
+          >
+            <ImageIcon className="h-4 w-4" />
+            {t("gallery.viewToggle.photos")}
+          </Button>
+          <Button
+            variant={view === "info" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setView("info")}
+            className="gap-2"
+          >
+            <Info className="h-4 w-4" />
+            {t("gallery.viewToggle.info")}
+          </Button>
+        </div>
+
+        {view === "photos" && (
+          <div className="animate-fade-in">
         {/* Season Filter Tabs */}
         <div className="flex flex-wrap justify-center gap-2 mb-6">
           {seasons.map((season) => {
