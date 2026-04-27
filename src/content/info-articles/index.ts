@@ -8,12 +8,20 @@ import krimmlerWasserfaelle from "./articles/krimmler-wasserfaelle";
 import smaragdwegHabachtal from "./articles/smaragdweg-habachtal";
 import wildkogelGipfel from "./articles/wildkogel-gipfel";
 import kuersingerhuette from "./articles/kuersingerhuette";
+import stockenbaumalm from "./articles/stockenbaumalm";
+import wildalm from "./articles/wildalm";
+import wildkogelalm from "./articles/wildkogelalm";
+import baumgartenalm from "./articles/baumgartenalm";
 
 export const infoArticles: InfoArticle[] = [
   tauernradweg,
   alpeAdria,
   pinzgauPongau,
   berndlalm,
+  stockenbaumalm,
+  baumgartenalm,
+  wildalm,
+  wildkogelalm,
   krimmlerWasserfaelle,
   smaragdwegHabachtal,
   wildkogelGipfel,

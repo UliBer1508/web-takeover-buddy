@@ -1,40 +1,44 @@
-# Helle Naturbilder für die Radwege
+# 4 zusätzliche Hüttenwanderungen mit Einkehr
 
-Die zwei Radweg-Artikel im Info-Bereich (**Tauernradweg** und **Alpe-Adria-Radweg**) bekommen frisch kuratierte, sonnige Naturbilder mit echtem Radsport-Bezug – Rennrad/Gravelbike vor Bergpanorama, türkise Bergseen, sonnige Bergstraßen –, die radbegeisterte Gäste sofort ansprechen.
+Vier neue Wanderartikel werden im Info-Bereich unter "Wandern" hinzugefügt – alle mit garantierter Einkehrmöglichkeit, abgestimmt auf unterschiedliche Schwierigkeitsgrade und Gästetypen.
 
-## Was sich ändert
+## Neue Touren
 
-Nur die Cover- und Galeriebilder in zwei Dateien werden ausgetauscht. Texte, Statistiken, Sektionen und Layout bleiben unverändert.
+### 1. Stockenbaumalm via Sonnenweg (leicht)
+- **Einkehr**: Gasthof Stockenbaum (ganzjährig bewirtschaftet)
+- 3,5 km · 150 hm · 1–1,5 h
+- Aussichtsreicher Höhenweg auf halber Höhe von Neukirchen, ideal für Familien & Genießer
 
-### Tauernradweg
-- **Cover**: Rennradfahrer in sonnigem Alpenpanorama
-- **Galerie**:
-  1. Genussradeln im goldenen Licht entlang der Salzach
-  2. Türkisblauer Bergsee als Etappenziel
-  3. Sonniger Radweg durch lichten Bergwald
-  4. Pinzgauer Bergdorf im Sonnenlicht
+### 2. Baumgartenalm Bramberg (leicht)
+- **Einkehr**: Baumgartenalm (hausgemachte Mehlspeisen, Almkäse)
+- 5 km · 350 hm · 2 h
+- Familienfreundlich durch Wälder und blühende Almwiesen, ruhige Alternative
 
-### Alpe-Adria-Radweg
-- **Cover**: Gravelbike vor Alpenpanorama
-- **Galerie**:
-  1. Rennrad-Etappe über sonnige Alpenpässe
-  2. Glasklarer Bergsee in Kärnten
-  3. Eindrucksvolle Brückenpassage mit Bergblick
-  4. Sonniger Süden – Ankunft an der Adria
+### 3. Wildalm im Untersulzbachtal (mittel)
+- **Einkehr**: Wildalm (urige Hütte, Buttermilch & Kaspressknödel)
+- 7 km · 450 hm · 2,5 h
+- Romantische Almwanderung im Naturschutzgebiet, klassische "Jausen-Tour"
 
-Alle Bildunterschriften werden zweisprachig (DE/EN) aktualisiert, passend zum neuen Motiv.
+### 4. Wildkogelalm vom Gipfel (leicht, mit Bergbahn)
+- **Einkehr**: Wildkogelalm (2.089 m, große Sonnenterrasse)
+- 4 km · 100 hm · 2 h
+- Bequeme Smaragdbahn-Auffahrt, 360°-Panorama – perfekt für ältere Gäste
 
-## Technische Details
+## Technische Umsetzung
 
-- **Geänderte Dateien**:
-  - `src/content/info-articles/articles/tauernradweg.ts` (Zeilen 13–31: `coverImage` + `gallery`)
-  - `src/content/info-articles/articles/alpe-adria.ts` (Zeilen 13–31: `coverImage` + `gallery`)
-- **Bildquelle**: Lizenzfreie Unsplash-Fotos (gleiche `UNSPLASH(id)`-Helper wie bisher, nur neue, bewährte Foto-IDs mit Radsport-/Alpenbezug)
-- **Keine Schema-Änderungen**, keine neuen Dependencies, kein Auto-Layout-Eingriff
-- Verifikation per `tsc --noEmit`
+- **4 neue Module** in `src/content/info-articles/articles/`:
+  - `stockenbaumalm.ts`
+  - `baumgartenalm.ts`
+  - `wildalm.ts`
+  - `wildkogelalm.ts`
+- Jeder Artikel folgt dem `InfoArticle`-Schema (id, topic="hiking", icon, gradient, coverImage, gallery 4 Bilder, title, subtitle, shortDescription, stats, sections, externalUrl, sourceLabel) – DE/EN
+- **Icons** (Lucide): `Sun`, `Flower2`, `Trees`, `Mountain`
+- **Bilder**: helle Unsplash-Naturbilder im bewährten Stil (Almwiesen, Bergwald, Panoramen)
+- **Quellen verlinkt**: wildkogel-arena.at, bergfex.at, outdooractive.com, sentres.com
+- **Registrierung** in `src/content/info-articles/index.ts` – Reihenfolge: leicht → mittel, gruppiert mit bestehenden Touren
 
 ## Was unberührt bleibt
 
-- Wander-Artikel (Berndlalm, Krimml, Smaragdweg, Wildkogel, Kürsingerhütte) – die wurden bereits zuletzt mit hellen Naturmotiven versorgt
-- Komponenten `InfoGallery.tsx` und `InfoArticleDialog.tsx`
-- Lokalisierungsdateien
+- Bestehende 5 Wandertouren (Berndlalm, Krimml, Smaragdweg, Wildkogel-Gipfel, Kürsingerhütte) – unverändert
+- Komponenten, Layouts, Lokalisierungsdateien – keine Änderungen nötig
+- Validierung per `tsc --noEmit`
