@@ -1,11 +1,34 @@
 import { MapPin } from "lucide-react";
 import type { InfoArticle } from "../types";
 
+// Image source: Unsplash (free to use under the Unsplash License)
+const UNSPLASH = (id: string, w = 1200) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+
 const article: InfoArticle = {
   id: "pinzgau-pongau",
   topic: "cycling",
   icon: MapPin,
   gradient: "from-primary to-accent",
+  coverImage: UNSPLASH("photo-1770589019079-26b2e577acd2", 1600),
+  gallery: [
+    {
+      url: UNSPLASH("photo-1751229288367-48227cbfa742"),
+      caption: { de: "Bergdorf inmitten der Alpen", en: "Mountain village among the Alps" },
+    },
+    {
+      url: UNSPLASH("photo-1768161680835-c8e0cca76c22"),
+      caption: { de: "Klarer Bergsee bei einer Wanderung", en: "Clear mountain lake on a hike" },
+    },
+    {
+      url: UNSPLASH("photo-1668936132313-2c3105eef631"),
+      caption: { de: "Mit dem Rad durch die Region", en: "Cycling through the region" },
+    },
+    {
+      url: UNSPLASH("photo-1768395594632-6d6af13cfd7e"),
+      caption: { de: "Wasserfall im Salzburger Land", en: "Waterfall in Salzburg country" },
+    },
+  ],
   title: { de: "Radregion Pinzgau & Pongau", en: "Pinzgau & Pongau Cycling Region" },
   subtitle: {
     de: "Genussradeln, Mountainbike und E-Bike rund ums Chalet",

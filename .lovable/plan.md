@@ -1,66 +1,65 @@
 ## Ziel
 
-Den Galerie-Bereich um einen klaren Umschalter zwischen **Bildergalerie** und **Infogalerie** erweitern. Beide Inhalte teilen sich denselben Section-Container (`#galerie`), aber der Gast sieht immer nur eine der beiden Ansichten.
+Jede Info-Karte bekommt einen passenden, lizenzfreien Foto-Hintergrund, und der Detail-Dialog wird um eine kleine Bildergalerie (3–5 Bilder) ergänzt. Bildquelle: **Unsplash** (CC0 / Unsplash-Lizenz, kommerziell frei nutzbar, keine Attribution Pflicht).
 
-Aktuell wird `<InfoGallery />` zwar unterhalb der Bildergalerie gerendert, aber sie ist für den Gast nicht auffindbar (zu weit unten, kein Hinweis, dass es sie gibt). Außerdem wirkt das Aneinanderreihen zweier umfangreicher Galerien überladen.
+## Auswahl der Bilder
 
-## Lösung
+Pro Artikel ein Cover + 3–4 Galerie-Bilder, kuratiert nach Thema:
 
-Ein zweistufiges Tab-System direkt unter dem Section-Titel "Galerie":
+**Tauernradweg** (cycling)
+- Cover: Salzach-Flusslandschaft mit Alpen
+- Galerie: Krimmler Wasserfälle · Radfahrer am Fluss · Festung Hohenwerfen · Salzburg Altstadt
 
-```text
-┌────────────────────────────────────────────┐
-│              Galerie                       │
-│       Eindrücke & Informationen            │
-│                                            │
-│   [ 📷 Bilder ]   [ ℹ️ Infos ]              │  <- Haupt-Umschalter
-│                                            │
-│   (je nach Auswahl)                        │
-│   - Bilder: Saison-Filter + Bild-Grid      │
-│   - Infos:  Themen-Filter + Info-Karten    │
-└────────────────────────────────────────────┘
-```
+**Alpe-Adria-Radweg** (cycling)
+- Cover: Bergpass Richtung Süden / Alpenpanorama
+- Galerie: Großglockner-Region · Italienische Hügellandschaft · Adria-Küste bei Grado · Bahn-Begleitung
 
-### Verhalten
+**Pinzgau & Pongau** (culture / region)
+- Cover: Pinzgauer Bergpanorama
+- Galerie: Almlandschaft · Bergsee · Traditionelles Bauernhaus · Wanderweg
 
-- Standard-Ansicht beim Laden: **Bilder** (so wie heute gewohnt).
-- Klick auf "Infos" blendet Bilder-Grid, Saison-Filter und Upload-Button aus und zeigt stattdessen die Infogalerie (Themen-Tabs + Karten).
-- Beide Ansichten behalten ihren bisherigen internen Filter (Saisons bzw. Themen).
-- Smooth Fade beim Umschalten (gleiches `animate-fade-in` Pattern wie auf der Seite üblich).
-- Lightbox, Upload-, Edit- und Delete-Dialoge bleiben unverändert und nur in der Bilder-Ansicht aktiv.
-
-### i18n
-
-Neue Keys in `de.json` / `en.json`:
-
-```
-gallery.viewToggle.photos  -> "Bilder" / "Photos"
-gallery.viewToggle.info    -> "Infos"  / "Info"
-```
-
-Subtitle der Section leicht anpassen, sodass beide Inhalte angekündigt werden:
-- DE: "Eindrücke und Wissenswertes rund um Ihren Aufenthalt"
-- EN: "Impressions and useful info around your stay"
+Alle URLs werden direkt von `images.unsplash.com` geladen (mit `?w=…&q=80&auto=format` Parametern für Performance). Quellen werden im Code kommentiert dokumentiert.
 
 ## Technische Umsetzung
 
-**Datei:** `src/components/Gallery.tsx`
+### 1. Datenmodell erweitern (`src/content/info-articles/types.ts`)
 
-1. Neuer State: `const [view, setView] = useState<"photos" | "info">("photos")`.
-2. Direkt nach dem Section-Header zwei Toggle-Buttons rendern (gleicher Button-Style wie die Saison-Tabs, mit Lucide-Icons `Image` und `Info`).
-3. Den bisherigen Block (Saison-Tabs, Upload-Button, Empty-State, Bild-Grid) in `{view === "photos" && (...)}` einwickeln.
-4. `<InfoGallery />` (ohne den eigenen `mt-20 pt-16 border-t` Rahmen, da nicht mehr nötig) in `{view === "info" && (...)}` rendern.
-5. In `InfoGallery.tsx` den umschließenden `mt-20 pt-16 border-t border-border` Wrapper entfernen / optional machen, damit es als eigenständige Ansicht ohne Trennlinie erscheint. Eigener H3-Titel + Subtitle entfällt, da der Section-Titel schon "Galerie" sagt — stattdessen nur noch die Themen-Tabs und das Karten-Grid.
-6. Lightbox / Upload / Edit / Delete Dialoge bleiben am Section-Ende, werden aber nur relevant wenn `view === "photos"` (kein zusätzlicher Code-Aufwand, da sie von Bild-Klicks getriggert werden, die in der Info-Ansicht gar nicht existieren).
+```ts
+export interface InfoArticle {
+  // ... bestehend
+  coverImage: string;           // Unsplash URL für Karten-Hintergrund + Dialog-Header
+  gallery: {
+    url: string;
+    caption: LocalizedText;
+  }[];                          // 3-5 Bilder pro Artikel
+}
+```
 
-**Datei:** `src/i18n/locales/de.json` und `en.json`
-- Neuen Block `gallery.viewToggle` mit `photos` und `info` ergänzen.
-- Subtitle in `gallery.subtitle` ggf. anpassen (oder unverändert lassen, wenn er bereits passend ist).
+`gradient` und `icon` bleiben als Fallback erhalten (z. B. wenn ein Bild nicht lädt → `onError` zeigt Gradient).
 
-**Datenmodell / Datenbank:** keine Änderungen nötig. Die Infogalerie-Inhalte sind statische TS-Module (`src/content/info-articles/`), die DB bleibt unangetastet und damit weiterhin in 3. Normalform.
+### 2. Bilder in jeden Artikel ergänzen
+`tauernradweg.ts`, `alpe-adria.ts`, `pinzgau-pongau.ts` bekommen jeweils `coverImage` und `gallery: [...]` mit kuratierten Unsplash-URLs und bilingualen Captions.
+
+### 3. `InfoGallery.tsx` – Karten mit Bildhintergrund
+- `<img src={article.coverImage} ... className="absolute inset-0 w-full h-full object-cover" />` statt Gradient-Wrapper.
+- Icon klein oben links als Badge auf dem Bild (mit Backdrop-Blur), Topic-Label + Titel + Kurzbeschreibung im unteren Verlauf wie bisher.
+- `loading="lazy"` für Performance.
+- Hover: bestehender Scale-Effekt bleibt, wirkt mit Foto noch stärker.
+
+### 4. `InfoArticleDialog.tsx` – Header-Bild + Mini-Galerie
+- Oben: großes Cover-Bild (`aspect-[16/9]`) mit Titel-Overlay.
+- Nach den Sections, vor dem External-Link: neuer Block "Impressionen" mit 3-spaltigem Grid (mobil 2 Spalten) der Galerie-Bilder; Klick auf ein Bild öffnet es im bestehenden Lightbox-Stil (kleine eigene Lightbox im Dialog).
+- Captions als Bildunterschrift sichtbar (klein, muted).
+
+### 5. i18n-Ergänzung
+Neue Keys in `de.json` / `en.json`:
+- `infoGallery.dialog.impressions` → "Impressionen" / "Impressions"
+- `infoGallery.dialog.imageSource` → "Bilder: Unsplash" / "Images: Unsplash"
+
+### 6. Datenbank
+Keine Änderungen — Inhalte bleiben statische TS-Module (3. Normalform der DB unangetastet).
 
 ## Was bleibt unverändert
-
-- Bestehende Bildergalerie-Funktionalität (Saisons, Upload, Drag&Drop, Lightbox, Admin-Aktionen).
-- Die drei vorhandenen Info-Artikel (Tauernradweg, Alpe-Adria, Pinzgau-Pongau) und ihre Detail-Dialoge.
-- Layout, Farben, Spacings — es kommen nur zwei Toggle-Buttons hinzu.
+- Toggle Bilder/Infos, Themen-Filter, externe Links zu offiziellen Seiten.
+- Bestehende Bildergalerie und Booking-Flow.
+- Komplette Bilingualität.

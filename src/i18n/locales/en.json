@@ -460,6 +460,10 @@
     "source": "Source",
     "visitOfficial": "Visit official website",
     "comingSoon": "Coming soon",
+    "dialog": {
+      "impressions": "Impressions",
+      "imageSource": "Images: Unsplash"
+    },
     "topics": {
       "all": "All",
       "cycling": "Cycling",

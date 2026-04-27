@@ -1,11 +1,34 @@
 import { Bike } from "lucide-react";
 import type { InfoArticle } from "../types";
 
+// Image source: Unsplash (free to use under the Unsplash License)
+const UNSPLASH = (id: string, w = 1200) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+
 const article: InfoArticle = {
   id: "tauernradweg",
   topic: "cycling",
   icon: Bike,
   gradient: "from-mountain-blue to-primary",
+  coverImage: UNSPLASH("photo-1756326276980-a4ee41a9f519", 1600),
+  gallery: [
+    {
+      url: UNSPLASH("photo-1763913077146-b3d369eb4ea4"),
+      caption: { de: "Festung Hohensalzburg über Salzburg", en: "Hohensalzburg Fortress above Salzburg" },
+    },
+    {
+      url: UNSPLASH("photo-1768395594632-6d6af13cfd7e"),
+      caption: { de: "Tosender Wasserfall im Salzburger Land", en: "Roaring waterfall in Salzburg country" },
+    },
+    {
+      url: UNSPLASH("photo-1668936132313-2c3105eef631"),
+      caption: { de: "Radfahrt mit Bergpanorama", en: "Cycling with mountain panorama" },
+    },
+    {
+      url: UNSPLASH("photo-1751229288367-48227cbfa742"),
+      caption: { de: "Bergdorf im Tal", en: "Mountain village in the valley" },
+    },
+  ],
   title: { de: "Tauernradweg", en: "Tauern Cycle Path" },
   subtitle: {
     de: "Von Krimml entlang der Salzach bis nach Passau",

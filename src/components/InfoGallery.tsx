@@ -64,14 +64,18 @@ const InfoGallery = () => {
                 className="group relative overflow-hidden rounded-lg cursor-pointer aspect-[4/3] animate-fade-in-up text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 style={{ animationDelay: `${Math.min(index, 10) * 0.1}s` }}
               >
-                {/* Cover */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${article.gradient} transition-transform duration-500 group-hover:scale-110 flex items-center justify-center`}
-                >
-                  <Icon
-                    className="!w-20 !h-20 text-primary-foreground/80"
-                    strokeWidth={1.5}
-                  />
+                {/* Cover image with gradient fallback */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${article.gradient}`} />
+                <img
+                  src={article.coverImage}
+                  alt={article.title[lang]}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+
+                {/* Topic icon badge */}
+                <div className="absolute top-3 left-3 bg-background/30 backdrop-blur-sm rounded-full p-2">
+                  <Icon className="h-4 w-4 text-primary-foreground" strokeWidth={2} />
                 </div>
 
                 {/* Always-visible bottom label */}

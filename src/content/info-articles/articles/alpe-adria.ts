@@ -1,11 +1,34 @@
 import { Mountain } from "lucide-react";
 import type { InfoArticle } from "../types";
 
+// Image source: Unsplash (free to use under the Unsplash License)
+const UNSPLASH = (id: string, w = 1200) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+
 const article: InfoArticle = {
   id: "alpe-adria",
   topic: "cycling",
   icon: Mountain,
   gradient: "from-accent to-wood",
+  coverImage: UNSPLASH("photo-1698077326553-32c42f839a85", 1600),
+  gallery: [
+    {
+      url: UNSPLASH("photo-1699962765931-0f58ed74ee21"),
+      caption: { de: "Kurvenreiche Alpenstraße Richtung Süden", en: "Winding alpine road heading south" },
+    },
+    {
+      url: UNSPLASH("photo-1768161680835-c8e0cca76c22"),
+      caption: { de: "Stiller Bergsee unterwegs", en: "Quiet mountain lake along the way" },
+    },
+    {
+      url: UNSPLASH("photo-1668936132313-2c3105eef631"),
+      caption: { de: "Etappe mit dem Rad über die Berge", en: "A stage by bike across the mountains" },
+    },
+    {
+      url: UNSPLASH("photo-1756326276980-a4ee41a9f519"),
+      caption: { de: "Startpunkt Salzburg", en: "Starting point Salzburg" },
+    },
+  ],
   title: { de: "Alpe-Adria-Radweg", en: "Alpe Adria Cycle Path" },
   subtitle: {
     de: "Von Salzburg über die Alpen bis ans Mittelmeer",
