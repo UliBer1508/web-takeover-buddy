@@ -1,53 +1,40 @@
-## 5 Wanderrouten unter dem Tab „Wandern"
+# Helle Naturbilder für die Radwege
 
-Alle Touren starten in oder unmittelbar bei **Neukirchen am Großvenediger** und sind so gewählt, dass für jeden Gast etwas dabei ist – von kinderwagentauglich bis hochalpin.
+Die zwei Radweg-Artikel im Info-Bereich (**Tauernradweg** und **Alpe-Adria-Radweg**) bekommen frisch kuratierte, sonnige Naturbilder mit echtem Radsport-Bezug – Rennrad/Gravelbike vor Bergpanorama, türkise Bergseen, sonnige Bergstraßen –, die radbegeisterte Gäste sofort ansprechen.
 
-### 1. Wanderung zur Berndlalm (leicht, klassisch)
-- **Start:** Hopffeldboden / Obersulzbachtal-Parkplatz
-- **Länge / Höhenmeter / Dauer:** ca. 6 km · 350 hm · 2 h hin
-- **Charakter:** Familientauglich, breiter Almweg durch das wilde Obersulzbachtal, urige Alm mit Großvenediger-Blick
-- **Highlights:** Sulzbach-Wasserfälle · Berndlalm-Kapelle · einkehrfreundlich
-- **Quelle:** bergfex.at / outdooractive.com
+## Was sich ändert
 
-### 2. Krimmler Wasserfälle – Wasserfallweg (leicht, ikonisch)
-- **Start:** Krimml, Eingang Wasserfälle
-- **Länge / Höhenmeter / Dauer:** ca. 4 km · 460 hm · 1,5–2 h
-- **Charakter:** Höchste Wasserfälle Österreichs (380 m), gut ausgebaute Aussichtskanzeln
-- **Highlights:** Drei Fallstufen · WasserWunderWelt · Tauernhaus oben als Einkehr
-- **Quelle:** wasserfaelle-krimml.at
+Nur die Cover- und Galeriebilder in zwei Dateien werden ausgetauscht. Texte, Statistiken, Sektionen und Layout bleiben unverändert.
 
-### 3. Smaragdweg im Habachtal (leicht-mittel, für Familien & Schatzsucher)
-- **Start:** Habachtal-Parkplatz, Bramberg (Nachbarort)
-- **Länge / Höhenmeter / Dauer:** ca. 13 km · 500 hm · 4 h
-- **Charakter:** Themenweg entlang des Habachs durchs einzige Smaragdvorkommen Europas
-- **Highlights:** Mineralien-Stationen · Schaubergwerk-Atmosphäre · Thurnerkaser-Alm
-- **Quelle:** hohetauern.at / habachtal.at
+### Tauernradweg
+- **Cover**: Rennradfahrer in sonnigem Alpenpanorama
+- **Galerie**:
+  1. Genussradeln im goldenen Licht entlang der Salzach
+  2. Türkisblauer Bergsee als Etappenziel
+  3. Sonniger Radweg durch lichten Bergwald
+  4. Pinzgauer Bergdorf im Sonnenlicht
 
-### 4. Wildkogel-Gipfeltour (mittel, Panorama)
-- **Start:** Bergstation Smaragdbahn (Auffahrt empfohlen) oder Talstation Neukirchen
-- **Länge / Höhenmeter / Dauer:** ab Bergstation ca. 5 km · 350 hm · 2 h Rundweg
-- **Charakter:** 360°-Panorama auf Hohe Tauern und Großvenediger
-- **Highlights:** Gipfelkreuz Wildkogel (2.224 m) · Geißstein-Blick · Erlebniswelt am Berg
-- **Quelle:** wildkogel-arena.at
+### Alpe-Adria-Radweg
+- **Cover**: Gravelbike vor Alpenpanorama
+- **Galerie**:
+  1. Rennrad-Etappe über sonnige Alpenpässe
+  2. Glasklarer Bergsee in Kärnten
+  3. Eindrucksvolle Brückenpassage mit Bergblick
+  4. Sonniger Süden – Ankunft an der Adria
 
-### 5. Kürsingerhütte über Berndlalm (anspruchsvoll, hochalpin)
-- **Start:** Hopffeldboden / Obersulzbachtal
-- **Länge / Höhenmeter / Dauer:** ca. 13 km · 1.400 hm · 5–6 h hin
-- **Charakter:** Aufstieg zur Schutzhütte (2.558 m) am Großvenediger – für trittsichere, geübte Wanderer
-- **Highlights:** Großvenediger-Blick · Gletscherzunge · Übernachtung auf der Hütte möglich
-- **Quelle:** bergwelten.com / outdooractive.com
+Alle Bildunterschriften werden zweisprachig (DE/EN) aktualisiert, passend zum neuen Motiv.
 
-## Umsetzung
+## Technische Details
 
-Pro Tour ein TS-Modul wie bei den Radtouren (`src/content/info-articles/articles/`):
-- `topic: "hiking"`
-- `icon`: passend (`Footprints`, `Mountain`, `Droplet`/`Waves`, `Gem`, `Trees`)
-- `gradient`: Fallback-Farbverlauf
-- `coverImage` + 4-Bilder-Galerie (Unsplash, lizenzfrei)
-- `stats`: Länge · Höhenmeter · Dauer · Schwierigkeit
-- `sections`: Streckenverlauf · Highlights · Gut zu wissen
-- `externalUrl`: Link zur Originalquelle (bergfex / wildkogel-arena / hohetauern.at etc.)
+- **Geänderte Dateien**:
+  - `src/content/info-articles/articles/tauernradweg.ts` (Zeilen 13–31: `coverImage` + `gallery`)
+  - `src/content/info-articles/articles/alpe-adria.ts` (Zeilen 13–31: `coverImage` + `gallery`)
+- **Bildquelle**: Lizenzfreie Unsplash-Fotos (gleiche `UNSPLASH(id)`-Helper wie bisher, nur neue, bewährte Foto-IDs mit Radsport-/Alpenbezug)
+- **Keine Schema-Änderungen**, keine neuen Dependencies, kein Auto-Layout-Eingriff
+- Verifikation per `tsc --noEmit`
 
-Keine Datenbankänderung nötig – die statische TS-Struktur bleibt erhalten (3. Normalform der DB unangetastet). Die Karten erscheinen automatisch unter dem **Wandern**-Tab in der Infogalerie und der Counter springt von 0 auf 5.
+## Was unberührt bleibt
 
-Sind die fünf Touren so passend? Falls du andere Routen bevorzugst (z. B. Postalm, Thüringer Hütte, Untersulzbachtal mit Wasserfall, Tauernhöhenweg-Etappe), einfach sagen – dann tauschen wir aus, bevor ich umsetze.
+- Wander-Artikel (Berndlalm, Krimml, Smaragdweg, Wildkogel, Kürsingerhütte) – die wurden bereits zuletzt mit hellen Naturmotiven versorgt
+- Komponenten `InfoGallery.tsx` und `InfoArticleDialog.tsx`
+- Lokalisierungsdateien

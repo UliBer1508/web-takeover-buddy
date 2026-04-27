@@ -10,23 +10,23 @@ const article: InfoArticle = {
   topic: "cycling",
   icon: Bike,
   gradient: "from-mountain-blue to-primary",
-  coverImage: UNSPLASH("photo-1544191696-15693072e0b5", 1600),
+  coverImage: UNSPLASH("photo-1541625602330-2277a4c46182", 1600),
   gallery: [
     {
-      url: UNSPLASH("photo-1517649763962-0c623066013b"),
-      caption: { de: "Sonnige Radtour entlang der Salzach", en: "Sunny ride along the Salzach river" },
+      url: UNSPLASH("photo-1571333250630-f0230c320b6d"),
+      caption: { de: "Genussradeln entlang der Salzach im goldenen Licht", en: "Leisure cycling along the Salzach in golden light" },
     },
     {
-      url: UNSPLASH("photo-1506260408121-e353d10b87c7"),
-      caption: { de: "Wasserfall im Salzburger Land", en: "Waterfall in Salzburg country" },
+      url: UNSPLASH("photo-1506905925346-21bda4d32df4"),
+      caption: { de: "Türkisblauer Bergsee als Etappenziel", en: "Turquoise mountain lake as a stage destination" },
     },
     {
-      url: UNSPLASH("photo-1558981806-ec527fa84c39"),
-      caption: { de: "Radfahrt mit Bergpanorama", en: "Cycling with mountain panorama" },
+      url: UNSPLASH("photo-1502082553048-f009c37129b9"),
+      caption: { de: "Sonniger Radweg durch lichten Bergwald", en: "Sunny cycle path through bright mountain forest" },
     },
     {
       url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
-      caption: { de: "Bergdorf im sonnigen Tal", en: "Mountain village in a sunny valley" },
+      caption: { de: "Pinzgauer Bergdorf im Sonnenlicht", en: "Pinzgau mountain village bathed in sunlight" },
     },
   ],
   title: { de: "Tauernradweg", en: "Tauern Cycle Path" },
