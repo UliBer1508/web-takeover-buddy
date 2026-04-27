@@ -1,40 +1,31 @@
-# Echte Pinzgau-Naturfotos in alle 5 Radtouren einbinden
+## Ziel
+Unter dem Satz „Tipps und offizielle Quellen rund um die Region – von Radwegen bis Kultur." (Tab „Infos" der Galerie) einen emotionalen Werbetext einfügen, der die Vorzüge der Region Pinzgau betont und Gäste zur Buchung des Chalets motiviert.
 
-## Status
-20 authentische Naturfotos aus der **Pinzgau / Hohe Tauern**-Region wurden bereits von **Wikimedia Commons** (CC BY-SA Lizenz) heruntergeladen und liegen unter `src/assets/bike-routes/`. Jetzt müssen sie nur noch in die Tour-Dateien eingebunden werden.
+## Inhalt des Werbetexts (DE)
+**Überschrift:** „Warum Ihr nächster Urlaub ins Pinzgau führen sollte"
 
-## Bildzuordnung pro Tour
+**Fließtext (kurz, emotional, 3–4 Sätze):**
+„Zwischen den Gipfeln der Hohen Tauern, glasklaren Bergbächen und sonnigen Almen erwartet Sie eine der schönsten Regionen Österreichs. Ob entspanntes Radeln am Tauernradweg, Wanderungen zu bewirtschafteten Almen, der Donnergesang der Krimmler Wasserfälle oder Skitage am Wildkogel – im Pinzgau findet jeder seinen Lieblingsmoment. Unten finden Sie eine Auswahl unserer persönlichen Empfehlungen rund um Touren, Natur und Kultur. Lassen Sie sich inspirieren – und buchen Sie Ihren Aufenthalt in unserem Chalet als Ausgangspunkt für all diese Erlebnisse."
 
-### 1. Tauernradweg
-- Cover: Wald im Pinzgau – Salzach
-- Galerie: Salzach bei Neukirchen · Salzachtal Hollersbach · Sommerblick vom Plattenkogel
+**Call-to-Action-Button:** „Jetzt anfragen" → scrollt zu `#booking` (oder zur bestehenden Buchungssektion).
 
-### 2. Radregion Pinzgau & Pongau
-- Cover: Pass Thurn – Blick ins Salzachtal
-- Galerie: Salzach Bramberg · Wildkogel über Hollersbach · Almlandschaft Sulzau
+## Inhalt EN (Spiegelung)
+**Heading:** „Why your next holiday belongs in the Pinzgau"
 
-### 3. Pinzgauer Lokalbahn-Tour
-- Cover: Landschaft entlang der Pinzgauer Lokalbahn
-- Galerie: Bahnhof Krimml · Lokalbahnstrecke Neukirchen · Salzach Bramberg
+**Body:** „Between the peaks of the Hohe Tauern, crystal-clear mountain streams and sun-drenched alpine pastures lies one of Austria's most beautiful regions. Whether it's easy cycling along the Tauern Cycle Path, hikes to welcoming alpine huts, the thunder of the Krimml Waterfalls or ski days on the Wildkogel – the Pinzgau has a favourite moment for everyone. Below you'll find a curated selection of our personal recommendations on tours, nature and culture. Get inspired – and book your stay at our chalet as the perfect base for all these experiences."
 
-### 4. Hohe Tauern Bike Trail – Etappe 12
-- Cover: Oberes Obersulzbachtal
-- Galerie: Hinteres Obersulzbachtal · Postalm-Blick · Schiedhofalm
-
-### 5. Salzachtal Krimml → Mittersill
-- Cover: Wald im Pinzgau Ortsansicht
-- Galerie: Krimmler Wasserfälle · Salzach Bramberg · Brücke über Salzach Mittersill
+**CTA:** „Book now"
 
 ## Technische Umsetzung
-- **Geänderte Dateien** (5):
-  - `src/content/info-articles/articles/tauernradweg.ts`
-  - `src/content/info-articles/articles/pinzgau-pongau.ts`
-  - `src/content/info-articles/articles/pinzgauer-lokalbahn-rad.ts`
-  - `src/content/info-articles/articles/hohe-tauern-bike-trail-et12.ts`
-  - `src/content/info-articles/articles/salzachtal-krimml-mittersill.ts`
-- Pro Datei: Unsplash-Helper entfernen, lokale Asset-Imports aus `@/assets/bike-routes/` einsetzen, `coverImage` und `gallery` durch lokale Bilder + ortsspezifische DE/EN-Captions ersetzen
-- Quellenkommentar (Wikimedia Commons CC BY-SA) im Header
-- Validierung per `tsc --noEmit`
+1. **i18n-Strings** in `src/i18n/locales/de.json` und `src/i18n/locales/en.json` unter `infoGallery` ergänzen:
+   - `pitch.heading`, `pitch.body`, `pitch.cta`
+2. **`src/components/InfoGallery.tsx`** anpassen: Direkt nach dem bestehenden Subtitle-Block (Zeile 23–25) eine neue, designkonforme Card einfügen:
+   - Container mit `bg-card/60`, `border`, `rounded-2xl`, dezentem Schatten, max-w-3xl, zentriert
+   - Headline in `text-2xl font-bold`, Body in `text-muted-foreground leading-relaxed`
+   - CTA-Button (`variant="default"`) mit Anker-Link auf `#booking`
+   - Nutzt ausschließlich Design-Tokens (kein hartkodiertes Farb-Styling)
+3. **Sprachumschaltung** über bestehenden `useTranslation`-Hook.
 
-## Was unberührt bleibt
-- Restliche Artikel (Wandern, Kultur, Skifahren), Komponenten, Tour-Inhalte/Stats/Sektionen
+## Was unverändert bleibt
+- Topic-Tabs, Grid, Dialog, Routen, restliche Inhalte
+- Bestehender Subtitle-Text
