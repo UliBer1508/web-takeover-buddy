@@ -10,23 +10,23 @@ const article: InfoArticle = {
   topic: "cycling",
   icon: Mountain,
   gradient: "from-accent to-wood",
-  coverImage: UNSPLASH("photo-1517649763962-0c623066013b", 1600),
+  coverImage: UNSPLASH("photo-1571068316344-75bc76f77890", 1600),
   gallery: [
     {
-      url: UNSPLASH("photo-1486870591958-9b9d0d1dda99"),
-      caption: { de: "Sonnige Alpenstraße Richtung Süden", en: "Sunny alpine road heading south" },
+      url: UNSPLASH("photo-1505705694340-019e1e335916"),
+      caption: { de: "Rennrad-Etappe über sonnige Alpenpässe", en: "Road bike stage across sunny alpine passes" },
     },
     {
-      url: UNSPLASH("photo-1500534314209-a25ddb2bd429"),
-      caption: { de: "Heller Bergsee unterwegs", en: "Bright mountain lake along the way" },
+      url: UNSPLASH("photo-1470770841072-f978cf4d019e"),
+      caption: { de: "Glasklarer Bergsee in Kärnten", en: "Crystal-clear mountain lake in Carinthia" },
     },
     {
-      url: UNSPLASH("photo-1558981806-ec527fa84c39"),
-      caption: { de: "Etappe mit dem Rad über die Berge", en: "A stage by bike across the mountains" },
+      url: UNSPLASH("photo-1518609878373-06d740f60d8b"),
+      caption: { de: "Eindrucksvolle Brückenpassage mit Bergblick", en: "Impressive bridge crossing with mountain view" },
     },
     {
-      url: UNSPLASH("photo-1544191696-15693072e0b5"),
-      caption: { de: "Radweg durch grüne Landschaft", en: "Cycle path through green countryside" },
+      url: UNSPLASH("photo-1469474968028-56623f02e42e"),
+      caption: { de: "Sonniger Süden – Ankunft an der Adria", en: "Sunny south – arriving at the Adriatic" },
     },
   ],
   title: { de: "Alpe-Adria-Radweg", en: "Alpe Adria Cycle Path" },
