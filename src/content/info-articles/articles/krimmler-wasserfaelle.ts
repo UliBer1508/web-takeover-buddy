@@ -10,23 +10,23 @@ const article: InfoArticle = {
   topic: "hiking",
   icon: Droplets,
   gradient: "from-mountain-blue to-primary",
-  coverImage: UNSPLASH("photo-1768395594632-6d6af13cfd7e", 1600),
+  coverImage: UNSPLASH("photo-1506260408121-e353d10b87c7", 1600),
   gallery: [
     {
-      url: UNSPLASH("photo-1757330878339-0b0c3b02d9b5"),
-      caption: { de: "Aussichtskanzeln entlang des Wasserfallweges", en: "Viewing platforms along the waterfall path" },
+      url: UNSPLASH("photo-1502082553048-f009c37129b9"),
+      caption: { de: "Sonniger Waldweg entlang der Fälle", en: "Sunny forest path along the falls" },
     },
     {
-      url: UNSPLASH("photo-1761384140398-88c88e648fcb"),
+      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
       caption: { de: "Bergblumen oberhalb der Fälle", en: "Mountain flowers above the falls" },
     },
     {
-      url: UNSPLASH("photo-1769029299328-31fa8472ef67"),
-      caption: { de: "Tauernhaus als Einkehr am oberen Ende", en: "Tauernhaus stop at the top of the trail" },
+      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
+      caption: { de: "Almwiese am oberen Ende", en: "Alpine meadow at the top" },
     },
     {
-      url: UNSPLASH("photo-1756846036941-36644e2dff7a"),
-      caption: { de: "Alpine Landschaft im Krimmler Achental", en: "Alpine scenery in the Krimml Achen Valley" },
+      url: UNSPLASH("photo-1500534314209-a25ddb2bd429"),
+      caption: { de: "Helle alpine Landschaft im Achental", en: "Bright alpine scenery in the Achen Valley" },
     },
   ],
   title: { de: "Krimmler Wasserfälle – Wasserfallweg", en: "Krimml Waterfalls – Waterfall Trail" },

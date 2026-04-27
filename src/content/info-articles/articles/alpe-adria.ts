@@ -10,23 +10,23 @@ const article: InfoArticle = {
   topic: "cycling",
   icon: Mountain,
   gradient: "from-accent to-wood",
-  coverImage: UNSPLASH("photo-1698077326553-32c42f839a85", 1600),
+  coverImage: UNSPLASH("photo-1517649763962-0c623066013b", 1600),
   gallery: [
     {
-      url: UNSPLASH("photo-1699962765931-0f58ed74ee21"),
-      caption: { de: "Kurvenreiche Alpenstraße Richtung Süden", en: "Winding alpine road heading south" },
+      url: UNSPLASH("photo-1486870591958-9b9d0d1dda99"),
+      caption: { de: "Sonnige Alpenstraße Richtung Süden", en: "Sunny alpine road heading south" },
     },
     {
-      url: UNSPLASH("photo-1768161680835-c8e0cca76c22"),
-      caption: { de: "Stiller Bergsee unterwegs", en: "Quiet mountain lake along the way" },
+      url: UNSPLASH("photo-1500534314209-a25ddb2bd429"),
+      caption: { de: "Heller Bergsee unterwegs", en: "Bright mountain lake along the way" },
     },
     {
-      url: UNSPLASH("photo-1668936132313-2c3105eef631"),
+      url: UNSPLASH("photo-1558981806-ec527fa84c39"),
       caption: { de: "Etappe mit dem Rad über die Berge", en: "A stage by bike across the mountains" },
     },
     {
-      url: UNSPLASH("photo-1756326276980-a4ee41a9f519"),
-      caption: { de: "Startpunkt Salzburg", en: "Starting point Salzburg" },
+      url: UNSPLASH("photo-1544191696-15693072e0b5"),
+      caption: { de: "Radweg durch grüne Landschaft", en: "Cycle path through green countryside" },
     },
   ],
   title: { de: "Alpe-Adria-Radweg", en: "Alpe Adria Cycle Path" },
