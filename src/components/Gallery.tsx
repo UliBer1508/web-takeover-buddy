@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff, GripVertical, Pencil } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff, GripVertical, Pencil, Image as ImageIcon, Info } from "lucide-react";
 // VisuallyHidden import removed; using sr-only utility instead
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -73,6 +73,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
   const [draggedImage, setDraggedImage] = useState<GalleryImage | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [imageToEdit, setImageToEdit] = useState<GalleryImage | null>(null);
+  const [view, setView] = useState<"photos" | "info">("photos");
 
   // Fetch seasons from database
   const { data: seasons = [] } = useQuery({
@@ -343,6 +344,30 @@ const Gallery = ({ houseId }: GalleryProps) => {
           </p>
         </div>
 
+        {/* View Toggle: Photos vs Info */}
+        <div className="flex justify-center gap-2 mb-8">
+          <Button
+            variant={view === "photos" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setView("photos")}
+            className="gap-2"
+          >
+            <ImageIcon className="h-4 w-4" />
+            {t("gallery.viewToggle.photos")}
+          </Button>
+          <Button
+            variant={view === "info" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setView("info")}
+            className="gap-2"
+          >
+            <Info className="h-4 w-4" />
+            {t("gallery.viewToggle.info")}
+          </Button>
+        </div>
+
+        {view === "photos" && (
+          <div className="animate-fade-in">
         {/* Season Filter Tabs */}
         <div className="flex flex-wrap justify-center gap-2 mb-6">
           {seasons.map((season) => {
@@ -481,8 +506,14 @@ const Gallery = ({ houseId }: GalleryProps) => {
             ))}
           </div>
         )}
+          </div>
+        )}
 
-        <InfoGallery />
+        {view === "info" && (
+          <div className="animate-fade-in">
+            <InfoGallery />
+          </div>
+        )}
       </div>
 
       {/* Upload Dialog */}

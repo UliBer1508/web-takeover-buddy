@@ -84,8 +84,12 @@
     "hidden": "Ausgeblendet"
   },
   "gallery": {
-    "title": "Bildergalerie",
-    "subtitle": "Entdecken Sie die luxuriöse Ausstattung und die atemberaubende Lage unseres Chalets",
+    "title": "Galerie",
+    "subtitle": "Eindrücke und Wissenswertes rund um Ihren Aufenthalt",
+    "viewToggle": {
+      "photos": "Bilder",
+      "info": "Infos"
+    },
     "addImages": "Bilder hinzufügen",
     "noImages": "Noch keine Bilder vorhanden",
     "noImagesForSeason": "Keine Bilder für \"{{season}}\" vorhanden",

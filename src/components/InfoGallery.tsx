@@ -19,9 +19,8 @@ const InfoGallery = () => {
     topic === "all" ? infoArticles.length : infoArticles.filter((a) => a.topic === topic).length;
 
   return (
-    <div className="mt-20 pt-16 border-t border-border">
-      <div className="text-center mb-10 animate-fade-in">
-        <h3 className="text-3xl md:text-4xl font-bold mb-3">{t("infoGallery.title")}</h3>
+    <div>
+      <div className="text-center mb-8">
         <p className="text-muted-foreground max-w-2xl mx-auto">{t("infoGallery.subtitle")}</p>
       </div>
 
