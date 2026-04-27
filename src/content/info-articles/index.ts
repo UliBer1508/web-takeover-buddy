@@ -18,6 +18,15 @@ import baumgartenalm from "./articles/baumgartenalm";
 import skiarenaWildkogel from "./articles/skiarena-wildkogel";
 import zillertalArena from "./articles/zillertal-arena";
 import saalbachHinterglemm from "./articles/saalbach-hinterglemm";
+import kitzskiKitzbuehel from "./articles/kitzski-kitzbuehel";
+import kitzsteinhorn from "./articles/kitzsteinhorn";
+import schmittenhoehe from "./articles/schmittenhoehe";
+import hochkoenig from "./articles/hochkoenig";
+import grossarltal from "./articles/grossarltal";
+import mayrhofenHintertux from "./articles/mayrhofen-hintertux";
+import obertauern from "./articles/obertauern";
+import rauris from "./articles/rauris";
+import snowSpaceFlachau from "./articles/snow-space-flachau";
 import nationalparkzentrum from "./articles/nationalparkzentrum";
 import museumBramberg from "./articles/museum-bramberg";
 import felberturm from "./articles/felberturm";
@@ -41,6 +50,15 @@ export const infoArticles: InfoArticle[] = [
   skiarenaWildkogel,
   zillertalArena,
   saalbachHinterglemm,
+  kitzskiKitzbuehel,
+  kitzsteinhorn,
+  schmittenhoehe,
+  hochkoenig,
+  grossarltal,
+  mayrhofenHintertux,
+  obertauern,
+  rauris,
+  snowSpaceFlachau,
   nationalparkzentrum,
   museumBramberg,
   felberturm,
