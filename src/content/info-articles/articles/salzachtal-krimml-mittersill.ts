@@ -1,20 +1,22 @@
 import { Bike } from "lucide-react";
 import type { InfoArticle } from "../types";
+import cover from "@/assets/bike-routes/salzachtal-cover.jpg";
+import g1 from "@/assets/bike-routes/salzachtal-g1.jpg";
+import g2 from "@/assets/bike-routes/salzachtal-g2.jpg";
+import g3 from "@/assets/bike-routes/salzachtal-g3.jpg";
 
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Image source: Wikimedia Commons (CC BY-SA) - authentic Salzach valley photography
 
 const article: InfoArticle = {
   id: "salzachtal-krimml-mittersill",
   topic: "cycling",
   icon: Bike,
   gradient: "from-accent to-primary",
-  coverImage: UNSPLASH("photo-1571333250630-f0230c320b6d", 1600),
+  coverImage: cover,
   gallery: [
-    { url: UNSPLASH("photo-1544191696-15693072e0b5"), caption: { de: "Flacher Radweg entlang der Salzach", en: "Flat cycle path along the Salzach" } },
-    { url: UNSPLASH("photo-1502784444187-359ac186c5bb"), caption: { de: "Bergdörfer im sonnigen Salzachtal", en: "Mountain villages in the sunny Salzach Valley" } },
-    { url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"), caption: { de: "Wiesen und Felder am Wegesrand", en: "Meadows and fields along the route" } },
-    { url: UNSPLASH("photo-1470770841072-f978cf4d019e"), caption: { de: "Stille Bachläufe im Pinzgau", en: "Quiet streams in the Pinzgau" } },
+    { url: g1, caption: { de: "Krimmler Wasserfälle – Start der Tour", en: "Krimml waterfalls – start of the tour" } },
+    { url: g2, caption: { de: "Salzach bei Bramberg am Wildkogel", en: "Salzach river near Bramberg am Wildkogel" } },
+    { url: g3, caption: { de: "Brücke über die Salzach bei Mittersill", en: "Bridge over the Salzach near Mittersill" } },
   ],
   title: { de: "Salzachtal: Krimml → Mittersill", en: "Salzach Valley: Krimml → Mittersill" },
   subtitle: { de: "Klassische Genussetappe entlang der Salzach", en: "Classic leisure stage along the Salzach river" },

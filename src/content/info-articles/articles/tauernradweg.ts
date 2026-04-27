@@ -1,33 +1,22 @@
 import { Bike } from "lucide-react";
 import type { InfoArticle } from "../types";
+import cover from "@/assets/bike-routes/tauernradweg-cover.jpg";
+import g1 from "@/assets/bike-routes/tauernradweg-g1.jpg";
+import g2 from "@/assets/bike-routes/tauernradweg-g2.jpg";
+import g3 from "@/assets/bike-routes/tauernradweg-g3.jpg";
 
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+// Image source: Wikimedia Commons (CC BY-SA) - authentic Pinzgau / Salzach region photography
 
 const article: InfoArticle = {
   id: "tauernradweg",
   topic: "cycling",
   icon: Bike,
   gradient: "from-mountain-blue to-primary",
-  coverImage: UNSPLASH("photo-1541625602330-2277a4c46182", 1600),
+  coverImage: cover,
   gallery: [
-    {
-      url: UNSPLASH("photo-1571333250630-f0230c320b6d"),
-      caption: { de: "Genussradeln entlang der Salzach im goldenen Licht", en: "Leisure cycling along the Salzach in golden light" },
-    },
-    {
-      url: UNSPLASH("photo-1506905925346-21bda4d32df4"),
-      caption: { de: "Türkisblauer Bergsee als Etappenziel", en: "Turquoise mountain lake as a stage destination" },
-    },
-    {
-      url: UNSPLASH("photo-1502082553048-f009c37129b9"),
-      caption: { de: "Sonniger Radweg durch lichten Bergwald", en: "Sunny cycle path through bright mountain forest" },
-    },
-    {
-      url: UNSPLASH("photo-1502784444187-359ac186c5bb"),
-      caption: { de: "Pinzgauer Bergdorf im Sonnenlicht", en: "Pinzgau mountain village bathed in sunlight" },
-    },
+    { url: g1, caption: { de: "Salzach bei Neukirchen am Großvenediger", en: "The Salzach river near Neukirchen am Großvenediger" } },
+    { url: g2, caption: { de: "Salzachtal bei Hollersbach im Pinzgau", en: "Salzach valley near Hollersbach in Pinzgau" } },
+    { url: g3, caption: { de: "Sommerblick ins Salzachtal vom Plattenkogel", en: "Summer view into the Salzach valley from Plattenkogel" } },
   ],
   title: { de: "Tauernradweg", en: "Tauern Cycle Path" },
   subtitle: {
