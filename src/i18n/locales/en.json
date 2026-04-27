@@ -460,6 +460,11 @@
     "source": "Source",
     "visitOfficial": "Visit official website",
     "comingSoon": "Coming soon",
+    "pitch": {
+      "heading": "Why your next holiday belongs in the Pinzgau",
+      "body": "Between the peaks of the Hohe Tauern, crystal-clear mountain streams and sun-drenched alpine pastures lies one of Austria's most beautiful regions. Whether it's easy cycling along the Tauern Cycle Path, hikes to welcoming alpine huts, the thunder of the Krimml Waterfalls or ski days on the Wildkogel – the Pinzgau has a favourite moment for everyone. Below you'll find a curated selection of our personal recommendations on tours, nature and culture. Get inspired – and book your stay at our chalet as the perfect base for all these experiences.",
+      "cta": "Book now"
+    },
     "dialog": {
       "impressions": "Impressions",
       "imageSource": "Images: Unsplash"
