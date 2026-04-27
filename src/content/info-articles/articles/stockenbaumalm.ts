@@ -1,10 +1,10 @@
 import { Sun } from "lucide-react";
 import type { InfoArticle } from "../types";
+// Real photos from Wikimedia Commons (CC BY-SA)
+// Wildkogel from Hollersbach by Herzi Pinki; Trattenbachalm by Woelle ffm
 import stockenbaumalmCover from "@/assets/hiking/stockenbaumalm-cover.jpg";
-
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+import wildkogelView from "@/assets/hiking/wildkogel-view.jpg";
+import trattenbachalm from "@/assets/hiking/trattenbachalm.jpg";
 
 const article: InfoArticle = {
   id: "stockenbaumalm",
@@ -14,20 +14,12 @@ const article: InfoArticle = {
   coverImage: stockenbaumalmCover,
   gallery: [
     {
-      url: UNSPLASH("photo-1418065460487-3e41a6c84dc5"),
-      caption: { de: "Sonniger Höhenweg auf halber Höhe", en: "Sunny high path at mid-altitude" },
+      url: wildkogelView,
+      caption: { de: "Wildkogel-Massiv über dem Sonnenweg", en: "Wildkogel massif above the Sun Trail" },
     },
     {
-      url: UNSPLASH("photo-1486870591958-9b9d0d1dda99"),
-      caption: { de: "Aussicht ins Salzachtal", en: "View into the Salzach Valley" },
-    },
-    {
-      url: UNSPLASH("photo-1464822759023-fed622ff2c3b"),
-      caption: { de: "Großvenediger-Panorama vom Sonnenweg", en: "Großvenediger panorama from the sunny trail" },
-    },
-    {
-      url: UNSPLASH("photo-1469474968028-56623f02e42e"),
-      caption: { de: "Gemütliche Einkehr am Gasthof Stockenbaum", en: "Cosy stop at Gasthof Stockenbaum" },
+      url: trattenbachalm,
+      caption: { de: "Pinzgauer Almlandschaft am Höhenweg", en: "Pinzgau alpine landscape along the high trail" },
     },
   ],
   title: { de: "Stockenbaumalm via Sonnenweg", en: "Stockenbaumalm via Sun Trail" },

@@ -1,12 +1,12 @@
 import { Footprints } from "lucide-react";
 import type { InfoArticle } from "../types";
+// Real photos from Wikimedia Commons (CC BY-SA)
+// "berndlalm-cover" / "berndlalm-view" by Whgler
+// "obersulzbachtal-postalm" & "...-geiger" CC BY-SA 4.0
 import berndlalmCover from "@/assets/hiking/berndlalm-cover.jpg";
 import berndlalmView from "@/assets/hiking/berndlalm-view.jpg";
-
-// Cover & gallery photo "berndlalm-view" by Whgler, Wikimedia Commons, CC BY-SA
-// Image source: Unsplash (free to use under the Unsplash License)
-const UNSPLASH = (id: string, w = 1200) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+import obersulzbachtalPostalm from "@/assets/hiking/obersulzbachtal-postalm.jpg";
+import obersulzbachtalGeiger from "@/assets/hiking/obersulzbachtal-geiger.jpg";
 
 const article: InfoArticle = {
   id: "berndlalm",
@@ -20,16 +20,12 @@ const article: InfoArticle = {
       caption: { de: "Blick von der Berndlalm ins Obersulzbachtal", en: "View from Berndlalm into the Obersulzbach Valley" },
     },
     {
-      url: UNSPLASH("photo-1502082553048-f009c37129b9"),
-      caption: { de: "Schattige Waldpassage am Aufstieg", en: "Shady forest section on the way up" },
+      url: obersulzbachtalPostalm,
+      caption: { de: "Obersulzbachtal von der Postalm", en: "Obersulzbach Valley from Postalm" },
     },
     {
-      url: UNSPLASH("photo-1506905925346-21bda4d32df4"),
-      caption: { de: "Klarer Bergbach am Wegesrand", en: "Clear mountain stream along the path" },
-    },
-    {
-      url: UNSPLASH("photo-1464822759023-fed622ff2c3b"),
-      caption: { de: "Blick zum Großvenediger", en: "View towards the Großvenediger" },
+      url: obersulzbachtalGeiger,
+      caption: { de: "Obersulzbachtal mit Großem Geiger", en: "Obersulzbach Valley with Großer Geiger" },
     },
   ],
   title: { de: "Wanderung zur Berndlalm", en: "Hike to Berndlalm" },
