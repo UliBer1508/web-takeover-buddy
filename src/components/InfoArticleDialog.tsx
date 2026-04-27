@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, X } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { InfoArticle } from "@/content/info-articles";
 
@@ -157,13 +157,6 @@ const InfoArticleDialog = ({ article, open, onOpenChange }: Props) => {
               {lightboxIndex !== null ? article.gallery[lightboxIndex].caption[lang] : ""}
             </DialogDescription>
           </div>
-          <button
-            onClick={() => setLightboxIndex(null)}
-            className="absolute top-4 right-4 z-50 text-white hover:text-accent transition-colors"
-            aria-label="Close"
-          >
-            <X className="h-8 w-8" />
-          </button>
           {lightboxIndex !== null && (
             <div className="flex flex-col items-center justify-center p-4 max-h-[95vh]">
               <img
