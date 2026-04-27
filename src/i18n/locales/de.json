@@ -460,6 +460,11 @@
     "source": "Quelle",
     "visitOfficial": "Zur offiziellen Webseite",
     "comingSoon": "Bald verfügbar",
+    "pitch": {
+      "heading": "Warum Ihr nächster Urlaub ins Pinzgau führen sollte",
+      "body": "Zwischen den Gipfeln der Hohen Tauern, glasklaren Bergbächen und sonnigen Almen erwartet Sie eine der schönsten Regionen Österreichs. Ob entspanntes Radeln am Tauernradweg, Wanderungen zu bewirtschafteten Almen, der Donnergesang der Krimmler Wasserfälle oder Skitage am Wildkogel – im Pinzgau findet jeder seinen Lieblingsmoment. Unten finden Sie eine Auswahl unserer persönlichen Empfehlungen rund um Touren, Natur und Kultur. Lassen Sie sich inspirieren – und buchen Sie Ihren Aufenthalt in unserem Chalet als Ausgangspunkt für all diese Erlebnisse.",
+      "cta": "Jetzt anfragen"
+    },
     "dialog": {
       "impressions": "Impressionen",
       "imageSource": "Bilder: Unsplash"
