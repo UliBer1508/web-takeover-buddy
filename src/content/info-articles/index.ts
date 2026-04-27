@@ -3,6 +3,9 @@ import type { InfoArticle, InfoTopic } from "./types";
 import tauernradweg from "./articles/tauernradweg";
 import alpeAdria from "./articles/alpe-adria";
 import pinzgauPongau from "./articles/pinzgau-pongau";
+import pinzgauerLokalbahnRad from "./articles/pinzgauer-lokalbahn-rad";
+import hoheTauernBikeTrailEt12 from "./articles/hohe-tauern-bike-trail-et12";
+import salzachtalKrimmlMittersill from "./articles/salzachtal-krimml-mittersill";
 import berndlalm from "./articles/berndlalm";
 import krimmlerWasserfaelle from "./articles/krimmler-wasserfaelle";
 import smaragdwegHabachtal from "./articles/smaragdweg-habachtal";
@@ -17,6 +20,9 @@ export const infoArticles: InfoArticle[] = [
   tauernradweg,
   alpeAdria,
   pinzgauPongau,
+  pinzgauerLokalbahnRad,
+  salzachtalKrimmlMittersill,
+  hoheTauernBikeTrailEt12,
   berndlalm,
   stockenbaumalm,
   baumgartenalm,
