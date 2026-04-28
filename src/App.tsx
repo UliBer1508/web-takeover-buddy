@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import RegionGuide from "./pages/RegionGuide";
 import RegionGuideArticle from "./pages/RegionGuideArticle";
+import GuestMaterials from "./pages/GuestMaterials";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/admin" element={<Auth />} />
             <Route path="/region-guide" element={<RegionGuide />} />
             <Route path="/region-guide/:slug" element={<RegionGuideArticle />} />
+            <Route path="/admin/guest-materials" element={<GuestMaterials />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
