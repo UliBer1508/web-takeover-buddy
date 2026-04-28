@@ -185,17 +185,23 @@ const Testimonials = () => {
       </div>
 
       {editingReview && (
-        <ReviewEditDialog
-          review={editingReview}
-          open={!!editingReview}
-          onOpenChange={(open) => !open && setEditingReview(null)}
-        />
+        <Suspense fallback={null}>
+          <ReviewEditDialog
+            review={editingReview}
+            open={!!editingReview}
+            onOpenChange={(open) => !open && setEditingReview(null)}
+          />
+        </Suspense>
       )}
 
-      <ReviewAddDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-      />
+      {addDialogOpen && (
+        <Suspense fallback={null}>
+          <ReviewAddDialog
+            open={addDialogOpen}
+            onOpenChange={setAddDialogOpen}
+          />
+        </Suspense>
+      )}
     </section>
   );
 };
