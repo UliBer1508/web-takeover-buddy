@@ -511,26 +511,36 @@ const Gallery = ({ houseId }: GalleryProps) => {
 
         {view === "info" && (
           <div className="animate-fade-in">
-            <InfoGallery />
+            <Suspense fallback={<div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+              <InfoGallery />
+            </Suspense>
           </div>
         )}
       </div>
 
-      {/* Upload Dialog */}
-      <ImageUploadDialog
-        open={uploadDialogOpen}
-        onOpenChange={setUploadDialogOpen}
-        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
-        houseId={houseId}
-      />
+      {/* Upload Dialog – lazy, nur wenn geöffnet */}
+      {uploadDialogOpen && (
+        <Suspense fallback={null}>
+          <ImageUploadDialog
+            open={uploadDialogOpen}
+            onOpenChange={setUploadDialogOpen}
+            onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
+            houseId={houseId}
+          />
+        </Suspense>
+      )}
 
-      {/* Image Edit Dialog */}
-      <ImageEditDialog
-        open={!!imageToEdit}
-        onOpenChange={(open) => !open && setImageToEdit(null)}
-        image={imageToEdit}
-        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
-      />
+      {/* Image Edit Dialog – lazy, nur wenn ein Bild gewählt ist */}
+      {imageToEdit && (
+        <Suspense fallback={null}>
+          <ImageEditDialog
+            open={!!imageToEdit}
+            onOpenChange={(open) => !open && setImageToEdit(null)}
+            image={imageToEdit}
+            onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
+          />
+        </Suspense>
+      )}
 
       {/* Lightbox Dialog */}
       <Dialog open={selectedImageIndex !== null} onOpenChange={closeLightbox}>
