@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,7 +20,7 @@ import { de } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import HouseSettingsDialog from "@/components/HouseSettingsDialog";
+const HouseSettingsDialog = lazy(() => import("@/components/HouseSettingsDialog"));
 
 import PromotionBanner from "@/components/PromotionBanner";
 import { useTranslation } from "react-i18next";
