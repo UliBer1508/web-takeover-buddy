@@ -120,17 +120,14 @@ const GuestMaterials = () => {
     }
   };
 
-  const generateWelcomeGuide = async () => {
+  const generateWelcomeGuide = async (lang: "de" | "en") => {
     setWelcomePdfLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("generate-region-guide-pdf", {
-        body: { language: "de" },
+      await generateWelcomeGuidePdf(lang);
+      toast({
+        title: "Welcome-Guide erstellt",
+        description: "PDF wurde heruntergeladen.",
       });
-      if (error) throw error;
-      const url = (data as { url?: string })?.url;
-      if (!url) throw new Error("Keine URL erhalten");
-      window.open(url, "_blank");
-      toast({ title: "Welcome-Guide generiert", description: "Wird in neuem Tab geöffnet." });
     } catch (err) {
       console.error(err);
       toast({
