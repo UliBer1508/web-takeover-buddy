@@ -237,18 +237,24 @@ const GuestMaterials = () => {
               Booking-Chat <strong>nach</strong> erfolgter Buchung.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button onClick={generateWelcomeGuide} disabled={welcomePdfLoading} className="gap-2">
-              {welcomePdfLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
+          <CardContent className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={() => generateWelcomeGuide("de")} disabled={welcomePdfLoading} className="gap-2">
+                {welcomePdfLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <FileText className="h-4 w-4" />
+                )}
+                Welcome-Guide (Deutsch)
+              </Button>
+              <Button onClick={() => generateWelcomeGuide("en")} disabled={welcomePdfLoading} variant="outline" className="gap-2">
                 <FileText className="h-4 w-4" />
-              )}
-              Welcome-Guide generieren
-            </Button>
-            <p className="text-xs text-muted-foreground mt-3">
+                Welcome Guide (English)
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
               Generiert ein PDF aller 30 Region-Infos (Skigebiete, Wanderungen, Kultur, Radwege).
-              Der Link öffnet sich in einem neuen Tab und kann von dort gespeichert werden.
+              Wird direkt im Browser erstellt und heruntergeladen.
             </p>
           </CardContent>
         </Card>
