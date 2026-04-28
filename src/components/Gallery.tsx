@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 const ImageUploadDialog = lazy(() => import("./ImageUploadDialog"));
 const ImageEditDialog = lazy(() => import("./ImageEditDialog"));
-const InfoGallery = lazy(() => import("./InfoGallery"));
+import InfoGallery from "./InfoGallery";
 import { Badge } from "@/components/ui/badge";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useTranslation } from "react-i18next";
@@ -511,9 +511,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
 
         {view === "info" && (
           <div className="animate-fade-in">
-            <Suspense fallback={<div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
-              <InfoGallery />
-            </Suspense>
+            <InfoGallery />
           </div>
         )}
       </div>
