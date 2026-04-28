@@ -770,7 +770,9 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xl">{t('booking.prices')}</CardTitle>
                 {canEdit && selectedHouse && (
-                  <HouseSettingsDialog house={selectedHouse} />
+                  <Suspense fallback={null}>
+                    <HouseSettingsDialog house={selectedHouse} />
+                  </Suspense>
                 )}
               </CardHeader>
               <CardContent className="space-y-2">
