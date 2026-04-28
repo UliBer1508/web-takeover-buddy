@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
-  const { t } = useTranslation();
-  
+  const { t, i18n } = useTranslation();
+  const isDe = i18n.language !== "en";
   return (
     <footer id="footer" className="bg-primary text-primary-foreground py-12 md:py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
