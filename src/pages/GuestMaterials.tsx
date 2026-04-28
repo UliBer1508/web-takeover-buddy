@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Mountain, QrCode, Download, FileText, ArrowLeft, Loader2 } from "lucide-react";
 import { useAdmin } from "@/hooks/useAdmin";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { generateWelcomeGuidePdf } from "@/lib/welcomeGuidePdf";
 
 const DEFAULT_URL = "https://steinbockchalets.com/region-guide";
 
