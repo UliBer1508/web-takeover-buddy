@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, lazy, Suspense } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff, GripVertical, Pencil, Image as ImageIcon, Info } from "lucide-react";
@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import ImageUploadDialog from "./ImageUploadDialog";
-import ImageEditDialog from "./ImageEditDialog";
-import InfoGallery from "./InfoGallery";
+const ImageUploadDialog = lazy(() => import("./ImageUploadDialog"));
+const ImageEditDialog = lazy(() => import("./ImageEditDialog"));
+const InfoGallery = lazy(() => import("./InfoGallery"));
 import { Badge } from "@/components/ui/badge";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useTranslation } from "react-i18next";

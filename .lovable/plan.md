@@ -1,40 +1,31 @@
-## Ziel
+Ich habe die Preview geprüft: Die Seite bleibt weiß, obwohl der Dev-Server läuft. In der Browser-Konsole erscheinen 404-Fehler auf einzelne Vite-Module/Assets und ein fehlgeschlagener Vite-WebSocket. Das deutet auf eine instabile/zu schwere Dev-Preview-Auslieferung nach den vielen direkten Bild-Imports hin. Lokal sind die Dateien vorhanden, aber die Preview lädt sie teils nicht zuverlässig.
 
-Zusätzlich zu den 3 bestehenden Skigebieten (Wildkogel, Zillertal Arena/Königsleiten, Saalbach) **9 weitere Skigebiete** als Karten in der Info-Galerie ergänzen — jeweils mit echten Fotos (CC-lizenziert von Wikimedia Commons).
+Plan zur Behebung:
 
-## Neue Skigebiete
+1. Start-Bundle deutlich entlasten
+   - `InfoGallery` aus `Gallery.tsx` lazy laden, damit die ganzen Ski-/Kultur-/Rad-/Wander-Artikel samt Bildern nicht direkt beim Seitenstart geladen werden.
+   - Die Info-Galerie erst importieren, wenn der Nutzer auf den Info-/Region-Tab klickt.
+   - Einen kleinen Ladezustand anzeigen, statt die ganze Startseite zu blockieren.
 
-| # | Skigebiet | Entfernung | Besonderheit |
-|---|-----------|------------|--------------|
-| 1 | KitzSki – Kitzbühel & Kirchberg | ~60 km | Hahnenkamm, 233 km Pisten |
-| 2 | Kitzsteinhorn Kaprun | ~50 km | Gletscher, ganzjährig, 3.029 m |
-| 3 | Schmittenhöhe Zell am See | ~45 km | Seenpanorama, 77 km |
-| 4 | Hochkönig (Maria Alm/Dienten/Mühlbach) | ~70 km | Königstour, Ski amadé |
-| 5 | Großarltal & Dorfgastein | ~90 km | „Tal der Almen" |
-| 6 | Mayrhofen & Hintertuxer Gletscher | ~80 km | Harakiri, Ski 365 Tage |
-| 7 | Obertauern | ~130 km | Schneesicherstes A-Gebiet |
-| 8 | Skigebiet Rauris (Hochalmbahnen) | ~75 km | Familiär, Nationalpark |
-| 9 | Snow Space Salzburg (Flachau/Wagrain/St. Johann) | ~110 km | FIS Nightrace, Ski amadé |
+2. Admin-/Dialog-Komponenten lazy laden
+   - Große Dialoge wie Upload, Bildbearbeitung, Haus-/Promotion-Einstellungen und Review-Dialoge nur laden, wenn sie wirklich geöffnet werden.
+   - Dadurch werden unnötige Imports wie `switch.tsx` und Admin-Formularcode nicht beim ersten Laden angefordert.
 
-## Bilder
+3. Bilder robuster einbinden
+   - Für die neuen Info-Artikel prüfen, ob die direkten statischen Bild-Imports die Preview überladen.
+   - Falls nötig: große Artikelbilder als öffentliche Asset-Pfade oder über lazy Datenmodule strukturieren, damit Vite nicht alle Bilder als JavaScript-Importmodule beim Start anfordert.
+   - Optional die größten Bilder moderat komprimieren, ohne sichtbaren Qualitätsverlust.
 
-Bereits heruntergeladen (CC-lizenziert von Wikimedia Commons, valide JPG-Dateien zwischen 170 KB – 920 KB) in `src/assets/skiing/`:
-- `kitzbuehel-hahnenkamm.jpg`, `kitzbuehel-may.jpg`
-- `kitzsteinhorn.jpg`
-- `schmittenhoehe.jpg`, `schmittenhoehe-zellsee.jpg`
-- `hochkoenig-mariaalm.jpg`
-- `grossarltal.jpg`
-- `mayrhofen-penken.jpg`, `hintertux-gletscher.jpg`, `hintertux-piste.jpg`
-- `obertauern.jpg`
-- `rauris-hochalm.jpg`
-- `flachau.jpg`
+4. Fehlende PWA-Assets korrigieren
+   - `index.html`/PWA-Konfiguration referenziert `pwa-512x512.png`, das aktuell 404 liefert.
+   - Entweder die fehlende Datei ergänzen oder die Referenz auf vorhandene Icons korrigieren.
 
-## Technische Umsetzung
+5. Validierung
+   - TypeScript-Prüfung erneut ausführen.
+   - Preview neu laden und kontrollieren, dass die Startseite wieder sichtbar ist.
+   - Danach prüfen, dass Galerie-Fotos und der Info-Tab mit den Ski-/Kultur-Karten weiterhin funktionieren.
 
-1. **9 neue Artikel-Dateien** in `src/content/info-articles/articles/` (`kitzski-kitzbuehel.ts`, `kitzsteinhorn.ts`, `schmittenhoehe.ts`, `hochkoenig.ts`, `grossarltal.ts`, `mayrhofen-hintertux.ts`, `obertauern.ts`, `rauris.ts`, `snow-space-flachau.ts`) — alle mit `topic: "skiing"`, lokalisierten Titeln, Stats (Pisten-km, Höhenmeter, Entfernung), Highlights und externem Link zur offiziellen Tourismus-Webseite.
-2. **Registrierung** in `src/content/info-articles/index.ts`: 9 Imports + 9 Einträge im `infoArticles`-Array.
-3. **Quellenangabe**: jede Karte zeigt `sourceLabel` (offizielle Webseite + Wikimedia Commons).
-
-## Ergebnis
-
-Nach der Implementierung enthält die Info-Galerie unter Filter „Ski" **12 Karten** statt bisher 3.
+Technische Details:
+- Keine Datenbankänderung nötig.
+- Ursache ist sehr wahrscheinlich nicht der Content selbst, sondern dass `Gallery.tsx` aktuell `InfoGallery` direkt importiert. Dadurch werden alle Artikel und sehr viele Bilder bereits beim App-Start in den Modulgraph gezogen.
+- Das Entkoppeln per `React.lazy`/`Suspense` sollte die weiße Preview beheben und die Seite schneller starten lassen.
