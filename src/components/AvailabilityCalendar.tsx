@@ -46,19 +46,24 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
           .abortSignal(controller.signal);
         
         if (debugError) {
-          throw new Error('Failed to load availability');
+          console.error('Error fetching bookings:', debugError);
+          throw new Error(`bookings: ${debugError.message}`);
         }
-
+        
+        console.log('All bookings for house:', allBookings);
+        console.log('Unique status values:', [...new Set(allBookings?.map(b => b.status))]);
+        
         // Filter for confirmed/completed bookings (case-insensitive, German and English)
         const confirmedStatuses = ['confirmed', 'checked_in', 'bestätigt', 'eingescheckt'];
-        const bookings = allBookings?.filter(b =>
-          confirmedStatuses.some(status =>
+        const bookings = allBookings?.filter(b => 
+          confirmedStatuses.some(status => 
             b.status?.toLowerCase() === status.toLowerCase()
           )
         ) || [];
 
         clearTimeout(timeoutId);
 
+        console.log(`Loaded ${bookings?.length || 0} confirmed bookings`);
         return (bookings || []) as OccupiedDate[];
       } catch (err) {
         clearTimeout(timeoutId);
@@ -438,7 +443,7 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
                   <p className="text-sm mt-2">
                     {t('calendar.connectionErrorDesc')}
                   </p>
-                  
+                  <p className="text-sm mt-1 opacity-75">{(error as Error).message}</p>
                 </div>
                 <Button 
                   variant="outline" 
