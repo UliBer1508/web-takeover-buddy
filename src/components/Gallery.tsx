@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, lazy, Suspense } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff, GripVertical, Pencil, Image as ImageIcon, Info } from "lucide-react";
@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import ImageUploadDialog from "./ImageUploadDialog";
-import ImageEditDialog from "./ImageEditDialog";
-import InfoGallery from "./InfoGallery";
+const ImageUploadDialog = lazy(() => import("./ImageUploadDialog"));
+const ImageEditDialog = lazy(() => import("./ImageEditDialog"));
+const InfoGallery = lazy(() => import("./InfoGallery"));
 import { Badge } from "@/components/ui/badge";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useTranslation } from "react-i18next";
@@ -511,26 +511,36 @@ const Gallery = ({ houseId }: GalleryProps) => {
 
         {view === "info" && (
           <div className="animate-fade-in">
-            <InfoGallery />
+            <Suspense fallback={<div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+              <InfoGallery />
+            </Suspense>
           </div>
         )}
       </div>
 
-      {/* Upload Dialog */}
-      <ImageUploadDialog
-        open={uploadDialogOpen}
-        onOpenChange={setUploadDialogOpen}
-        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
-        houseId={houseId}
-      />
+      {/* Upload Dialog – lazy, nur wenn geöffnet */}
+      {uploadDialogOpen && (
+        <Suspense fallback={null}>
+          <ImageUploadDialog
+            open={uploadDialogOpen}
+            onOpenChange={setUploadDialogOpen}
+            onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
+            houseId={houseId}
+          />
+        </Suspense>
+      )}
 
-      {/* Image Edit Dialog */}
-      <ImageEditDialog
-        open={!!imageToEdit}
-        onOpenChange={(open) => !open && setImageToEdit(null)}
-        image={imageToEdit}
-        onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
-      />
+      {/* Image Edit Dialog – lazy, nur wenn ein Bild gewählt ist */}
+      {imageToEdit && (
+        <Suspense fallback={null}>
+          <ImageEditDialog
+            open={!!imageToEdit}
+            onOpenChange={(open) => !open && setImageToEdit(null)}
+            image={imageToEdit}
+            onSuccess={() => queryClient.invalidateQueries({ queryKey: ['gallery-images', houseId] })}
+          />
+        </Suspense>
+      )}
 
       {/* Lightbox Dialog */}
       <Dialog open={selectedImageIndex !== null} onOpenChange={closeLightbox}>

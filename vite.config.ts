@@ -18,6 +18,9 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
+      // PWA nur im Production-Build aktiv – sonst überschreibt der Service Worker
+      // in der Lovable-Live-Preview Dev-Module und führt zu 404 / weißem Bildschirm.
+      disable: mode !== "production",
       includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
       manifest: {
         name: "Steinbock Chalet - Ferienwohnung",

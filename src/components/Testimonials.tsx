@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,8 +6,8 @@ import { Star, Pencil, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
-import ReviewEditDialog from "./ReviewEditDialog";
-import ReviewAddDialog from "./ReviewAddDialog";
+const ReviewEditDialog = lazy(() => import("./ReviewEditDialog"));
+const ReviewAddDialog = lazy(() => import("./ReviewAddDialog"));
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
@@ -185,17 +185,23 @@ const Testimonials = () => {
       </div>
 
       {editingReview && (
-        <ReviewEditDialog
-          review={editingReview}
-          open={!!editingReview}
-          onOpenChange={(open) => !open && setEditingReview(null)}
-        />
+        <Suspense fallback={null}>
+          <ReviewEditDialog
+            review={editingReview}
+            open={!!editingReview}
+            onOpenChange={(open) => !open && setEditingReview(null)}
+          />
+        </Suspense>
       )}
 
-      <ReviewAddDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-      />
+      {addDialogOpen && (
+        <Suspense fallback={null}>
+          <ReviewAddDialog
+            open={addDialogOpen}
+            onOpenChange={setAddDialogOpen}
+          />
+        </Suspense>
+      )}
     </section>
   );
 };
