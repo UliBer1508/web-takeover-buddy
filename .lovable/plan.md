@@ -1,31 +1,58 @@
-Ich habe die Preview geprüft: Die Seite bleibt weiß, obwohl der Dev-Server läuft. In der Browser-Konsole erscheinen 404-Fehler auf einzelne Vite-Module/Assets und ein fehlgeschlagener Vite-WebSocket. Das deutet auf eine instabile/zu schwere Dev-Preview-Auslieferung nach den vielen direkten Bild-Imports hin. Lokal sind die Dateien vorhanden, aber die Preview lädt sie teils nicht zuverlässig.
+## Problem
 
-Plan zur Behebung:
+Die Editor-Preview zeigt nichts an. Der Vite-Dev-Server läuft sauber (Logs zeigen `ready in 591 ms` und HMR-Updates), aber der Browser bekommt 502 vom Preview-Host. Mehrere zusammenwirkende Ursachen:
 
-1. Start-Bundle deutlich entlasten
-   - `InfoGallery` aus `Gallery.tsx` lazy laden, damit die ganzen Ski-/Kultur-/Rad-/Wander-Artikel samt Bildern nicht direkt beim Seitenstart geladen werden.
-   - Die Info-Galerie erst importieren, wenn der Nutzer auf den Info-/Region-Tab klickt.
-   - Einen kleinen Ladezustand anzeigen, statt die ganze Startseite zu blockieren.
+1. **`index.html` referenziert `/manifest.webmanifest`**, aber die Datei existiert im Dev-Modus nicht (PWA-Plugin ist `disable: mode !== "production"`). Das erzeugt eine 404 bei jedem Page-Load und kann in Kombination mit dem Reload-Loop unten den Editor in eine Endlosschleife schicken.
+2. **`src/main.tsx` führt einen `window.location.reload()`-Loop aus**, sobald irgendein Service Worker oder ein Cache-Eintrag vorhanden ist. In der Lovable-Iframe-Preview kann das bei jedem Reload erneut auslösen → weißer Screen / 502, weil der Iframe nie zur Ruhe kommt.
+3. **`isPreviewHost`-Logik ist fehlerhaft**: `hostname.includes("lovable.app") === false && hostname.includes("lovable.dev")` — falsche Operator-Präzedenz; auf der `lovable.app`-Preview-Domain wird der SW dort fälschlich als „kein Preview" eingestuft.
+4. **`tailwind.config.ts` hat einen doppelten `colors`-Key** (Zeile 16 und Zeile 66). Esbuild gibt eine Warnung aus, der zweite Block überschreibt den ersten — funktional ok, aber unnötig und potentiell verwirrend.
 
-2. Admin-/Dialog-Komponenten lazy laden
-   - Große Dialoge wie Upload, Bildbearbeitung, Haus-/Promotion-Einstellungen und Review-Dialoge nur laden, wenn sie wirklich geöffnet werden.
-   - Dadurch werden unnötige Imports wie `switch.tsx` und Admin-Formularcode nicht beim ersten Laden angefordert.
+## Lösung
 
-3. Bilder robuster einbinden
-   - Für die neuen Info-Artikel prüfen, ob die direkten statischen Bild-Imports die Preview überladen.
-   - Falls nötig: große Artikelbilder als öffentliche Asset-Pfade oder über lazy Datenmodule strukturieren, damit Vite nicht alle Bilder als JavaScript-Importmodule beim Start anfordert.
-   - Optional die größten Bilder moderat komprimieren, ohne sichtbaren Qualitätsverlust.
+### 1. `index.html`
+- `<link rel="manifest" href="/manifest.webmanifest" />` entfernen. Das PWA-Plugin injiziert das Manifest im Production-Build automatisch über `injectRegister`/`includeAssets`. Im Dev-Mode existiert die Datei nicht und produziert nur 404.
 
-4. Fehlende PWA-Assets korrigieren
-   - `index.html`/PWA-Konfiguration referenziert `pwa-512x512.png`, das aktuell 404 liefert.
-   - Entweder die fehlende Datei ergänzen oder die Referenz auf vorhandene Icons korrigieren.
+### 2. `src/main.tsx` — defensiver SW-Cleanup ohne Reload-Loop
+- Den automatischen `window.location.reload()` entfernen. Stattdessen nur stillschweigend SW abmelden + Caches löschen. Der nächste echte Page-Load übernimmt dann den sauberen Zustand.
+- `isPreviewHost`-Check vereinfachen: `lovableproject.com`, `lovable.app`, `lovable.dev`, `id-preview--` allesamt als Preview behandeln.
+- Außerdem `if (window.top !== window.self)` (Iframe) immer als Preview behandeln — egal welcher Host.
 
-5. Validierung
-   - TypeScript-Prüfung erneut ausführen.
-   - Preview neu laden und kontrollieren, dass die Startseite wieder sichtbar ist.
-   - Danach prüfen, dass Galerie-Fotos und der Info-Tab mit den Ski-/Kultur-Karten weiterhin funktionieren.
+### 3. `tailwind.config.ts`
+- Den zweiten, duplizierten `colors`-Block (Zeilen ~66 bis zum Ende des Blocks) entfernen. Sicherstellen, dass alle dort definierten Farben bereits im ersten Block stehen (sind sie laut Inspektion).
 
-Technische Details:
-- Keine Datenbankänderung nötig.
-- Ursache ist sehr wahrscheinlich nicht der Content selbst, sondern dass `Gallery.tsx` aktuell `InfoGallery` direkt importiert. Dadurch werden alle Artikel und sehr viele Bilder bereits beim App-Start in den Modulgraph gezogen.
-- Das Entkoppeln per `React.lazy`/`Suspense` sollte die weiße Preview beheben und die Seite schneller starten lassen.
+### 4. Verifikation
+- Nach den Änderungen: kurz checken, dass `tail /tmp/dev-server-logs/dev-server.log` keine Duplicate-Key-Warnung mehr zeigt und die Preview wieder lädt.
+
+## Technische Details
+
+**`src/main.tsx` (vereinfacht):**
+```ts
+const isInIframe = (() => { try { return window.self !== window.top; } catch { return true; } })();
+const h = window.location.hostname;
+const isPreviewHost =
+  h.includes("id-preview--") ||
+  h.includes("lovableproject.com") ||
+  h.includes("lovable.app") ||
+  h.includes("lovable.dev");
+
+if ("serviceWorker" in navigator) {
+  if (import.meta.env.PROD && !isInIframe && !isPreviewHost) {
+    import("virtual:pwa-register").then(({ registerSW }) => registerSW({ immediate: true })).catch(() => {});
+  } else {
+    navigator.serviceWorker.getRegistrations()
+      .then((regs) => regs.forEach((r) => r.unregister()))
+      .catch(() => {});
+    if ("caches" in window) {
+      caches.keys().then((keys) => keys.forEach((k) => caches.delete(k))).catch(() => {});
+    }
+    // KEIN reload — würde Iframe-Loop erzeugen.
+  }
+}
+```
+
+**Geänderte Dateien:**
+- `index.html` — Manifest-Link entfernen
+- `src/main.tsx` — Reload-Loop entfernen, Preview-Detection korrigieren
+- `tailwind.config.ts` — duplizierten `colors`-Block entfernen
+
+PWA in Production bleibt voll funktionsfähig (Manifest wird vom Plugin generiert, SW registriert sich nur im echten Browser-Tab auf der Production-Domain).
