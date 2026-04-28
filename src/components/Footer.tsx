@@ -81,6 +81,14 @@ const Footer = () => {
                   {t("footer.gallery")}
                 </button>
               </li>
+              <li>
+                <Link
+                  to="/region-guide"
+                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
+                  {t("language") === "Deutsch" || t("footer.copyright")?.includes("Steinbock") ? "Region-Guide" : "Region Guide"}
+                </Link>
+              </li>
             </ul>
           </div>
 
