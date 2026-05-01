@@ -15,9 +15,10 @@ import { useHouseSelection } from "@/hooks/useHouseSelection";
 
 interface IndexProps {
   initialGalleryView?: "photos" | "info";
+  startAtGallery?: boolean;
 }
 
-const Index = ({ initialGalleryView }: IndexProps = {}) => {
+const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) => {
   const { t } = useTranslation();
   const { selectedHouseId, setSelectedHouseId, hasMultipleHouses, selectedHouse } = useHouseSelection();
   const [selectedDates, setSelectedDates] = useState<{
@@ -82,7 +83,7 @@ const Index = ({ initialGalleryView }: IndexProps = {}) => {
   return (
     <div className="min-h-screen">
       <Navigation />
-      <Hero />
+      {!startAtGallery && <Hero />}
       
       {/* House Selector - only shown when multiple houses exist */}
       {hasMultipleHouses && (
@@ -96,10 +97,14 @@ const Index = ({ initialGalleryView }: IndexProps = {}) => {
         </div>
       )}
       
-      <About />
-      <Stats />
-      <Features />
-      <Testimonials />
+      {!startAtGallery && (
+        <>
+          <About />
+          <Stats />
+          <Features />
+          <Testimonials />
+        </>
+      )}
       <Gallery houseId={selectedHouseId} initialView={initialGalleryView} />
       <section className="py-12 md:py-16 bg-muted/30">
         <div className="container mx-auto px-4 max-w-4xl">
