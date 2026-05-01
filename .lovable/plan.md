@@ -1,58 +1,58 @@
 ## Problem
+Aktuell gibt es nur die Startseite `steinbockchalets.com`. Wenn du oder ein Gast `steinbockchalets.com/galerie/info` direkt im Browser eingibst (oder den Link aus einer Booking.com-Nachricht klickt), funktioniert das nicht – es gibt keine solche Route.
 
-Die Editor-Preview zeigt nichts an. Der Vite-Dev-Server läuft sauber (Logs zeigen `ready in 591 ms` und HMR-Updates), aber der Browser bekommt 502 vom Preview-Host. Mehrere zusammenwirkende Ursachen:
+Die Inhalte (Foto-Galerie + Info-Bereich mit Region-Tipps) **existieren bereits** als Sektion auf der Startseite (`<Gallery />` mit Foto/Info-Toggle). Sie haben nur keine eigene URL.
 
-1. **`index.html` referenziert `/manifest.webmanifest`**, aber die Datei existiert im Dev-Modus nicht (PWA-Plugin ist `disable: mode !== "production"`). Das erzeugt eine 404 bei jedem Page-Load und kann in Kombination mit dem Reload-Loop unten den Editor in eine Endlosschleife schicken.
-2. **`src/main.tsx` führt einen `window.location.reload()`-Loop aus**, sobald irgendein Service Worker oder ein Cache-Eintrag vorhanden ist. In der Lovable-Iframe-Preview kann das bei jedem Reload erneut auslösen → weißer Screen / 502, weil der Iframe nie zur Ruhe kommt.
-3. **`isPreviewHost`-Logik ist fehlerhaft**: `hostname.includes("lovable.app") === false && hostname.includes("lovable.dev")` — falsche Operator-Präzedenz; auf der `lovable.app`-Preview-Domain wird der SW dort fälschlich als „kein Preview" eingestuft.
-4. **`tailwind.config.ts` hat einen doppelten `colors`-Key** (Zeile 16 und Zeile 66). Esbuild gibt eine Warnung aus, der zweite Block überschreibt den ersten — funktional ok, aber unnötig und potentiell verwirrend.
+## Ziel
+Echte, direkt aufrufbare URLs erstellen:
+- **`steinbockchalets.com/galerie`** → öffnet die Galerie-Sektion mit der **Foto-Ansicht** aktiv
+- **`steinbockchalets.com/galerie/info`** → öffnet die Galerie-Sektion mit der **Info-Ansicht** aktiv (für Gäste)
+- **`steinbockchalets.com/gallery`** und **`/gallery/info`** → englische Varianten (gleiche Seite)
 
-## Lösung
+Beim Aufruf landet der Gast auf der **kompletten Startseite** (mit Hero, Haus-Infos, Galerie/Info-Bereich, Verfügbarkeitskalender und Buchungsformular) und scrollt automatisch zum Galerie-Abschnitt – mit der richtigen Ansicht (Fotos oder Info) bereits ausgewählt.
 
-### 1. `index.html`
-- `<link rel="manifest" href="/manifest.webmanifest" />` entfernen. Das PWA-Plugin injiziert das Manifest im Production-Build automatisch über `injectRegister`/`includeAssets`. Im Dev-Mode existiert die Datei nicht und produziert nur 404.
+So erreichst du dein Ziel: Gäste klicken den Link, sehen sofort die wertvollen Region-Infos – und haben gleichzeitig auf derselben Seite Zugang zu Hausinfos, Verfügbarkeit und Direktbuchung.
 
-### 2. `src/main.tsx` — defensiver SW-Cleanup ohne Reload-Loop
-- Den automatischen `window.location.reload()` entfernen. Stattdessen nur stillschweigend SW abmelden + Caches löschen. Der nächste echte Page-Load übernimmt dann den sauberen Zustand.
-- `isPreviewHost`-Check vereinfachen: `lovableproject.com`, `lovable.app`, `lovable.dev`, `id-preview--` allesamt als Preview behandeln.
-- Außerdem `if (window.top !== window.self)` (Iframe) immer als Preview behandeln — egal welcher Host.
+## Was gebaut wird
 
-### 3. `tailwind.config.ts`
-- Den zweiten, duplizierten `colors`-Block (Zeilen ~66 bis zum Ende des Blocks) entfernen. Sicherstellen, dass alle dort definierten Farben bereits im ersten Block stehen (sind sie laut Inspektion).
-
-### 4. Verifikation
-- Nach den Änderungen: kurz checken, dass `tail /tmp/dev-server-logs/dev-server.log` keine Duplicate-Key-Warnung mehr zeigt und die Preview wieder lädt.
-
-## Technische Details
-
-**`src/main.tsx` (vereinfacht):**
-```ts
-const isInIframe = (() => { try { return window.self !== window.top; } catch { return true; } })();
-const h = window.location.hostname;
-const isPreviewHost =
-  h.includes("id-preview--") ||
-  h.includes("lovableproject.com") ||
-  h.includes("lovable.app") ||
-  h.includes("lovable.dev");
-
-if ("serviceWorker" in navigator) {
-  if (import.meta.env.PROD && !isInIframe && !isPreviewHost) {
-    import("virtual:pwa-register").then(({ registerSW }) => registerSW({ immediate: true })).catch(() => {});
-  } else {
-    navigator.serviceWorker.getRegistrations()
-      .then((regs) => regs.forEach((r) => r.unregister()))
-      .catch(() => {});
-    if ("caches" in window) {
-      caches.keys().then((keys) => keys.forEach((k) => caches.delete(k))).catch(() => {});
-    }
-    // KEIN reload — würde Iframe-Loop erzeugen.
-  }
-}
+### 1. Routen in `src/App.tsx` registrieren
+Vier neue Routen, alle rendern die bestehende `<Index />`-Seite mit unterschiedlichen Props:
+```tsx
+<Route path="/galerie" element={<Index initialGalleryView="photos" />} />
+<Route path="/galerie/info" element={<Index initialGalleryView="info" />} />
+<Route path="/gallery" element={<Index initialGalleryView="photos" />} />
+<Route path="/gallery/info" element={<Index initialGalleryView="info" />} />
 ```
 
-**Geänderte Dateien:**
-- `index.html` — Manifest-Link entfernen
-- `src/main.tsx` — Reload-Loop entfernen, Preview-Detection korrigieren
-- `tailwind.config.ts` — duplizierten `colors`-Block entfernen
+### 2. `src/pages/Index.tsx` erweitern
+- Neuer optionaler Prop `initialGalleryView?: "photos" | "info"`
+- Wird an `<Gallery />` weitergereicht
+- `useEffect`: wenn `initialGalleryView` gesetzt ist → automatisches sanftes Scrollen zur Galerie-Sektion (`#galerie`) nach dem ersten Render
 
-PWA in Production bleibt voll funktionsfähig (Manifest wird vom Plugin generiert, SW registriert sich nur im echten Browser-Tab auf der Production-Domain).
+### 3. `src/components/Gallery.tsx` minimal anpassen
+- Neuer optionaler Prop `initialView?: "photos" | "info"`
+- `useState` initial-Wert nutzt diesen Prop (Fallback: `"photos"`)
+- Sonst keine Änderung – die Toggle-Buttons funktionieren weiterhin normal
+
+### 4. SEO/Share-Vorschau für `/galerie/info`
+Damit die URL beim Teilen in Booking.com/WhatsApp/E-Mail eine schöne Vorschau zeigt:
+- Im `useEffect` von `Index.tsx`: `document.title` dynamisch setzen, z. B. "Gäste-Infos & Region-Tipps – Steinbock Chalets" wenn `initialGalleryView === "info"`
+- Open-Graph-Meta-Tags (`og:title`, `og:description`, `og:image`) dynamisch via DOM-Manipulation setzen, mit Hero-Bild aus der DB als `og:image`
+
+## Was du nach dem Bauen tust
+In deine Booking.com-/Airbnb-Nachricht einfügen:
+```
+Liebe Gäste, hier finden Sie unsere Region-Tipps und alle Infos zum Haus:
+https://steinbockchalets.com/galerie/info
+```
+
+## Technische Details
+- **Keine Datenbankänderungen, keine neuen Seiten** – nur Routing-Erweiterung der bestehenden Index-Seite.
+- **SPA-Routing**: Lovable-Hosting löst Deep-Links wie `/galerie/info` automatisch auf `index.html` auf. Sobald die Route in `App.tsx` registriert ist, funktioniert der direkte Browser-Aufruf und der Klick aus E-Mails.
+- **Auto-Scroll**: nach Mount mit `setTimeout` + `scrollIntoView({ behavior: 'smooth', block: 'start' })` auf `#galerie`. Verzögerung ~300 ms, damit Lazy-Loading-Inhalte (z. B. Hero-Bild) die Layout-Position nicht mehr verschieben.
+- **Bestehende Funktionalität bleibt erhalten**: Startseite `/` zeigt weiterhin alles wie gewohnt ohne Auto-Scroll und mit Default-Ansicht "Fotos".
+
+## Geänderte Dateien
+- `src/App.tsx` (4 neue Routen)
+- `src/pages/Index.tsx` (neuer Prop + Auto-Scroll + Meta-Tags)
+- `src/components/Gallery.tsx` (neuer optionaler Prop `initialView`)
