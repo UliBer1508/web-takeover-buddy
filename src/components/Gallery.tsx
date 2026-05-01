@@ -37,9 +37,10 @@ interface Season {
 
 interface GalleryProps {
   houseId?: string | null;
+  initialView?: "photos" | "info";
 }
 
-const Gallery = ({ houseId }: GalleryProps) => {
+const Gallery = ({ houseId, initialView = "photos" }: GalleryProps) => {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const { isAdmin } = useAdmin();
@@ -73,7 +74,7 @@ const Gallery = ({ houseId }: GalleryProps) => {
   const [draggedImage, setDraggedImage] = useState<GalleryImage | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [imageToEdit, setImageToEdit] = useState<GalleryImage | null>(null);
-  const [view, setView] = useState<"photos" | "info">("photos");
+  const [view, setView] = useState<"photos" | "info">(initialView);
 
   // Fetch seasons from database
   const { data: seasons = [] } = useQuery({

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
@@ -13,13 +13,57 @@ import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 import HouseSelector from "@/components/HouseSelector";
 import { useHouseSelection } from "@/hooks/useHouseSelection";
 
-const Index = () => {
+interface IndexProps {
+  initialGalleryView?: "photos" | "info";
+}
+
+const Index = ({ initialGalleryView }: IndexProps = {}) => {
   const { t } = useTranslation();
   const { selectedHouseId, setSelectedHouseId, hasMultipleHouses, selectedHouse } = useHouseSelection();
   const [selectedDates, setSelectedDates] = useState<{
     checkIn: Date | null;
     checkOut: Date | null;
   }>({ checkIn: null, checkOut: null });
+
+  // Update document title + meta tags + auto-scroll for deep-link routes
+  useEffect(() => {
+    if (!initialGalleryView) return;
+
+    const isInfo = initialGalleryView === "info";
+    const title = isInfo
+      ? "Gäste-Infos & Region-Tipps – Steinbock Chalets"
+      : "Galerie – Steinbock Chalets";
+    const description = isInfo
+      ? "Persönliche Insider-Tipps zur Region Pinzgau: Skigebiete, Wanderungen, Radtouren und Kultur – plus alle Infos zum Chalet."
+      : "Bilder unseres Chalets in den österreichischen Alpen – Sommer wie Winter.";
+
+    document.title = title;
+
+    const setMeta = (selector: string, attr: string, value: string) => {
+      let el = document.querySelector(selector) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement("meta");
+        const [key, val] = selector.replace("meta[", "").replace("]", "").split("=");
+        el.setAttribute(key, val.replace(/"/g, ""));
+        document.head.appendChild(el);
+      }
+      el.setAttribute(attr, value);
+    };
+
+    setMeta('meta[name="description"]', "content", description);
+    setMeta('meta[property="og:title"]', "content", title);
+    setMeta('meta[property="og:description"]', "content", description);
+
+    // Smooth scroll to gallery section after content has had time to render
+    const timer = setTimeout(() => {
+      document.getElementById("galerie")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [initialGalleryView]);
 
   const handleDateSelection = (checkIn: Date | null, checkOut: Date | null) => {
     setSelectedDates({ checkIn, checkOut });
@@ -56,7 +100,7 @@ const Index = () => {
       <Stats />
       <Features />
       <Testimonials />
-      <Gallery houseId={selectedHouseId} />
+      <Gallery houseId={selectedHouseId} initialView={initialGalleryView} />
       <section className="py-12 md:py-16 bg-muted/30">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-8">

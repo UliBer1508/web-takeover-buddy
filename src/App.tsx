@@ -20,6 +20,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/galerie" element={<Index initialGalleryView="photos" />} />
+          <Route path="/galerie/info" element={<Index initialGalleryView="info" />} />
+          <Route path="/gallery" element={<Index initialGalleryView="photos" />} />
+          <Route path="/gallery/info" element={<Index initialGalleryView="info" />} />
           <Route path="/region" element={<RegionIndex />} />
           <Route path="/region/:slug" element={<RegionArticle />} />
           <Route path="/admin" element={<Auth />} />
