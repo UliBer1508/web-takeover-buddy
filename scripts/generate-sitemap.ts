@@ -1,7 +1,8 @@
 // Runs before `vite dev` and `vite build` (predev/prebuild hooks); writes public/sitemap.xml.
-import { writeFileSync } from "fs";
+// Slugs are kept in sync manually with src/content/info-articles/articles/*.ts to avoid
+// importing TS files that pull in image assets at script time.
+import { writeFileSync, readdirSync } from "fs";
 import { resolve } from "path";
-import { infoArticles } from "../src/content/info-articles";
 
 const BASE_URL = "https://steinbockchalets.com";
 
@@ -18,8 +19,14 @@ const staticEntries: SitemapEntry[] = [
   { path: "/region", changefreq: "monthly", priority: "0.8" },
 ];
 
-const articleEntries: SitemapEntry[] = infoArticles.map((a) => ({
-  path: `/region/${a.id}`,
+// Derive article slugs from filenames in the articles directory.
+const articleSlugs = readdirSync(resolve("src/content/info-articles/articles"))
+  .filter((f) => f.endsWith(".ts"))
+  .map((f) => f.replace(/\.ts$/, ""))
+  .sort();
+
+const articleEntries: SitemapEntry[] = articleSlugs.map((slug) => ({
+  path: `/region/${slug}`,
   changefreq: "monthly",
   priority: "0.6",
 }));
