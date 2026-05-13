@@ -476,5 +476,19 @@
       "skiing": "Skiing",
       "culture": "Culture"
     }
+  },
+  "seo": {
+    "home": {
+      "title": "Steinbock Chalets – Alpine Holiday Chalets in Austria",
+      "description": "Book your chalet in Neukirchen am Großvenediger. Skiing, hiking and relaxation in the Hohe Tauern National Park."
+    },
+    "gallery": {
+      "title": "Gallery – Steinbock Chalets",
+      "description": "Photos of our chalet in the Austrian Alps — interiors, exteriors, summer and winter impressions."
+    },
+    "info": {
+      "title": "Guest Info & Regional Tips – Steinbock Chalets",
+      "description": "Insider tips for the Pinzgau region: ski areas, hikes, bike tours and culture, plus everything about the chalet."
+    }
   }
 }
