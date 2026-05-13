@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -14,15 +15,27 @@ const RegionArticle = () => {
 
   const article = infoArticles.find((a) => a.id === slug);
 
-  useEffect(() => {
-    if (article) {
-      document.title = `${article.title[lang]} – Steinbock Chalet`;
-    }
-  }, [article, lang]);
-
   if (!article) return <NotFound />;
 
   const Icon = article.icon;
+  const rawTitle = `${article.title[lang]} – Steinbock Chalet`;
+  const pageTitle = rawTitle.length > 60 ? `${article.title[lang]}` : rawTitle;
+  const rawDesc = article.subtitle[lang] || article.shortDescription[lang] || "";
+  const description = rawDesc.length > 160 ? `${rawDesc.slice(0, 157)}...` : rawDesc;
+  const canonical = `https://steinbockchalets.com/region/${article.id}`;
+
+  return (
+    <main className="min-h-screen bg-background">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonical} />
+        <meta property="og:type" content="article" />
+        {article.coverImage && <meta property="og:image" content={article.coverImage} />}
+      </Helmet>
 
   return (
     <main className="min-h-screen bg-background">
