@@ -21,7 +21,7 @@ interface IndexProps {
 }
 
 const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { selectedHouseId, setSelectedHouseId, hasMultipleHouses, selectedHouse } = useHouseSelection();
   const [selectedDates, setSelectedDates] = useState<{
     checkIn: Date | null;
