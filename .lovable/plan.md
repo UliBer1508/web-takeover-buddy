@@ -1,58 +1,61 @@
-## Problem
-Aktuell gibt es nur die Startseite `steinbockchalets.com`. Wenn du oder ein Gast `steinbockchalets.com/galerie/info` direkt im Browser eingibst (oder den Link aus einer Booking.com-Nachricht klickt), funktioniert das nicht – es gibt keine solche Route.
-
-Die Inhalte (Foto-Galerie + Info-Bereich mit Region-Tipps) **existieren bereits** als Sektion auf der Startseite (`<Gallery />` mit Foto/Info-Toggle). Sie haben nur keine eigene URL.
-
 ## Ziel
-Echte, direkt aufrufbare URLs erstellen:
-- **`steinbockchalets.com/galerie`** → öffnet die Galerie-Sektion mit der **Foto-Ansicht** aktiv
-- **`steinbockchalets.com/galerie/info`** → öffnet die Galerie-Sektion mit der **Info-Ansicht** aktiv (für Gäste)
-- **`steinbockchalets.com/gallery`** und **`/gallery/info`** → englische Varianten (gleiche Seite)
 
-Beim Aufruf landet der Gast auf der **kompletten Startseite** (mit Hero, Haus-Infos, Galerie/Info-Bereich, Verfügbarkeitskalender und Buchungsformular) und scrollt automatisch zum Galerie-Abschnitt – mit der richtigen Ansicht (Fotos oder Info) bereits ausgewählt.
+Sobald eine neue Buchungsanfrage über das Formular in der Datenbank landet, bekommst du eine **kurze Hinweis-Email** an `uli.berresheim@hotmail.de` und `steinbockchalets@gmail.com`. Die Bearbeitung der Anfrage selbst passiert weiter wie gewohnt in deiner Hausverwaltungs-App — die Mail ist nur ein Erinnerungs-Ping ("schau in die App").
 
-So erreichst du dein Ziel: Gäste klicken den Link, sehen sofort die wertvollen Region-Infos – und haben gleichzeitig auf derselben Seite Zugang zu Hausinfos, Verfügbarkeit und Direktbuchung.
+## Inhalt der Email (bewusst minimal)
 
-## Was gebaut wird
+```
+Betreff: 🔔 Neue Buchungsanfrage – Steinbock Chalets
 
-### 1. Routen in `src/App.tsx` registrieren
-Vier neue Routen, alle rendern die bestehende `<Index />`-Seite mit unterschiedlichen Props:
-```tsx
-<Route path="/galerie" element={<Index initialGalleryView="photos" />} />
-<Route path="/galerie/info" element={<Index initialGalleryView="info" />} />
-<Route path="/gallery" element={<Index initialGalleryView="photos" />} />
-<Route path="/gallery/info" element={<Index initialGalleryView="info" />} />
+Es ist eine neue Buchungsanfrage eingegangen.
+
+Gast:      Uli Berresheim
+Zeitraum:  16.05.2026 – 23.05.2026 (7 Nächte)
+Personen:  6 Erwachsene
+Haus:      Venedigersiedlung Chalet
+
+Bitte öffne deine Hausverwaltungs-App, 
+um die Anfrage zu prüfen, zu bestätigen oder abzulehnen.
 ```
 
-### 2. `src/pages/Index.tsx` erweitern
-- Neuer optionaler Prop `initialGalleryView?: "photos" | "info"`
-- Wird an `<Gallery />` weitergereicht
-- `useEffect`: wenn `initialGalleryView` gesetzt ist → automatisches sanftes Scrollen zur Galerie-Sektion (`#galerie`) nach dem ersten Render
+Nur Eckdaten — die volle Bearbeitung passiert in der App.
 
-### 3. `src/components/Gallery.tsx` minimal anpassen
-- Neuer optionaler Prop `initialView?: "photos" | "info"`
-- `useState` initial-Wert nutzt diesen Prop (Fallback: `"photos"`)
-- Sonst keine Änderung – die Toggle-Buttons funktionieren weiterhin normal
+## Technischer Ansatz
 
-### 4. SEO/Share-Vorschau für `/galerie/info`
-Damit die URL beim Teilen in Booking.com/WhatsApp/E-Mail eine schöne Vorschau zeigt:
-- Im `useEffect` von `Index.tsx`: `document.title` dynamisch setzen, z. B. "Gäste-Infos & Region-Tipps – Steinbock Chalets" wenn `initialGalleryView === "info"`
-- Open-Graph-Meta-Tags (`og:title`, `og:description`, `og:image`) dynamisch via DOM-Manipulation setzen, mit Hero-Bild aus der DB als `og:image`
+Da du **keine eigene Domain** einrichten möchtest, nutze ich **Resend mit der kostenlosen Test-Adresse** `onboarding@resend.dev` als Absender. Das ist absolut ausreichend, weil die Mail nur an dich selbst geht — kein Gast sieht den Absender.
 
-## Was du nach dem Bauen tust
-In deine Booking.com-/Airbnb-Nachricht einfügen:
-```
-Liebe Gäste, hier finden Sie unsere Region-Tipps und alle Infos zum Haus:
-https://steinbockchalets.com/galerie/info
-```
+**Vorteile:**
+- Keine DNS-Einträge, keine Domain-Verifizierung.
+- In wenigen Minuten einsatzbereit.
+- 3.000 Mails/Monat kostenlos (mehr als ausreichend).
 
-## Technische Details
-- **Keine Datenbankänderungen, keine neuen Seiten** – nur Routing-Erweiterung der bestehenden Index-Seite.
-- **SPA-Routing**: Lovable-Hosting löst Deep-Links wie `/galerie/info` automatisch auf `index.html` auf. Sobald die Route in `App.tsx` registriert ist, funktioniert der direkte Browser-Aufruf und der Klick aus E-Mails.
-- **Auto-Scroll**: nach Mount mit `setTimeout` + `scrollIntoView({ behavior: 'smooth', block: 'start' })` auf `#galerie`. Verzögerung ~300 ms, damit Lazy-Loading-Inhalte (z. B. Hero-Bild) die Layout-Position nicht mehr verschieben.
-- **Bestehende Funktionalität bleibt erhalten**: Startseite `/` zeigt weiterhin alles wie gewohnt ohne Auto-Scroll und mit Default-Ansicht "Fotos".
+## Was du tun musst
 
-## Geänderte Dateien
-- `src/App.tsx` (4 neue Routen)
-- `src/pages/Index.tsx` (neuer Prop + Auto-Scroll + Meta-Tags)
-- `src/components/Gallery.tsx` (neuer optionaler Prop `initialView`)
+1. Kostenlosen Account anlegen unter **resend.com**.
+2. Im Resend-Dashboard unter **API Keys → Create API Key** einen Schlüssel erstellen.
+3. Den Schlüssel im sicheren Eingabe-Dialog einfügen, den ich dir nach deiner Freigabe zeige (ich sehe ihn nicht, er wird verschlüsselt gespeichert).
+
+## Umsetzung (nach deiner Freigabe)
+
+1. **Backend-Funktion** `notify-booking-inquiry`:
+   - Empfängt die wichtigsten Anfrage-Daten (Name, Zeitraum, Nächte, Personen, Haus).
+   - Sendet die Hinweis-Mail an beide Adressen via Resend.
+   - Setzt `Reply-To` auf die Email-Adresse des Gastes — du kannst direkt aus der Mail antworten.
+   - Schlägt der Versand fehl, wird das geloggt; die Anfrage selbst bleibt aber wie gewohnt in der DB.
+
+2. **Buchungsformular** (`src/components/BookingForm.tsx`):
+   - Direkt nach erfolgreichem Speichern der Anfrage in der externen Datenbank (`usblrulkcgucxtkhugck`) wird die Funktion aufgerufen.
+   - Falls die Mail mal nicht durchgeht, bekommt der Gast trotzdem die Erfolgsmeldung — Datenintegrität geht vor Benachrichtigung.
+   - Doppelter Versand wird über die Anfrage-ID verhindert (kein Doppel-Ping bei Doppelklick).
+
+## Was sich nicht ändert
+
+- Die Speicherung in der externen DB bleibt 1:1 wie bisher.
+- Die Hausverwaltungs-App empfängt die Anfrage weiterhin gleich.
+- Validierung, Preisberechnung und Erfolgsdialog im Formular bleiben unverändert.
+
+## Test
+
+Nach der Einrichtung schicken wir gemeinsam eine Test-Anfrage. Du solltest binnen Sekunden die Hinweis-Mail in beiden Postfächern (Hotmail + Gmail) sehen.
+
+Soll ich so loslegen?
