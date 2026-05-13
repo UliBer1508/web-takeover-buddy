@@ -24,6 +24,23 @@ const RegionArticle = () => {
   const description = rawDesc.length > 160 ? `${rawDesc.slice(0, 157)}...` : rawDesc;
   const canonical = `https://steinbockchalets.com/region/${article.id}`;
 
+  const absoluteImage = article.coverImage?.startsWith("http")
+    ? article.coverImage
+    : article.coverImage
+    ? `https://steinbockchalets.com${article.coverImage}`
+    : undefined;
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title[lang],
+    description: rawDesc,
+    image: absoluteImage,
+    author: { "@type": "Organization", name: "Steinbock Chalet" },
+    publisher: { "@type": "Organization", name: "Steinbock Chalet" },
+    mainEntityOfPage: canonical,
+    inLanguage: lang,
+  };
+
   return (
     <main className="min-h-screen bg-background">
       <Helmet>
@@ -34,7 +51,12 @@ const RegionArticle = () => {
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonical} />
         <meta property="og:type" content="article" />
-        {article.coverImage && <meta property="og:image" content={article.coverImage} />}
+        {absoluteImage && <meta property="og:image" content={absoluteImage} />}
+        {absoluteImage && <meta name="twitter:image" content={absoluteImage} />}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={description} />
+        <script type="application/ld+json">{JSON.stringify(articleJsonLd)}</script>
       </Helmet>
 
       {/* Hero */}
