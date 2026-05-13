@@ -26,12 +26,12 @@ const LanguageSwitcher = ({ isScrolled = true }: LanguageSwitcherProps) => {
             ? 'bg-primary/10 text-primary' 
             : isScrolled 
               ? 'text-muted-foreground hover:text-foreground' 
-              : 'text-white/70 hover:text-white hover:bg-white/10'
+              : 'text-white/95 hover:text-white hover:bg-white/10'
         }`}
       >
         DE
       </Button>
-      <span className={isScrolled ? 'text-muted-foreground' : 'text-white/50'}>|</span>
+      <span className={isScrolled ? 'text-muted-foreground' : 'text-white/80'}>|</span>
       <Button
         variant="ghost"
         size="sm"
@@ -41,7 +41,7 @@ const LanguageSwitcher = ({ isScrolled = true }: LanguageSwitcherProps) => {
             ? 'bg-primary/10 text-primary' 
             : isScrolled 
               ? 'text-muted-foreground hover:text-foreground' 
-              : 'text-white/70 hover:text-white hover:bg-white/10'
+              : 'text-white/95 hover:text-white hover:bg-white/10'
         }`}
       >
         EN
