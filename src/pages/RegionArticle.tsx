@@ -37,8 +37,6 @@ const RegionArticle = () => {
         {article.coverImage && <meta property="og:image" content={article.coverImage} />}
       </Helmet>
 
-  return (
-    <main className="min-h-screen bg-background">
       {/* Hero */}
       <div className="relative h-[45vh] min-h-[320px] overflow-hidden">
         <div className={`absolute inset-0 bg-gradient-to-br ${article.gradient}`} />
