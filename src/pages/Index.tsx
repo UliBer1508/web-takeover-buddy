@@ -32,17 +32,19 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
 
   const isInfo = initialGalleryView === "info";
   const isGalleryPhotos = initialGalleryView === "photos";
-  const pageTitle = isInfo
-    ? "Gäste-Infos & Region-Tipps – Steinbock Chalets"
+  const seoKey = isInfo ? "seo.info" : isGalleryPhotos ? "seo.gallery" : "seo.home";
+  const pageTitle = t(`${seoKey}.title`);
+  const pageDescription = t(`${seoKey}.description`);
+
+  // Canonicalize English aliases (/gallery, /gallery/info) to the German URLs
+  // to consolidate duplicate content under one canonical.
+  const canonicalPath = isInfo
+    ? "/galerie/info"
     : isGalleryPhotos
-      ? "Galerie – Steinbock Chalets"
-      : "Steinbock Chalets – Ferienchalets in den Hohen Tauern";
-  const pageDescription = isInfo
-    ? "Persönliche Insider-Tipps zur Region Pinzgau: Skigebiete, Wanderungen, Radtouren und Kultur – plus alle Infos zum Chalet."
-    : isGalleryPhotos
-      ? "Bilder unseres Chalets in den österreichischen Alpen – Sommer wie Winter."
-      : "Buchen Sie Ihr Chalet in Neukirchen am Großvenediger. Skifahren, Wandern und Erholung in den Hohen Tauern.";
-  const canonicalUrl = `https://steinbockchalets.com${location.pathname === "/" ? "/" : location.pathname}`;
+      ? "/galerie"
+      : location.pathname === "/" ? "/" : location.pathname;
+  const canonicalUrl = `https://steinbockchalets.com${canonicalPath}`;
+  const htmlLang = i18n.language?.startsWith("en") ? "en" : "de";
 
   // Auto-scroll to gallery section for deep-link routes
   useEffect(() => {
