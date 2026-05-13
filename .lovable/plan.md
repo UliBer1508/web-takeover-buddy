@@ -1,61 +1,46 @@
-## Ziel
+## SEO-Review — Status
 
-Sobald eine neue Buchungsanfrage über das Formular in der Datenbank landet, bekommst du eine **kurze Hinweis-Email** an `uli.berresheim@hotmail.de` und `steinbockchalets@gmail.com`. Die Bearbeitung der Anfrage selbst passiert weiter wie gewohnt in deiner Hausverwaltungs-App — die Mail ist nur ein Erinnerungs-Ping ("schau in die App").
+7 offene Findings vom letzten Scan. Google Search Console hängt am Republish (Verifizierungs-Tag liegt schon im Code). Restliche 6 lassen sich direkt im Code fixen.
 
-## Inhalt der Email (bewusst minimal)
+## Was umgesetzt wird
 
-```
-Betreff: 🔔 Neue Buchungsanfrage – Steinbock Chalets
+**1. Sitemap mit allen Routen (mid)**
+Aktuell enthält `public/sitemap.xml` nur `/`. Ich ersetze die statische Datei durch einen Generator `scripts/generate-sitemap.ts`, der bei `predev`/`prebuild` läuft und folgende Routen einträgt:
+- `/`, `/galerie`, `/galerie/info`, `/region`
+- `/region/{slug}` für alle 30 Artikel aus `src/content/info-articles`
 
-Es ist eine neue Buchungsanfrage eingegangen.
+`/gallery`, `/gallery/info`, `/admin`, `/*` bleiben raus (englische Duplikate, intern, catch-all).
 
-Gast:      Uli Berresheim
-Zeitraum:  16.05.2026 – 23.05.2026 (7 Nächte)
-Personen:  6 Erwachsene
-Haus:      Venedigersiedlung Chalet
+**2. Social Previews — absolute og:image + per-Route OG-Tags (low)**
+- `index.html`: og:image / twitter:image auf absolute URL (`https://steinbockchalets.com/pwa-512x512.png`) umstellen, og:url ergänzen.
+- `RegionIndex` und `RegionArticle` setzen via Helmet bereits eigenen Title/Description — ich prüfe und ergänze fehlende `og:title` / `og:description` / `og:image` (Cover-Bild absolut) pro Route.
 
-Bitte öffne deine Hausverwaltungs-App, 
-um die Anfrage zu prüfen, zu bestätigen oder abzulehnen.
-```
+**3. Strukturierte Daten / JSON-LD (low)**
+- `index.html`: `LodgingBusiness`-JSON-LD mit Name, Adresse (Bramberg am Wildkogel), Beschreibung, URL, Telefon (aus Booking-Daten), Bild.
+- `RegionArticle`: pro Artikel ein `Article`-JSON-LD via Helmet (headline, description, image, author, datePublished falls vorhanden).
 
-Nur Eckdaten — die volle Bearbeitung passiert in der App.
+**4. /llms.txt (low)**
+Neue Datei `public/llms.txt` mit H1 "Steinbock Chalet", Kurz­beschreibung und Link-Listen für Hauptseiten + Region-Übersicht + die wichtigsten Artikel.
 
-## Technischer Ansatz
+**5. Lighthouse Performance — LCP-Hero (low)**
+Im Hero-Bild (`src/components/Hero*` o.ä.) `loading="lazy"` entfernen, `fetchpriority="high"` und explizite `width`/`height` setzen. `font-display: swap` in allen `@font-face` Regeln in `index.css` sicherstellen.
 
-Da du **keine eigene Domain** einrichten möchtest, nutze ich **Resend mit der kostenlosen Test-Adresse** `onboarding@resend.dev` als Absender. Das ist absolut ausreichend, weil die Mail nur an dich selbst geht — kein Gast sieht den Absender.
+**6. Lighthouse Accessibility — Kontrast (low)**
+Helle `text-muted-foreground/50`, `text-gray-300/400` o.ä. auf hellem Background suchen und durch volle Design-Tokens (`text-muted-foreground`, `text-foreground`) ersetzen. Konkrete Stellen erst beim Umsetzen identifiziert.
 
-**Vorteile:**
-- Keine DNS-Einträge, keine Domain-Verifizierung.
-- In wenigen Minuten einsatzbereit.
-- 3.000 Mails/Monat kostenlos (mehr als ausreichend).
+**7. Google Search Console (mid)**
+Nichts zu coden — Verifizierungs-Tag ist seit letztem Run in `index.html`. Nach Republish wird im nächsten Schritt verifiziert + Sitemap eingereicht. Bleibt als Pending bis publiziert.
 
-## Was du tun musst
+## Technische Details
 
-1. Kostenlosen Account anlegen unter **resend.com**.
-2. Im Resend-Dashboard unter **API Keys → Create API Key** einen Schlüssel erstellen.
-3. Den Schlüssel im sicheren Eingabe-Dialog einfügen, den ich dir nach deiner Freigabe zeige (ich sehe ihn nicht, er wird verschlüsselt gespeichert).
+- Sitemap-Generator nutzt das `infoArticles`-Array (id = slug) — wenn Artikel hinzukommen, wird die Sitemap automatisch aktuell.
+- `package.json` bekommt `predev` + `prebuild`-Scripts (`bunx tsx scripts/generate-sitemap.ts`).
+- JSON-LD für Region-Artikel wird inline in der bestehenden `<Helmet>` der `RegionArticle.tsx` eingehängt.
+- Findings 1–4 werden nach Code-Änderung als `fixed` markiert; #5/#6 ebenfalls (republish nötig); GSC bleibt offen.
 
-## Umsetzung (nach deiner Freigabe)
+## Was nicht angefasst wird
 
-1. **Backend-Funktion** `notify-booking-inquiry`:
-   - Empfängt die wichtigsten Anfrage-Daten (Name, Zeitraum, Nächte, Personen, Haus).
-   - Sendet die Hinweis-Mail an beide Adressen via Resend.
-   - Setzt `Reply-To` auf die Email-Adresse des Gastes — du kannst direkt aus der Mail antworten.
-   - Schlägt der Versand fehl, wird das geloggt; die Anfrage selbst bleibt aber wie gewohnt in der DB.
-
-2. **Buchungsformular** (`src/components/BookingForm.tsx`):
-   - Direkt nach erfolgreichem Speichern der Anfrage in der externen Datenbank (`usblrulkcgucxtkhugck`) wird die Funktion aufgerufen.
-   - Falls die Mail mal nicht durchgeht, bekommt der Gast trotzdem die Erfolgsmeldung — Datenintegrität geht vor Benachrichtigung.
-   - Doppelter Versand wird über die Anfrage-ID verhindert (kein Doppel-Ping bei Doppelklick).
-
-## Was sich nicht ändert
-
-- Die Speicherung in der externen DB bleibt 1:1 wie bisher.
-- Die Hausverwaltungs-App empfängt die Anfrage weiterhin gleich.
-- Validierung, Preisberechnung und Erfolgsdialog im Formular bleiben unverändert.
-
-## Test
-
-Nach der Einrichtung schicken wir gemeinsam eine Test-Anfrage. Du solltest binnen Sekunden die Hinweis-Mail in beiden Postfächern (Hotmail + Gmail) sehen.
-
-Soll ich so loslegen?
+- Bestehende Helmet-Logik / Routing.
+- Lovable Cloud-Setup, Auth, Booking, Realtime.
+- Sprachen / i18n-Inhalte.
+- Englische `/gallery*`-Routen (Duplikate ohne eigene UI).
