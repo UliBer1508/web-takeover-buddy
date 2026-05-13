@@ -42,6 +42,8 @@ const Hero = () => {
             <img
               src={heroImage}
               alt={t("hero.altImage")}
+              fetchPriority="high"
+              decoding="async"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/30 to-foreground/60" />
