@@ -476,5 +476,19 @@
       "skiing": "Ski",
       "culture": "Kultur"
     }
+  },
+  "seo": {
+    "home": {
+      "title": "Steinbock Chalets – Ferienchalets in den Hohen Tauern",
+      "description": "Buchen Sie Ihr Chalet in Neukirchen am Großvenediger. Skifahren, Wandern und Erholung in den Hohen Tauern."
+    },
+    "gallery": {
+      "title": "Galerie – Steinbock Chalets",
+      "description": "Bilder unseres Chalets in den österreichischen Alpen – Sommer wie Winter, Innen- und Außenansichten."
+    },
+    "info": {
+      "title": "Gäste-Infos & Region-Tipps – Steinbock Chalets",
+      "description": "Persönliche Insider-Tipps zur Region Pinzgau: Skigebiete, Wanderungen, Radtouren und Kultur – plus alle Infos zum Chalet."
+    }
   }
 }
