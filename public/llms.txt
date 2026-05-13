@@ -1,0 +1,29 @@
+# Steinbock Chalet
+
+> Gemütliche Ferienwohnung im Steinbock Chalet in Neukirchen am Großvenediger (Pinzgau, Salzburger Land, Österreich) — direkt am Wildkogel und im Nationalpark Hohe Tauern.
+
+Das Chalet bietet Platz für Familien und Gruppen und liegt zentral für Skifahren (Wildkogel-Arena, Kitzbühel, Zillertal), Wandern, Radfahren (Tauernradweg) und Kultur in den Hohen Tauern.
+
+## Hauptseiten
+
+- [Startseite](/): Überblick, Buchung, Verfügbarkeit, Galerie und Region.
+- [Galerie](/galerie): Fotos der Ferienwohnung und Umgebung.
+- [Info-Galerie](/galerie/info): Informationen zur Region und Aktivitäten.
+- [Region & Aktivitäten](/region): Übersicht aller Region-Artikel.
+
+## Region-Artikel
+
+- [Tauernradweg](/region/tauernradweg): Radweg entlang der Salzach.
+- [Wildkogel-Arena](/region/skiarena-wildkogel): Skigebiet vor der Haustür.
+- [Kitzsteinhorn](/region/kitzsteinhorn): Gletscherskigebiet ganzjährig.
+- [Krimmler Wasserfälle](/region/krimmler-wasserfaelle): Höchste Wasserfälle Europas.
+- [Nationalparkzentrum Hohe Tauern](/region/nationalparkzentrum): Erlebniswelt in Mittersill.
+- [Hochkönig](/region/hochkoenig): Skigebiet mit Panorama.
+- [Saalbach Hinterglemm](/region/saalbach-hinterglemm): Großes Skigebiet im Pinzgau.
+- [Zillertal Arena](/region/zillertal-arena): Skiregion im Zillertal.
+- [Mayrhofen / Hintertux](/region/mayrhofen-hintertux): Ski- und Gletschergebiet.
+- [Schmittenhöhe](/region/schmittenhoehe): Skiberg über Zell am See.
+
+## Optional
+
+- [Alpe Adria](/region/alpe-adria), [Pinzgau-Pongau](/region/pinzgau-pongau), [Pinzgauer Lokalbahn (Rad)](/region/pinzgauer-lokalbahn-rad), [Hohe Tauern Bike Trail E12](/region/hohe-tauern-bike-trail-et12), [Salzachtal Krimml–Mittersill](/region/salzachtal-krimml-mittersill), [Berndlalm](/region/berndlalm), [Smaragdweg Habachtal](/region/smaragdweg-habachtal), [Wildkogel Gipfel](/region/wildkogel-gipfel), [Kürsingerhütte](/region/kuersingerhuette), [Stockenbaumalm](/region/stockenbaumalm), [Wildalm](/region/wildalm), [Wildkogelalm](/region/wildkogelalm), [Baumgartenalm](/region/baumgartenalm), [Großarltal](/region/grossarltal), [Obertauern](/region/obertauern), [Rauris](/region/rauris), [Snow Space Flachau](/region/snow-space-flachau), [Museum Bramberg](/region/museum-bramberg), [Felberturm](/region/felberturm), [KitzSki Kitzbühel](/region/kitzski-kitzbuehel).
