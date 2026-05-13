@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft } from "lucide-react";
 import { infoArticles } from "@/content/info-articles";
@@ -7,8 +8,24 @@ const RegionIndex = () => {
   const { i18n } = useTranslation();
   const lang = i18n.language === "en" ? "en" : "de";
 
+  const title = lang === "de"
+    ? "Region & Aktivitäten – Steinbock Chalet"
+    : "Region & Activities – Steinbock Chalet";
+  const description = lang === "de"
+    ? "Skigebiete, Wanderungen, Radtouren und Kultur rund um das Steinbock Chalet in Neukirchen am Großvenediger."
+    : "Ski areas, hiking trails, cycling routes and culture around Steinbock Chalet in Neukirchen am Großvenediger.";
+
   return (
     <main className="min-h-screen bg-background">
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href="https://steinbockchalets.com/region" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content="https://steinbockchalets.com/region" />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <div className="max-w-6xl mx-auto px-4 py-10 md:py-16">
         <Link
           to="/"
