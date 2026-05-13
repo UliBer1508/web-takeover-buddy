@@ -88,7 +88,7 @@ const RegionArticle = () => {
               </span>
             </div>
             <h1 className="text-3xl md:text-5xl font-bold mb-2">{article.title[lang]}</h1>
-            <p className="text-base md:text-lg text-white/85">{article.subtitle[lang]}</p>
+            <p className="text-base md:text-lg text-white/95 drop-shadow-md">{article.subtitle[lang]}</p>
           </div>
         </div>
       </div>
