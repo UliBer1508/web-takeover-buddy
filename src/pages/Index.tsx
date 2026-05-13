@@ -75,6 +75,7 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
   return (
     <div className="min-h-screen">
       <Helmet>
+        <html lang={htmlLang} />
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
         <link rel="canonical" href={canonicalUrl} />
