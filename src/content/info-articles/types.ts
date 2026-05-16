@@ -1,6 +1,15 @@
 import type { LucideIcon } from "lucide-react";
 
-export type InfoTopic = "cycling" | "hiking" | "skiing" | "culture";
+export type InfoTopic =
+  | "cycling"
+  | "hiking"
+  | "skiing"
+  | "culture"
+  | "panorama"
+  | "water"
+  | "family"
+  | "wellness"
+  | "premium";
 
 export interface LocalizedText {
   de: string;

@@ -471,10 +471,15 @@
     },
     "topics": {
       "all": "Alle",
-      "cycling": "Radwege",
+      "panorama": "Panorama",
+      "water": "Seen & Klammen",
       "hiking": "Wandern",
+      "cycling": "Radwege",
+      "family": "Familie",
+      "wellness": "Wellness & Spa",
+      "premium": "Premium",
       "skiing": "Ski",
-      "culture": "Kultur"
+      "culture": "Kultur & Städte"
     }
   },
   "seo": {

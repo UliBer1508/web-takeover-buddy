@@ -1,46 +1,86 @@
-## SEO-Review — Status
+## Ziel
 
-7 offene Findings vom letzten Scan. Google Search Console hängt am Republish (Verifizierungs-Tag liegt schon im Code). Restliche 6 lassen sich direkt im Code fixen.
+Empfehlungen aus deiner Liste – speziell relevant für Gäste aus arabischen Ländern und Israel im Frühling/Sommer – in die bestehende Info-Galerie integrieren, mit **exakt derselben Artikel-Struktur** wie bisher (Cover, Kurzbeschreibung, Stats, Sections, offizieller Link).
 
-## Was umgesetzt wird
+## Was bereits existiert (nicht neu anlegen)
 
-**1. Sitemap mit allen Routen (mid)**
-Aktuell enthält `public/sitemap.xml` nur `/`. Ich ersetze die statische Datei durch einen Generator `scripts/generate-sitemap.ts`, der bei `predev`/`prebuild` läuft und folgende Routen einträgt:
-- `/`, `/galerie`, `/galerie/info`, `/region`
-- `/region/{slug}` für alle 30 Artikel aus `src/content/info-articles`
+Kitzsteinhorn · Wildkogel (Gipfel/Alm) · Krimmler Wasserfälle · Nationalparkzentrum Mittersill · KitzSki Kitzbühel · Skigebiete (Zillertal, Saalbach, Hochkönig, Schmittenhöhe etc.)
 
-`/gallery`, `/gallery/info`, `/admin`, `/*` bleiben raus (englische Duplikate, intern, catch-all).
+## Neue Artikel (15)
 
-**2. Social Previews — absolute og:image + per-Route OG-Tags (low)**
-- `index.html`: og:image / twitter:image auf absolute URL (`https://steinbockchalets.com/pwa-512x512.png`) umstellen, og:url ergänzen.
-- `RegionIndex` und `RegionArticle` setzen via Helmet bereits eigenen Title/Description — ich prüfe und ergänze fehlende `og:title` / `og:description` / `og:image` (Cover-Bild absolut) pro Route.
+Jeder mit DE/EN Titel, Subtitle, kurzer Beschreibung (2–3 Sätze), 4 Stats, 2 Sections (Erlebnis + Highlights-Bullets), Cover-Gradient, Lucide-Icon, **offiziellem externalUrl**.
 
-**3. Strukturierte Daten / JSON-LD (low)**
-- `index.html`: `LodgingBusiness`-JSON-LD mit Name, Adresse (Bramberg am Wildkogel), Beschreibung, URL, Telefon (aus Booking-Daten), Bild.
-- `RegionArticle`: pro Artikel ein `Article`-JSON-LD via Helmet (headline, description, image, author, datePublished falls vorhanden).
+**Berge & Panorama**
+1. Großglockner Hochalpenstraße → grossglockner.at
+2. Mooserboden Stauseen (Kaprun) → verbund.com / kaprun-hochgebirgsstauseen
 
-**4. /llms.txt (low)**
-Neue Datei `public/llms.txt` mit H1 "Steinbock Chalet", Kurz­beschreibung und Link-Listen für Hauptseiten + Region-Übersicht + die wichtigsten Artikel.
+**Wasser, Seen & Klammen**
+3. Sigmund-Thun-Klamm Kaprun → kaprun.com
+4. Liechtensteinklamm St. Johann → liechtensteinklamm.at
+5. Zeller See (Bootsfahrten, Promenade) → zellamsee-kaprun.com
+6. Hintersee Mittersill → nationalpark.at
 
-**5. Lighthouse Performance — LCP-Hero (low)**
-Im Hero-Bild (`src/components/Hero*` o.ä.) `loading="lazy"` entfernen, `fetchpriority="high"` und explizite `width`/`height` setzen. `font-display: swap` in allen `@font-face` Regeln in `index.css` sicherstellen.
+**Familie**
+7. Rutschenweg & Mountaincarts Wildkogel (kombiniert, da gleicher Berg) → wildkogel-arena.at
+8. Wildpark Ferleiten → wildpark-ferleiten.at
+9. Alpakawanderung Bramberg/Mittersill → z. B. alpaka-tour.at
 
-**6. Lighthouse Accessibility — Kontrast (low)**
-Helle `text-muted-foreground/50`, `text-gray-300/400` o.ä. auf hellem Background suchen und durch volle Design-Tokens (`text-muted-foreground`, `text-foreground`) ersetzen. Konkrete Stellen erst beim Umsetzen identifiziert.
+**Wellness**
+10. Tauern Spa Kaprun → tauernspa.at
 
-**7. Google Search Console (mid)**
-Nichts zu coden — Verifizierungs-Tag ist seit letztem Run in `index.html`. Nach Republish wird im nächsten Schritt verifiziert + Sitemap eingereicht. Bleibt als Pending bis publiziert.
+**Premium**
+11. Helikopterflug Hohe Tauern → heli-austria / alpine helicopter Anbieter
+12. Bootstour / privates Boot Zeller See → schmittenhoehe / zellamsee-kaprun
+13. Pferdekutschenfahrt Kitzbühel → kitzbuehel.com
 
-## Technische Details
+**Städte & Kultur**
+14. Salzburg Altstadt (Festung, Mirabell, Mozart) → salzburg.info
+15. Zell am See Altstadt & Promenade → zellamsee-kaprun.com
 
-- Sitemap-Generator nutzt das `infoArticles`-Array (id = slug) — wenn Artikel hinzukommen, wird die Sitemap automatisch aktuell.
-- `package.json` bekommt `predev` + `prebuild`-Scripts (`bunx tsx scripts/generate-sitemap.ts`).
-- JSON-LD für Region-Artikel wird inline in der bestehenden `<Helmet>` der `RegionArticle.tsx` eingehängt.
-- Findings 1–4 werden nach Code-Änderung als `fixed` markiert; #5/#6 ebenfalls (republish nötig); GSC bleibt offen.
+## Topic-Filter erweitern
 
-## Was nicht angefasst wird
+Die aktuellen 4 Tabs (Radfahren · Wandern · Ski · Kultur) reichen nicht. Erweiterung auf **8 Topics**:
 
-- Bestehende Helmet-Logik / Routing.
-- Lovable Cloud-Setup, Auth, Booking, Realtime.
-- Sprachen / i18n-Inhalte.
-- Englische `/gallery*`-Routen (Duplikate ohne eigene UI).
+```text
+Alle · Radfahren · Wandern · Ski · Panorama · Wasser & Seen · Familie · Wellness & Spa · Premium · Kultur & Städte
+```
+
+- Neue Werte in `InfoTopic` (types.ts): `panorama`, `water`, `family`, `wellness`, `premium` (culture bleibt für Städte/Museen).
+- `infoTopics` in `index.ts` um die neuen Tabs mit passenden Lucide-Icons erweitern (Mountain, Waves, Users, Sparkles, Crown).
+- i18n-Keys `infoGallery.topics.*` in DE/EN ergänzen.
+- Bestehende Artikel bleiben unverändert in ihrem aktuellen Topic.
+
+## Bilder
+
+Reale Fotos von Wikimedia Commons (CC BY-SA), wie bei bestehenden Artikeln (z. B. krimmler-wasserfaelle). Pro neuem Artikel 1 Cover + 1–2 Galerie-Bilder, gespeichert unter `src/assets/{topic}/`. Wo kein freies Foto verfügbar (z. B. Helikopter, Alpaka), nur Gradient + Icon-Cover wie bisher als Fallback erlaubt.
+
+## Dateien
+
+**Neu:**
+- `src/content/info-articles/articles/grossglockner-hochalpenstrasse.ts`
+- `…/mooserboden-stauseen.ts`
+- `…/sigmund-thun-klamm.ts`
+- `…/liechtensteinklamm.ts`
+- `…/zeller-see.ts`
+- `…/hintersee-mittersill.ts`
+- `…/wildkogel-family-fun.ts` (Rutschenweg + Mountaincarts)
+- `…/wildpark-ferleiten.ts`
+- `…/alpakawanderung.ts`
+- `…/tauern-spa.ts`
+- `…/helikopterflug-hohe-tauern.ts`
+- `…/bootstour-zeller-see.ts`
+- `…/pferdekutsche-kitzbuehel.ts`
+- `…/salzburg-altstadt.ts`
+- `…/zell-am-see-altstadt.ts`
+- jeweilige Bild-Assets unter `src/assets/`
+
+**Geändert:**
+- `src/content/info-articles/types.ts` – `InfoTopic` erweitert
+- `src/content/info-articles/index.ts` – Imports + `infoTopics` erweitert
+- `src/i18n/locales/de.json` / `en.json` – neue `topics.*` keys
+- `public/llms.txt` – neue Routen unter „Region-Artikel" ergänzen
+- `public/sitemap.xml` + `scripts/generate-sitemap.ts` – neue `/region/{id}` Einträge
+
+## Hinweis zur Sprache
+
+Die neuen Artikel werden – konsistent mit dem Rest der Seite – auf **DE/EN** gepflegt. Arabisch/Hebräisch ist aktuell im i18n-Schema nicht vorgesehen; das wäre ein separater, größerer Umbau (RTL-Layout, vollständige Übersetzungen aller Artikel). Falls gewünscht, machen wir das als eigenes Projekt.

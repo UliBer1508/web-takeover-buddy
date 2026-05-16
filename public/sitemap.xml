@@ -31,6 +31,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://steinbockchalets.com/region/alpakawanderung</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://steinbockchalets.com/region/alpe-adria</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -46,12 +51,32 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://steinbockchalets.com/region/bootstour-zeller-see</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://steinbockchalets.com/region/felberturm</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://steinbockchalets.com/region/grossarltal</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://steinbockchalets.com/region/grossglockner-hochalpenstrasse</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://steinbockchalets.com/region/helikopterflug-hohe-tauern</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://steinbockchalets.com/region/hintersee-mittersill</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -86,7 +111,17 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://steinbockchalets.com/region/liechtensteinklamm</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://steinbockchalets.com/region/mayrhofen-hintertux</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://steinbockchalets.com/region/mooserboden-stauseen</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -102,6 +137,11 @@
   </url>
   <url>
     <loc>https://steinbockchalets.com/region/obertauern</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://steinbockchalets.com/region/pferdekutsche-kitzbuehel</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -131,7 +171,17 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://steinbockchalets.com/region/salzburg-altstadt</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://steinbockchalets.com/region/schmittenhoehe</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://steinbockchalets.com/region/sigmund-thun-klamm</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -156,6 +206,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://steinbockchalets.com/region/tauern-spa</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://steinbockchalets.com/region/tauernradweg</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -166,12 +221,32 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://steinbockchalets.com/region/wildkogel-family-fun</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://steinbockchalets.com/region/wildkogel-gipfel</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://steinbockchalets.com/region/wildkogelalm</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://steinbockchalets.com/region/wildpark-ferleiten</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://steinbockchalets.com/region/zell-am-see-altstadt</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://steinbockchalets.com/region/zeller-see</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
