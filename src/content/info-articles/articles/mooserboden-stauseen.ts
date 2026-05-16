@@ -27,8 +27,8 @@ const article: InfoArticle = {
     {
       heading: { de: "Das Erlebnis", en: "The experience" },
       body: {
-        de: "Vom Parkplatz Kesselfall geht es mit Bus und Schrägaufzug hinauf zu den Stauseen Wasserfallboden und Mooserboden. Oben warten Themenwege, Erlebniswelt „Strom & Eis" und beeindruckende Panoramen.",
-        en: "From Kesselfall car park, shuttle buses and an inclined lift take you up to the Wasserfallboden and Mooserboden reservoirs. Theme trails, the 'Electricity & Ice' experience and breathtaking panoramas await.",
+        de: "Vom Parkplatz Kesselfall geht es mit Bus und Schrägaufzug hinauf zu den Stauseen Wasserfallboden und Mooserboden. Oben warten Themenwege, Erlebniswelt Strom & Eis und beeindruckende Panoramen.",
+        en: "From Kesselfall car park, shuttle buses and an inclined lift take you up to the Wasserfallboden and Mooserboden reservoirs. Theme trails, the Electricity & Ice experience and breathtaking panoramas await.",
       },
     },
     {
@@ -36,7 +36,7 @@ const article: InfoArticle = {
       bullets: [
         { de: "Begehbare Staumauer", en: "Walk across the dam wall" },
         { de: "Rundweg um den Mooserboden", en: "Loop trail around Mooserboden" },
-        { de: "Erlebniswelt Strom & Eis", en: "'Electricity & Ice' experience" },
+        { de: "Erlebniswelt Strom & Eis", en: "Electricity & Ice experience" },
         { de: "Restaurant mit Panoramaterrasse", en: "Restaurant with panorama terrace" },
       ],
     },
