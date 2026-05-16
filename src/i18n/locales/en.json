@@ -471,10 +471,15 @@
     },
     "topics": {
       "all": "All",
-      "cycling": "Cycling",
+      "panorama": "Panorama",
+      "water": "Lakes & Gorges",
       "hiking": "Hiking",
+      "cycling": "Cycling",
+      "family": "Family",
+      "wellness": "Wellness & Spa",
+      "premium": "Premium",
       "skiing": "Skiing",
-      "culture": "Culture"
+      "culture": "Culture & Cities"
     }
   },
   "seo": {
