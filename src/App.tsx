@@ -8,6 +8,9 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import RegionIndex from "./pages/RegionIndex";
 import RegionArticle from "./pages/RegionArticle";
+import Impressum from "./pages/Impressum";
+import Datenschutz from "./pages/Datenschutz";
+import AGB from "./pages/AGB";
 import InstallPrompt from "./components/InstallPrompt";
 
 const queryClient = new QueryClient();
@@ -27,6 +30,9 @@ const App = () => (
           <Route path="/region" element={<RegionIndex />} />
           <Route path="/region/:slug" element={<RegionArticle />} />
           <Route path="/admin" element={<Auth />} />
+          <Route path="/impressum" element={<Impressum />} />
+          <Route path="/datenschutz" element={<Datenschutz />} />
+          <Route path="/agb" element={<AGB />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

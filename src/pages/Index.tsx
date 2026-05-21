@@ -83,6 +83,34 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
         <meta property="og:description" content={pageDescription} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://steinbockchalets.com/og-preview.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://steinbockchalets.com/og-preview.jpg" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LodgingBusiness",
+          name: "Steinbock Chalets",
+          description: pageDescription,
+          url: "https://steinbockchalets.com",
+          image: "https://steinbockchalets.com/og-preview.jpg",
+          telephone: "+49 15757153466",
+          email: "steinbockchalets@gmail.com",
+          priceRange: "€€€",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Venedigersiedlung 315",
+            postalCode: "5741",
+            addressLocality: "Neukirchen am Großvenediger",
+            addressCountry: "AT",
+          },
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: 47.2547,
+            longitude: 12.2725,
+          },
+        })}</script>
       </Helmet>
       <Navigation />
       {!startAtGallery && <Hero />}

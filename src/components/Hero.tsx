@@ -33,11 +33,7 @@ const Hero = () => {
     <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        {isLoading ? (
-          <div className="w-full h-full bg-gradient-to-br from-primary/20 via-background to-primary/10 flex items-center justify-center">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          </div>
-        ) : heroImage ? (
+        {heroImage ? (
           <>
             <img
               src={heroImage}
@@ -49,18 +45,25 @@ const Hero = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/30 to-foreground/60" />
           </>
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary/30 via-background to-accent/20">
+          <div className="w-full h-full bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/20">
             <div className="absolute inset-0 bg-gradient-to-b from-foreground/20 via-transparent to-foreground/40" />
           </div>
         )}
       </div>
 
+      {/* Small loader overlay */}
+      {isLoading && (
+        <div className="absolute top-20 right-6 z-20" aria-live="polite">
+          <Loader2 className="h-5 w-5 animate-spin text-white/80" aria-label={t("hero.altImage")} />
+        </div>
+      )}
+
       {/* Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 animate-fade-in-up">
-        <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 drop-shadow-2xl ${heroImage ? 'text-white' : 'text-foreground'}`}>
+        <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 drop-shadow-2xl ${heroImage ? "text-white" : "text-foreground"}`}>
           {t("hero.title")}
         </h1>
-        <p className={`text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto drop-shadow-lg ${heroImage ? 'text-white/95' : 'text-muted-foreground'}`}>
+        <p className={`text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto drop-shadow-lg ${heroImage ? "text-white/95" : "text-muted-foreground"}`}>
           {t("hero.subtitle")}
         </p>
         <Button
@@ -78,7 +81,8 @@ const Hero = () => {
           const element = document.getElementById("about");
           if (element) element.scrollIntoView({ behavior: "smooth" });
         }}
-        className={`absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform ${heroImage ? 'text-white' : 'text-foreground'}`}
+        aria-label="Zur nächsten Sektion scrollen"
+        className={`absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform ${heroImage ? "text-white" : "text-foreground"}`}
       >
         <ChevronDown size={32} />
       </button>
