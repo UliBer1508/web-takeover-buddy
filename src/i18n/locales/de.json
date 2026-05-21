@@ -241,7 +241,18 @@
     "copyright": "© 2025 Copy Right Steinbock Chalets. Alle Rechte vorbehalten.",
     "imprint": "Impressum",
     "privacy": "Datenschutz",
-    "terms": "AGB"
+    "terms": "AGB",
+    "followUs": "Folge uns für Angebote & Einblicke",
+    "openInMaps": "Auf Google Maps öffnen",
+    "aria": {
+      "scrollAbout": "Zum Über-uns-Bereich scrollen",
+      "scrollFeatures": "Zur Ausstattung scrollen",
+      "scrollBooking": "Zur Buchung scrollen",
+      "scrollGallery": "Zur Galerie scrollen",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "whatsapp": "WhatsApp"
+    }
   },
   "common": {
     "error": "Fehler",
@@ -495,5 +506,45 @@
       "title": "Gäste-Infos & Region-Tipps – Steinbock Chalets",
       "description": "Persönliche Insider-Tipps zur Region Pinzgau: Skigebiete, Wanderungen, Radtouren und Kultur – plus alle Infos zum Chalet."
     }
+  },
+  "legal": {
+    "imprint": {
+      "title": "Impressum",
+      "legalNote": "Angaben gemäß § 5 ECG (E-Commerce-Gesetz, Österreich)",
+      "operator": "Betreiber",
+      "namePlaceholder": "[BITTE EINTRAGEN]",
+      "address": "Adresse",
+      "contact": "Kontakt",
+      "phone": "Telefon",
+      "email": "E-Mail",
+      "disclaimer": "Haftungsausschluss",
+      "disclaimerText": "Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich."
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung",
+      "intro": "Der Schutz Ihrer persönlichen Daten ist uns ein besonderes Anliegen. Wir verarbeiten Ihre Daten ausschließlich auf Grundlage der gesetzlichen Bestimmungen (DSGVO, TKG 2003).",
+      "contactTitle": "Kontakt mit uns",
+      "contactText": "Wenn Sie per Formular auf der Website oder per E-Mail Kontakt mit uns aufnehmen, werden Ihre angegebenen Daten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen sechs Monate bei uns gespeichert.",
+      "hostingTitle": "Hosting",
+      "hostingText": "Diese Website wird über Supabase und Lovable Cloud gehostet. Server-Logfiles (IP-Adresse, Zeitpunkt, Browser) werden aus Sicherheitsgründen temporär gespeichert.",
+      "cookiesTitle": "Cookies",
+      "cookiesText": "Diese Website verwendet ausschließlich technisch notwendige Cookies (z. B. Spracheinstellung). Es werden keine Tracking- oder Marketing-Cookies eingesetzt.",
+      "rightsTitle": "Ihre Rechte",
+      "rightsText": "Ihnen stehen grundsätzlich die Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerruf und Widerspruch zu. Wenden Sie sich dazu an steinbockchalets@gmail.com."
+    },
+    "terms": {
+      "title": "Allgemeine Geschäftsbedingungen",
+      "bookingTitle": "1. Buchung & Vertragsabschluss",
+      "bookingText": "Eine Buchungsanfrage über das Formular ist unverbindlich. Der Mietvertrag kommt erst mit unserer schriftlichen Bestätigung zustande.",
+      "paymentTitle": "2. Zahlung",
+      "paymentText": "Die Zahlung erfolgt gemäß den in der Buchungsbestätigung genannten Konditionen, üblicherweise als Anzahlung bei Buchung und Restzahlung vor Anreise.",
+      "cancellationTitle": "3. Stornierung",
+      "cancellationText": "Stornierungen sind schriftlich an steinbockchalets@gmail.com zu richten. Die Stornogebühren richten sich nach dem Zeitpunkt der Stornierung gemäß ÖHGB.",
+      "liabilityTitle": "4. Haftung",
+      "liabilityText": "Der Gast haftet für Schäden, die während des Aufenthalts durch ihn oder seine Begleitpersonen verursacht werden. Eine Haftung des Vermieters für leichte Fahrlässigkeit ist ausgeschlossen.",
+      "jurisdictionTitle": "5. Gerichtsstand",
+      "jurisdictionText": "Es gilt österreichisches Recht. Gerichtsstand ist das sachlich zuständige Gericht in Österreich."
+    },
+    "backHome": "← Zurück zur Startseite"
   }
 }

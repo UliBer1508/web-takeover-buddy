@@ -241,7 +241,18 @@
     "copyright": "© 2025 Copyright Steinbock Chalets. All rights reserved.",
     "imprint": "Imprint",
     "privacy": "Privacy Policy",
-    "terms": "Terms & Conditions"
+    "terms": "Terms & Conditions",
+    "followUs": "Follow us for offers & insights",
+    "openInMaps": "Open in Google Maps",
+    "aria": {
+      "scrollAbout": "Scroll to About section",
+      "scrollFeatures": "Scroll to Features section",
+      "scrollBooking": "Scroll to Booking section",
+      "scrollGallery": "Scroll to Gallery section",
+      "instagram": "Instagram",
+      "facebook": "Facebook",
+      "whatsapp": "WhatsApp"
+    }
   },
   "common": {
     "error": "Error",
@@ -495,5 +506,45 @@
       "title": "Guest Info & Regional Tips – Steinbock Chalets",
       "description": "Insider tips for the Pinzgau region: ski areas, hikes, bike tours and culture, plus everything about the chalet."
     }
+  },
+  "legal": {
+    "imprint": {
+      "title": "Imprint",
+      "legalNote": "Information according to § 5 ECG (Austrian E-Commerce Act)",
+      "operator": "Operator",
+      "namePlaceholder": "[BITTE EINTRAGEN]",
+      "address": "Address",
+      "contact": "Contact",
+      "phone": "Phone",
+      "email": "E-Mail",
+      "disclaimer": "Disclaimer",
+      "disclaimerText": "Despite careful content control, we assume no liability for the content of external links. The operators of the linked pages are solely responsible for their content."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "The protection of your personal data is of particular importance to us. We process your data exclusively on the basis of legal provisions (GDPR, TKG 2003).",
+      "contactTitle": "Contact with us",
+      "contactText": "When you contact us via the form on our website or by email, the data you provide will be stored for six months for the purpose of processing the inquiry and in case of follow-up questions.",
+      "hostingTitle": "Hosting",
+      "hostingText": "This website is hosted via Supabase and Lovable Cloud. Server log files (IP address, timestamp, browser) are stored temporarily for security reasons.",
+      "cookiesTitle": "Cookies",
+      "cookiesText": "This website uses only technically necessary cookies (e.g. language settings). No tracking or marketing cookies are used.",
+      "rightsTitle": "Your rights",
+      "rightsText": "You have the right to information, correction, deletion, restriction, data portability, revocation and objection. To exercise these rights, please contact steinbockchalets@gmail.com."
+    },
+    "terms": {
+      "title": "Terms and Conditions",
+      "bookingTitle": "1. Booking & Contract",
+      "bookingText": "A booking inquiry via the form is non-binding. The rental contract only becomes effective with our written confirmation.",
+      "paymentTitle": "2. Payment",
+      "paymentText": "Payment is made according to the conditions stated in the booking confirmation, usually as a deposit upon booking and the balance before arrival.",
+      "cancellationTitle": "3. Cancellation",
+      "cancellationText": "Cancellations must be sent in writing to steinbockchalets@gmail.com. Cancellation fees depend on the time of cancellation according to ÖHGB.",
+      "liabilityTitle": "4. Liability",
+      "liabilityText": "The guest is liable for damages caused during the stay by themselves or their companions. The landlord's liability for slight negligence is excluded.",
+      "jurisdictionTitle": "5. Jurisdiction",
+      "jurisdictionText": "Austrian law applies. The place of jurisdiction is the competent court in Austria."
+    },
+    "backHome": "← Back to home"
   }
 }

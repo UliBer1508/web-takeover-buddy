@@ -1,9 +1,13 @@
-import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { MapPin, Phone, Mail, MessageCircle, Instagram, Facebook } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const { t } = useTranslation();
-  
+
+  const mapsUrl =
+    "https://www.google.com/maps/search/?api=1&query=Venedigersiedlung+315+5741+Neukirchen+am+Gro%C3%9Fvenediger";
+
   return (
     <footer id="footer" className="bg-primary text-primary-foreground py-12 md:py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,19 +18,38 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 flex-shrink-0 mt-1" />
-                <p className="text-sm text-primary-foreground/90">
-                  Venedigersiedlung 315<br />
-                  5741 Neukirchen am Großvenediger<br />
-                  Österreich
-                </p>
+                <div>
+                  <p className="text-sm text-primary-foreground/90">
+                    Venedigersiedlung 315<br />
+                    5741 Neukirchen am Großvenediger<br />
+                    Österreich
+                  </p>
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 mt-2 text-sm text-primary-foreground/90 hover:text-primary-foreground underline underline-offset-2 transition-colors"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    {t("footer.openInMaps")} →
+                  </a>
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 flex-shrink-0" />
-                <a href="tel:+4915757153466" className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors">+49 15757153466</a>
+                <a
+                  href="tel:+4915757153466"
+                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
+                  +49 15757153466
+                </a>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 flex-shrink-0" />
-                <a href="mailto:info@steinbock-chalet.com" className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors">
+                <a
+                  href="mailto:steinbockchalets@gmail.com"
+                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
                   steinbockchalets@gmail.com
                 </a>
               </div>
@@ -38,43 +61,36 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">{t("footer.quickLinks")}</h3>
             <ul className="space-y-2">
               <li>
-                <a 
-                  href="https://wa.me/4915757153466" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  WhatsApp
-                </a>
-              </li>
-              <li>
-                <button 
-                  onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+                <button
+                  onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
+                  aria-label={t("footer.aria.scrollAbout")}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
                   {t("footer.aboutUs")}
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                <button
+                  onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+                  aria-label={t("footer.aria.scrollFeatures")}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
                   {t("footer.features")}
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })}
+                <button
+                  onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
+                  aria-label={t("footer.aria.scrollBooking")}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
                   {t("footer.booking")}
                 </button>
               </li>
               <li>
-                <button 
-                  onClick={() => document.getElementById('galerie')?.scrollIntoView({ behavior: 'smooth' })}
+                <button
+                  onClick={() => document.getElementById("galerie")?.scrollIntoView({ behavior: "smooth" })}
+                  aria-label={t("footer.aria.scrollGallery")}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
                   {t("footer.gallery")}
@@ -83,11 +99,42 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Social Media & Newsletter */}
+          {/* Social Media */}
           <div>
             <h3 className="text-xl font-bold mb-4">{t("footer.contactUs")}</h3>
-            
-            <p className="text-sm text-primary-foreground/90">
+            <div className="flex items-center gap-4 mb-4">
+              <a
+                href="https://instagram.com/steinbockchalets"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t("footer.aria.instagram")}
+                className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a
+                href="https://facebook.com/steinbockchalets"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t("footer.aria.facebook")}
+                className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
+              >
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a
+                href="https://wa.me/4915757153466"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t("footer.aria.whatsapp")}
+                className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
+              >
+                <MessageCircle className="w-5 h-5" />
+              </a>
+            </div>
+            <p className="text-sm text-primary-foreground/90 mb-2">
+              {t("footer.followUs")}
+            </p>
+            <p className="text-xs text-primary-foreground/70">
               {t("footer.stayUpdated")}
             </p>
           </div>
@@ -102,15 +149,15 @@ const Footer = () => {
               <span className="text-xs text-primary-foreground/60">v{__APP_VERSION__}</span>
             </div>
             <div className="flex gap-6">
-              <button className="hover:text-primary-foreground transition-colors">
+              <Link to="/impressum" className="hover:text-primary-foreground transition-colors">
                 {t("footer.imprint")}
-              </button>
-              <button className="hover:text-primary-foreground transition-colors">
+              </Link>
+              <Link to="/datenschutz" className="hover:text-primary-foreground transition-colors">
                 {t("footer.privacy")}
-              </button>
-              <button className="hover:text-primary-foreground transition-colors">
+              </Link>
+              <Link to="/agb" className="hover:text-primary-foreground transition-colors">
                 {t("footer.terms")}
-              </button>
+              </Link>
             </div>
           </div>
         </div>
