@@ -1,67 +1,61 @@
-# Umsetzungskonzept: Fixes & Verbesserungen
+## Ziel
 
-## 1. Footer-Korrekturen (`src/components/Footer.tsx`)
+Komplette Migration weg von Lovable Cloud — **alle Daten, Auth und Bilder ausschließlich im externen Supabase** (`usblrulkcgucxtkhugck`). Damit fallen für Lovable Cloud keine Storage-/DB-/Auth-Kosten mehr an.
 
-- **E-Mail-Fix**: `href="mailto:steinbockchalets@gmail.com"` (einheitlich mit sichtbarem Text).
-- **Google-Maps-Link** unter der Adresse: `https://www.google.com/maps/search/?api=1&query=Venedigersiedlung+315+5741+Neukirchen` mit `MapPin`-Icon, Text „Auf Google Maps öffnen →", `target="_blank"`.
-- **Social-Media-Spalte** (3. Spalte, aktuell leer) befüllen:
-  - Instagram-Icon → `https://instagram.com/steinbockchalets`
-  - Facebook-Icon → `https://facebook.com/steinbockchalets`
-  - WhatsApp-Link aus „Quick Links" hierher verschieben
-  - Untertitel: „Folge uns für Angebote & Einblicke" (über i18n-Key `footer.followUs`)
-- **Rechts-Links**: Impressum/Datenschutz/AGB als `<Link to="/impressum">` etc. statt funktionsloser Buttons.
-- **Accessibility**: Allen Scroll-Buttons `aria-label` geben (z. B. „Zur Galerie scrollen").
+## Ausgangslage (Ist-Zustand)
 
-## 2. Rechtsseiten (neue Routen)
+Aktuell ist die App ein Mischbetrieb, obwohl laut Projektgedächtnis nur das externe Supabase genutzt werden soll:
 
-Drei neue Seiten in `src/pages/`:
-- `Impressum.tsx` (Route `/impressum`) — § 5 ECG-Inhalt:
-  - Name: **[BITTE EINTRAGEN]** (Platzhalter, mit Hinweisbox)
-  - Adresse: Venedigersiedlung 315, 5741 Neukirchen am Großvenediger
-  - E-Mail: steinbockchalets@gmail.com
-  - Telefon: +49 15757153466
-- `Datenschutz.tsx` (Route `/datenschutz`) — DSGVO-Grundtext (Kontaktformular, Supabase-Hosting, Cookies, Rechte der Betroffenen).
-- `AGB.tsx` (Route `/agb`) — Standard-Buchungs-AGB (Buchung, Zahlung, Stornierung, Haftung, Gerichtsstand).
+- **Lovable Cloud** (`xcohqbdgzprkixeycdhk`) — wird benutzt von: `Hero`, `Gallery`, `ImageUploadDialog` (Storage-Bucket `gallery`), `ImageEditDialog`, `Testimonials`, `PromotionBanner`, `PromotionSettingsEmbedded`, `HouseSelector`, `HouseSettingsDialog`, `ReviewAddDialog`, `ReviewEditDialog`, `useAuth`, `useAdmin`, `useHouseSelection`, `Auth`-Page, sowie das parallele Schreiben in `BookingForm`.
+- **External Supabase** — wird nur benutzt für: `AvailabilityCalendar` (Lesen) und `BookingForm` (zusätzliches Schreiben).
 
-Alle drei Seiten zweisprachig (DE/EN über i18n) und im bestehenden Warm/Holz-Stil mit Navigation + Footer.
+Bilder liegen im Lovable-Cloud-Bucket `gallery`, die DB-Tabelle `gallery_images` (mit URLs) liegt in Lovable Cloud.
 
-Registrierung in `src/App.tsx` als neue `<Route>`-Einträge.
+## Plan
 
-## 3. Dark Mode (`src/index.css`)
+### 1. Externes Supabase vorbereiten
+- Prüfen, welche Tabellen/Policies/Functions im externen Projekt bereits existieren (`houses`, `gallery_images`, `reviews`, `promotions`, `booking_inquiries`, `booking_statuses`, `categories`, `seasons`, `user_roles`, Funktionen `is_admin` / `has_role`).
+- Fehlende Tabellen + RLS-Policies + Trigger im externen Supabase neu anlegen, identisches Schema wie heute in Lovable Cloud (3NF beibehalten, Foreign Keys ergänzen wo heute fehlend).
+- Storage-Bucket `gallery` (public) im externen Supabase anlegen inkl. Policies (Public Read, Admin Write/Delete).
 
-Den `.dark`-Block durch die vorgegebene warme Palette ersetzen (Holz-/Stein-Töne statt kaltem shadcn-Blau). Werte 1:1 übernommen wie im Prompt aufgelistet.
+### 2. Daten- und Bild-Migration
+- Einmaliges Migrationsskript (Node, lokal mit Service-Role-Keys beider Projekte):
+  1. Alle Rows aus Lovable-Cloud-Tabellen lesen und ins externe Supabase einfügen (mit gleichen UUIDs).
+  2. Alle Dateien aus Lovable-Cloud-Bucket `gallery` herunterladen und in den externen Bucket hochladen.
+  3. URLs in `gallery_images.url` von alter Cloud-Domain auf neue externe Domain umschreiben.
+- Stichprobenprüfung: Bilder im Frontend laden, Buchungen sichtbar, Reviews sichtbar.
 
-## 4. SEO-Verbesserungen (`src/pages/Index.tsx`)
+### 3. Code-Umstellung auf einen einzigen Client
+- `src/integrations/external-supabase/client.ts` wird zum **einzigen aktiven Client** für die App. Datei mit generierten Types versehen (oder vorerst untypisiert lassen).
+- Globaler Refactor: alle `import { supabase } from "@/integrations/supabase/client"` → `import { supabase } from "@/integrations/external-supabase/client"` (Re-Export unter altem Pfad, damit kein Massen-Diff nötig ist).
+- `BookingForm`: doppeltes Schreiben entfernen, nur noch externer Insert.
+- `useAuth` / `useAdmin` / `Auth`-Page: nutzen jetzt externe Auth. Bestehende Admin-User muss im externen Supabase neu angelegt werden (Magic Link oder Passwort).
 
-- **og:image** in `<Helmet>` ergänzen (`https://steinbockchalets.com/og-preview.jpg` + `og:image:width/height`).
-- **JSON-LD Schema.org** (`LodgingBusiness`) mit Name, Adresse, Telefon, E-Mail, Geo-Koordinaten, Sterne, Preisbereich.
-- **`public/og-preview.jpg`**: ein bestehendes Galerie-/Hero-Bild als Fallback kopieren (1200×630).
+### 4. Lovable Cloud abklemmen
+- `.env`-Variablen (`VITE_SUPABASE_URL`, …) im Code nicht mehr verwenden.
+- Hinweis an dich: Lovable Cloud lässt sich nachträglich nicht „abschalten", verursacht aber ohne Nutzung keine Kosten — der freie $25-Topf bleibt ungenutzt.
 
-## 5. Hero (`src/components/Hero.tsx`)
+### 5. Sicherheit & Cleanup
+- Externer Anon-Key bleibt im Frontend (ist publishable, RLS schützt).
+- Sicherstellen, dass externer Service-Role-Key **nie** ins Repo gelangt — wird nur lokal für das Migrationsskript benutzt.
+- `gallery_images` Foreign Keys (`house_id`, `season_id`, `category_id`) im externen Supabase als echte FKs anlegen — derzeit fehlen sie und verletzen die 3NF-Vorgabe.
 
-- Loading-State: sofort sichtbarer warmer Gradient-Hintergrund + Titel; `Loader2` nur noch klein in der Ecke als Overlay-Spinner.
-- `aria-label="Zur nächsten Sektion scrollen"` am `ChevronDown`-Button.
+## Was du dafür brauchst / entscheiden musst
 
-## 6. .env / Git-Sicherheit
-
-- `.env` zu `.gitignore` hinzufügen (falls nicht vorhanden).
-- **Hinweis an dich**: Die in Git veröffentlichten Supabase-Schlüssel sollten in Lovable Cloud → Secrets rotiert/neu hinterlegt werden. Der **Anon Key** ist öffentlich unproblematisch (durch RLS geschützt), aber falls ein **Service-Role-Key** oder DB-Passwort committet wurde, **muss** dieser sofort rotiert werden.
-
-## i18n-Ergänzungen
-
-Neue Translation-Keys (DE+EN):
-- `footer.followUs`, `footer.openInMaps`, `footer.aria.scrollTo*`
-- `legal.imprint.*`, `legal.privacy.*`, `legal.terms.*`
+1. **Service-Role-Keys**: Ich brauche Zugriff (über Lovable-Secrets, nicht im Code) auf
+   - Lovable Cloud Service-Role (zum Auslesen/Download)
+   - Externer Supabase Service-Role (zum Schreiben/Upload)
+   Alternativ kannst du das Migrationsskript lokal selbst ausführen — ich liefere es dir fertig.
+2. **Admin-User**: Soll dein heutiger Admin-Login im externen Supabase mit gleicher E-Mail neu angelegt werden?
+3. **Reihenfolge**: Soll ich erst Schritt 1+2 (Schema + Datenmigration) machen und dir zur Prüfung zeigen, bevor ich Schritt 3 (Code-Switch) ausführe? Empfohlen: ja, sonst ist die Seite während der Umstellung leer.
 
 ## Technische Details
 
-- **Routing**: React Router (`BrowserRouter` bereits aktiv) → drei neue `<Route path="/impressum|/datenschutz|/agb">` in `App.tsx` oberhalb der Catch-All-Route.
-- **Footer-Links**: `import { Link } from "react-router-dom"`.
-- **Icons**: `Instagram`, `Facebook` aus `lucide-react`.
-- **og:image-Datei**: per `code--exec cp` aus `src/assets/` nach `public/og-preview.jpg`.
-- **Helmet**: `react-helmet-async` ist bereits eingebunden (Index.tsx nutzt es).
-
-## Was ich NICHT mache ohne deine Bestätigung
-
-- **Echten Namen/Firmierung** im Impressum eintragen — bleibt `[BITTE EINTRAGEN]`, bis du ihn nennst.
-- Social-Media-URLs sind **Platzhalter** — sag mir die echten Handles, falls abweichend.
+- Re-Export-Trick in `src/integrations/supabase/client.ts`:
+  ```ts
+  export { externalSupabase as supabase } from '../external-supabase/client';
+  ```
+  → minimal-invasiv, Types werden untypisiert bis wir `supabase gen types` gegen das externe Projekt laufen lassen.
+- Migrationsskript-Reihenfolge wegen FKs: `seasons`, `categories`, `booking_statuses`, `houses` → `gallery_images`, `promotions`, `reviews`, `booking_inquiries` → `user_roles`.
+- Storage-Migration via `supabase.storage.from('gallery').list()` + `download()` + Upload in Ziel-Bucket; URLs in DB anschließend per `UPDATE` umsetzen.
+- Lovable-Cloud-spezifische Edge Functions (falls vorhanden) bleiben außen vor — aktuell sind keine in Nutzung erkennbar.
