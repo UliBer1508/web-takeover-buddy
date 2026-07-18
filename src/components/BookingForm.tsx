@@ -418,6 +418,8 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
       }
 
       // 2. Insert into external "my sweet-home manager" database
+      let externalErrorOccurred = false;
+
       if (selectedHouse?.external_house_id) {
         const { error: externalError } = await externalSupabase
           .from('booking_inquiries')
@@ -436,14 +438,18 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           });
 
         if (externalError) {
-          console.warn("External DB sync failed:", externalError);
-          // Don't throw - local save was successful
+          console.error("External DB sync failed:", externalError);
+          externalErrorOccurred = true;
         }
+      } else {
+        console.error("External house ID is missing for selected house:", selectedHouse?.id);
       }
 
       toast({
         title: t('booking.successTitle'),
-        description: t('booking.successDesc')
+        description: externalErrorOccurred
+          ? "Ihre Anfrage wurde gespeichert. Falls Sie innerhalb von 24 Stunden keine Antwort erhalten, kontaktieren Sie uns bitte zusätzlich per E-Mail an steinbockchalets@gmail.com."
+          : t('booking.successDesc')
       });
       
       form.reset();
