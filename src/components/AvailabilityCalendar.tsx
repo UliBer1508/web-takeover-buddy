@@ -40,20 +40,22 @@ export const AvailabilityCalendar = ({ externalHouseId, onDateRangeSelect }: Ava
       try {
         // First, fetch all bookings to debug status values
         const { data: allBookings, error: debugError } = await externalSupabase
-          .from('bookings')
+          .from('public_availability')
           .select('check_in, check_out, status')
           .eq('house_id', externalHouseId)
           .abortSignal(controller.signal);
         
         if (debugError) {
-          console.error('Error fetching bookings:', debugError);
-          throw new Error(`bookings: ${debugError.message}`);
+          console.error('Error fetching availability:', debugError);
+          throw new Error(`public_availability: ${debugError.message}`);
         }
         
         console.log('All bookings for house:', allBookings);
         console.log('Unique status values:', [...new Set(allBookings?.map(b => b.status))]);
         
-        // Filter for confirmed/completed bookings (case-insensitive, German and English)
+        // Sicherheitsnetz: Die View public_availability liefert bereits nur
+        // 'confirmed' und 'checked_in'. Dieser Filter bleibt als zweite Ebene,
+        // falls die View-Definition erweitert wird.
         const confirmedStatuses = ['confirmed', 'checked_in', 'bestätigt', 'eingescheckt'];
         const bookings = allBookings?.filter(b => 
           confirmedStatuses.some(status => 
