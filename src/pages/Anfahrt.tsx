@@ -32,7 +32,12 @@ const Anfahrt = () => {
     }
   };
 
-  const schritte = [t("directions.step1"), t("directions.step2"), t("directions.step3")];
+  const schritte = [
+    t("directions.step1"),
+    t("directions.step2"),
+    t("directions.step3"),
+    t("directions.step4"),
+  ];
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -56,8 +61,8 @@ const Anfahrt = () => {
         <p className="text-muted-foreground mb-8">{t("directions.intro")}</p>
 
         <img
-          src="/og-preview.jpg"
-          alt="Steinbock Chalet"
+          src="/chalet-anfahrt.jpg"
+          alt={t("directions.imageAlt")}
           className="w-full rounded-xl border border-border mb-8 aspect-[16/9] object-cover"
           loading="lazy"
         />
