@@ -5,6 +5,11 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   const { t } = useTranslation();
 
+  // React Router behaelt die Scroll-Position beim Seitenwechsel. Da die Links
+  // im Footer ganz unten stehen, landet man sonst auf der neuen Seite wieder
+  // am Fussende - es sieht aus, als sei nichts passiert.
+  const nachObenScrollen = () => window.scrollTo({ top: 0 });
+
 
   return (
     <footer id="footer" className="bg-primary text-primary-foreground py-12 md:py-16">
@@ -24,6 +29,7 @@ const Footer = () => {
                   </p>
                   <Link
                     to="/anfahrt"
+                    onClick={nachObenScrollen}
                     className="inline-flex items-center gap-1 mt-2 text-sm text-primary-foreground/90 hover:text-primary-foreground underline underline-offset-2 transition-colors"
                   >
                     <MapPin className="w-4 h-4" />
@@ -104,6 +110,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/anfahrt"
+                  onClick={nachObenScrollen}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
                   {t("footer.directions")}
@@ -162,13 +169,13 @@ const Footer = () => {
               <span className="text-xs text-primary-foreground/60">v{__APP_VERSION__}</span>
             </div>
             <div className="flex gap-6">
-              <Link to="/impressum" className="hover:text-primary-foreground transition-colors">
+              <Link to="/impressum" onClick={nachObenScrollen} className="hover:text-primary-foreground transition-colors">
                 {t("footer.imprint")}
               </Link>
-              <Link to="/datenschutz" className="hover:text-primary-foreground transition-colors">
+              <Link to="/datenschutz" onClick={nachObenScrollen} className="hover:text-primary-foreground transition-colors">
                 {t("footer.privacy")}
               </Link>
-              <Link to="/agb" className="hover:text-primary-foreground transition-colors">
+              <Link to="/agb" onClick={nachObenScrollen} className="hover:text-primary-foreground transition-colors">
                 {t("footer.terms")}
               </Link>
             </div>
