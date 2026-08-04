@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { MapPin, Copy, Check, AlertTriangle, Car, Plane, TrainFront, Snowflake, Phone } from "lucide-react";
 import Navigation from "@/components/Navigation";
@@ -53,11 +52,7 @@ const Anfahrt = () => {
       <Navigation />
 
       <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 max-w-3xl">
-        <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-          {t("legal.backHome")}
-        </Link>
-
-        <h1 className="text-4xl md:text-5xl font-bold mt-4 mb-2">{t("directions.title")}</h1>
+        <h1 className="text-4xl md:text-5xl font-bold mb-2">{t("directions.title")}</h1>
         <p className="text-muted-foreground mb-8">{t("directions.intro")}</p>
 
         <img
