@@ -33,7 +33,7 @@ const Impressum = () => {
           <section>
             <h2 className="text-xl font-semibold mb-3 text-primary">{t("legal.imprint.address")}</h2>
             <p>
-              Venedigersiedlung 315<br />
+              Venedigersiedlung 316<br />
               5741 Neukirchen am Großvenediger<br />
               Österreich
             </p>
