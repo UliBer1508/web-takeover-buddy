@@ -6,7 +6,9 @@ const Footer = () => {
   const { t } = useTranslation();
 
   const mapsUrl =
-    "https://www.google.com/maps/search/?api=1&query=Venedigersiedlung+315+5741+Neukirchen+am+Gro%C3%9Fvenediger";
+    // Koordinaten statt Adresssuche: Google ordnet die Hausnummer sonst dem
+    // Nachbargebaeude zu. Punkt = Venedigersiedlung 316.
+    "https://www.google.com/maps/search/?api=1&query=47.249878,12.254109";
 
   return (
     <footer id="footer" className="bg-primary text-primary-foreground py-12 md:py-16">
@@ -20,7 +22,7 @@ const Footer = () => {
                 <MapPin className="w-5 h-5 flex-shrink-0 mt-1" />
                 <div>
                   <p className="text-sm text-primary-foreground/90">
-                    Venedigersiedlung 315<br />
+                    Venedigersiedlung 316<br />
                     5741 Neukirchen am Großvenediger<br />
                     Österreich
                   </p>
