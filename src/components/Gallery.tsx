@@ -1,7 +1,7 @@
 import { useState, useCallback, lazy, Suspense } from "react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff, GripVertical, Pencil, Image as ImageIcon, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight, X, Trash2, Star, StarOff, Plus, Loader2, ImageOff, GripVertical, Pencil, Image as ImageIcon, Info, Map } from "lucide-react";
 // VisuallyHidden import removed; using sr-only utility instead
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
@@ -345,26 +345,42 @@ const Gallery = ({ houseId, initialView = "photos" }: GalleryProps) => {
           </p>
         </div>
 
-        {/* View Toggle: Photos vs Info */}
-        <div className="flex justify-center gap-2 mb-8">
-          <Button
-            variant={view === "photos" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setView("photos")}
-            className="gap-2"
-          >
-            <ImageIcon className="h-4 w-4" />
-            {t("gallery.viewToggle.photos")}
-          </Button>
-          <Button
-            variant={view === "info" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setView("info")}
-            className="gap-2"
-          >
-            <Info className="h-4 w-4" />
-            {t("gallery.viewToggle.info")}
-          </Button>
+        {/* View Toggle: Hausbilder vs Erlebnisse.
+            Der Erlebnisse-Bereich wird leicht uebersehen, weil aus der
+            Beschriftung nicht hervorgeht, was dahintersteckt. Deshalb eigene
+            Farbe, Signalpunkt und eine erklaerende Zeile - alles nur, solange
+            der Bereich noch nicht geoeffnet wurde. */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row justify-center gap-2 max-w-sm sm:max-w-none mx-auto">
+            <Button
+              variant={view === "photos" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setView("photos")}
+              className="gap-2"
+            >
+              <ImageIcon className="h-4 w-4" />
+              {t("gallery.viewToggle.photos")}
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => setView("info")}
+              className="gap-2 relative bg-[#c87f2a] hover:bg-[#b3701f] text-white font-medium"
+            >
+              <Map className="h-4 w-4" />
+              {t("gallery.viewToggle.info")}
+              {view !== "info" && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#2f6b4f] ring-2 ring-background"
+                />
+              )}
+            </Button>
+          </div>
+          {view !== "info" && (
+            <p className="text-center text-xs text-muted-foreground mt-3 max-w-md mx-auto">
+              {t("gallery.viewToggle.infoHint")}
+            </p>
+          )}
         </div>
 
         {view === "photos" && (
