@@ -24,8 +24,9 @@
     "openAppleMaps": "Open in Apple Maps",
     "routeTitle": "The final kilometres",
     "step1": "Take the B165 (Gerlos Straße) to Neukirchen am Großvenediger.",
-    "step2": "In the village turn into Venedigersiedlung and follow the road.",
-    "step3": "The chalet is on your right — see the photo above.",
+    "step2": "Just past Neukirchen, turn right at Hotel Venedigerblick.",
+    "step3": "Follow the S-bend to the fork in the road, then turn sharp right.",
+    "step4": "The chalet is already visible on the left-hand side — see the photo above.",
     "parkingTitle": "Parking",
     "parkingText": "Parking spaces are available directly at the house.",
     "arrivalTitle": "Getting here",
@@ -34,10 +35,11 @@
     "airport": "Nearest airport",
     "airportText": "Salzburg, approx. 1.5 hours",
     "trainStation": "Nearest station",
-    "trainStationText": "Neukirchen am Großvenediger",
+    "trainStationText": "Mittersill",
     "winterTitle": "In winter",
     "winterText": "Winter tyres are mandatory in Austria from 1 November to 15 April.",
-    "questions": "Questions about your arrival? Give us a call."
+    "questions": "Questions about your arrival? Give us a call.",
+    "imageAlt": "Steinbock Chalet seen from the road"
   },
   "hero": {
     "title": "Steinbock Chalet",

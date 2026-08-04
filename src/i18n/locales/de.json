@@ -24,8 +24,9 @@
     "openAppleMaps": "In Apple Karten öffnen",
     "routeTitle": "Die letzten Kilometer",
     "step1": "Auf der B165 (Gerlos Straße) bis Neukirchen am Großvenediger.",
-    "step2": "Im Ort in die Venedigersiedlung abbiegen und dem Straßenverlauf folgen.",
-    "step3": "Das Chalet liegt auf der rechten Seite — siehe Foto oben.",
+    "step2": "Hinter Neukirchen beim Hotel Venedigerblick rechts abbiegen.",
+    "step3": "Durch die S-Kurve bis zur Weggabelung, dort scharf rechts.",
+    "step4": "Das Chalet ist auf der linken Straßenseite bereits zu sehen — siehe Foto oben.",
     "parkingTitle": "Parken",
     "parkingText": "Stellplätze befinden sich direkt am Haus.",
     "arrivalTitle": "Anreise",
@@ -34,10 +35,11 @@
     "airport": "Nächster Flughafen",
     "airportText": "Salzburg, ca. 1,5 Stunden",
     "trainStation": "Nächster Bahnhof",
-    "trainStationText": "Neukirchen am Großvenediger",
+    "trainStationText": "Mittersill",
     "winterTitle": "Im Winter",
     "winterText": "Winterreifen sind in Österreich von 1. November bis 15. April vorgeschrieben.",
-    "questions": "Fragen zur Anreise? Rufen Sie uns an."
+    "questions": "Fragen zur Anreise? Rufen Sie uns an.",
+    "imageAlt": "Das Steinbock Chalet von der Straße aus gesehen"
   },
   "hero": {
     "title": "Steinbock Chalet",
