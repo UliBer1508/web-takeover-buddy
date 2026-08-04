@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
@@ -15,12 +14,11 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      // Service Worker NUR im Production-Build aktiv. In der Lovable-Live-Preview
-      // würde er sonst Dev-Module cachen → weißer Bildschirm. Wir registrieren ihn
-      // zusätzlich in main.tsx defensiv (kein iframe / kein Preview-Host).
+      // Service Worker NUR im Production-Build aktiv. In Entwicklungs- und
+      // Vorschau-Umgebungen würde er Dev-Module zwischenspeichern → weißer
+      // Bildschirm. Zusätzlich in main.tsx defensiv abgesichert.
       disable: mode !== "production",
       injectRegister: false,
       devOptions: { enabled: false },

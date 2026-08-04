@@ -1,73 +1,91 @@
-# Welcome to your Lovable project
+# Steinbock Chalets — Website
 
-## Project info
+Öffentliche Website unter **[steinbockchalets.com](https://steinbockchalets.com)**.
+Zeigt die Ferienhäuser, einen Verfügbarkeitskalender und nimmt
+Buchungsanfragen entgegen.
 
-**URL**: https://lovable.dev/projects/922ecdf4-62f7-4188-90c5-8361d916fa8a
+---
 
-## How can I edit this code?
+## Technik
 
-There are several ways of editing your application.
+| | |
+|---|---|
+| Aufbau | Vite · React · TypeScript · Tailwind · shadcn/ui |
+| Datenbank | Supabase (eigene Instanz, **nicht** die der Hausverwaltung) |
+| Hosting | Vercel — baut automatisch bei jedem Commit auf `main` |
+| PWA | `vite-plugin-pwa`, Service Worker nur im Produktionsbuild aktiv |
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/922ecdf4-62f7-4188-90c5-8361d916fa8a) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Entwicklung
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Läuft auf Port 8080. Vor `dev` und `build` erzeugt ein Vorschritt
+(`scripts/generate-sitemap.ts`) die Datei `public/sitemap.xml`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Zwei Umgebungsvariablen sind nötig — Vorlage in `.env.example`:
 
-**Use GitHub Codespaces**
+```
+VITE_SUPABASE_URL
+VITE_SUPABASE_PUBLISHABLE_KEY
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Die Datei `.env` gehört **nicht** ins Repository. In Vercel stehen die
+Werte unter *Settings → Environment Variables*.
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## Veröffentlichen
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Jeder Commit auf `main` löst bei Vercel einen Build aus und geht nach
+wenigen Sekunden live. Es ist kein weiterer Schritt nötig.
 
-## How can I deploy this project?
+Ein Commit auf einen anderen Branch erzeugt eine Vorschau-Adresse, ohne
+die Live-Seite zu berühren.
 
-Simply open [Lovable](https://lovable.dev/projects/922ecdf4-62f7-4188-90c5-8361d916fa8a) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## Buchungsanfragen
 
-Yes, you can!
+Das Formular (`src/components/BookingForm.tsx`) **löst keine Zahlung aus**.
+Beim Absenden passieren genau zwei Dinge:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Eintrag in `booking_inquiries` der **Website-Datenbank**
+2. Eintrag in `booking_inquiries` der **Hausverwaltungs-Datenbank** —
+   nur wenn beim Haus `external_house_id` gesetzt ist. Fehlt sie, wird das
+   protokolliert und der Gast erhält den Hinweis, sich bei ausbleibender
+   Antwort zusätzlich per E-Mail zu melden.
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Der angezeigte Preis stammt aus `calculatePriceBreakdown()` und den
+**website-eigenen** Hausdaten (`price_winter` / `price_summer` /
+`price_offseason`). Die dynamische Preis-Engine der Hausverwaltung ist daran
+nicht beteiligt — die Preise können daher voneinander abweichen.
+
+Die Stripe-Zahlungsaufforderung entsteht **erst in der Hausverwaltung**,
+nachdem aus der Anfrage eine Buchung geworden ist. Details in
+`hausmanagement-selfhosted/docs/CODE-INDEX.md`, Abschnitt 11b.
+
+---
+
+## Edge Function
+
+`supabase/functions/translate-review` — übersetzt Gästebewertungen.
+Deployment über die Supabase CLI, unabhängig vom Website-Build.
+
+---
+
+## Historie
+
+Das Projekt entstand ursprünglich mit Lovable. Im August 2026 wurde die
+Verbindung gelöst und das Hosting auf Vercel umgestellt; die Domain zeigt
+seitdem nicht mehr auf Lovables Edge-IP. Das alte Lovable-Projekt bleibt
+als Sicherung unter `web-takeover-buddy.lovable.app` bestehen, wird aber
+nicht mehr gepflegt.
+
+In `src/main.tsx` steht weiterhin eine Prüfung auf Lovable-Hostnamen. Sie
+verhindert, dass sich dort ein Service Worker registriert, und bleibt
+absichtlich erhalten, solange die Sicherung existiert.
