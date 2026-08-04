@@ -71,6 +71,52 @@ nachdem aus der Anfrage eine Buchung geworden ist. Details in
 
 ---
 
+## Anfahrtsseite
+
+`/anfahrt` (deutsch) und `/directions` (englisch) führen auf dieselbe
+Komponente `src/pages/Anfahrt.tsx`. Die Adresse ist zum Weitergeben an Gäste
+gedacht (Airbnb, Booking).
+
+**Hintergrund:** Google ordnet die Adresssuche „Venedigersiedlung 316“ einem
+Nachbargebäude zu. Deshalb werden überall **Koordinaten** verwendet:
+
+```
+47.249878, 12.254109      Plus Code: 67X3+XJ5
+```
+
+Diese Werte stehen als Konstanten oben in `Anfahrt.tsx` und zusätzlich in
+`src/pages/Index.tsx` (strukturierte Daten für Suchmaschinen). Bei einer
+Änderung **beide** Stellen anpassen.
+
+**Keine eingebettete Karte.** Ein Google-Maps-iframe würde Daten an Google
+übertragen und Cookies setzen; `src/pages/Datenschutz.tsx` deckt das nicht ab.
+Stattdessen ein statisches Bild (`public/anfahrt-karte.jpg`) und Buttons, die
+die Navigations-App des Gastes öffnen.
+
+Bilder: `public/chalet-anfahrt.jpg` (Hausfoto zur Wiedererkennung) und
+`public/anfahrt-karte.jpg` (Kartenausschnitt mit eingezeichnetem Weg).
+Alle Texte liegen in `src/i18n/locales/{de,en}.json` unter `directions`.
+
+---
+
+## Navigation
+
+Die Leiste ist auf der Startseite über dem Hero-Bild transparent und wird ab
+50 px Scroll deckend. **Auf Unterseiten ist sie immer deckend** — sonst stünde
+weiße Schrift auf hellem Grund (`istStartseite` in `Navigation.tsx`).
+
+Menülinks mit `id` scrollen zu einem Abschnitt der Startseite, Links mit `path`
+wechseln die Seite. Von einer Unterseite aus wird bei `id`-Links zuerst zur
+Startseite navigiert (`/#abschnitt`). Alles läuft über `handleNavClick()` —
+**kein direkter `scrollToSection`-Aufruf**, sonst funktionieren Links auf
+Unterseiten nicht.
+
+Die `<Link>`-Elemente im Footer scrollen beim Klick nach oben; React Router
+behält sonst die Scroll-Position und man landet auf der neuen Seite wieder am
+Fußende.
+
+---
+
 ## Edge Function
 
 `supabase/functions/translate-review` — übersetzt Gästebewertungen.
@@ -80,7 +126,7 @@ Deployment über die Supabase CLI, unabhängig vom Website-Build.
 
 ## Historie
 
-Das Projekt entstand ursprünglich mit Lovable. Im August 2026 wurde die
+Das Projekt entstand ursprünglich mit Lovable. Am 04.08.2026 wurde die
 Verbindung gelöst und das Hosting auf Vercel umgestellt; die Domain zeigt
 seitdem nicht mehr auf Lovables Edge-IP. Das alte Lovable-Projekt bleibt
 als Sicherung unter `web-takeover-buddy.lovable.app` bestehen, wird aber
