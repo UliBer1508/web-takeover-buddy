@@ -100,15 +100,15 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
           priceRange: "€€€",
           address: {
             "@type": "PostalAddress",
-            streetAddress: "Venedigersiedlung 315",
+            streetAddress: "Venedigersiedlung 316",
             postalCode: "5741",
             addressLocality: "Neukirchen am Großvenediger",
             addressCountry: "AT",
           },
           geo: {
             "@type": "GeoCoordinates",
-            latitude: 47.2547,
-            longitude: 12.2725,
+            latitude: 47.249878,
+            longitude: 12.254109,
           },
         })}</script>
       </Helmet>
