@@ -1,14 +1,10 @@
-import { MapPin, Phone, Mail, MessageCircle, Instagram, Facebook } from "lucide-react";
+import { MapPin, Phone, Mail, Globe, MessageCircle, Instagram, Facebook } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
   const { t } = useTranslation();
 
-  const mapsUrl =
-    // Koordinaten statt Adresssuche: Google ordnet die Hausnummer sonst dem
-    // Nachbargebaeude zu. Punkt = Venedigersiedlung 316.
-    "https://www.google.com/maps/search/?api=1&query=47.249878,12.254109";
 
   return (
     <footer id="footer" className="bg-primary text-primary-foreground py-12 md:py-16">
@@ -26,15 +22,13 @@ const Footer = () => {
                     5741 Neukirchen am Großvenediger<br />
                     Österreich
                   </p>
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    to="/anfahrt"
                     className="inline-flex items-center gap-1 mt-2 text-sm text-primary-foreground/90 hover:text-primary-foreground underline underline-offset-2 transition-colors"
                   >
                     <MapPin className="w-4 h-4" />
-                    {t("footer.openInMaps")} →
-                  </a>
+                    {t("footer.directions")} →
+                  </Link>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -53,6 +47,15 @@ const Footer = () => {
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
                   steinbockchalets@gmail.com
+                </a>
+              </div>
+              <div className="flex items-center gap-3">
+                <Globe className="w-5 h-5 flex-shrink-0" />
+                <a
+                  href="https://www.steinbockchalets.com"
+                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
+                  www.steinbockchalets.com
                 </a>
               </div>
             </div>
@@ -97,6 +100,14 @@ const Footer = () => {
                 >
                   {t("footer.gallery")}
                 </button>
+              </li>
+              <li>
+                <Link
+                  to="/anfahrt"
+                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                >
+                  {t("footer.directions")}
+                </Link>
               </li>
             </ul>
           </div>
@@ -146,7 +157,7 @@ const Footer = () => {
         <div className="border-t border-primary-foreground/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/80">
             <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-              <p>{t("footer.copyright")}</p>
+              <p>{t("footer.copyright", { year: new Date().getFullYear() })}</p>
               <span className="hidden md:inline text-primary-foreground/60">•</span>
               <span className="text-xs text-primary-foreground/60">v{__APP_VERSION__}</span>
             </div>
