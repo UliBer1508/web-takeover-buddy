@@ -19,6 +19,8 @@ const staticEntries: SitemapEntry[] = [
   { path: "/gallery", changefreq: "monthly", priority: "0.8" },
   { path: "/gallery/info", changefreq: "monthly", priority: "0.7" },
   { path: "/region", changefreq: "monthly", priority: "0.8" },
+  { path: "/anfahrt", changefreq: "yearly", priority: "0.7" },
+  { path: "/directions", changefreq: "yearly", priority: "0.6" },
 ];
 
 // Derive article slugs from filenames in the articles directory.
