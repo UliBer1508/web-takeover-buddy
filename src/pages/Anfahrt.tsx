@@ -52,7 +52,7 @@ const Anfahrt = () => {
 
       <Navigation />
 
-      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 max-w-3xl">
+      <main className="flex-1 container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 max-w-3xl">
         <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
           {t("legal.backHome")}
         </Link>
@@ -148,6 +148,18 @@ const Anfahrt = () => {
               </li>
             ))}
           </ol>
+
+          <figure className="mt-8">
+            <img
+              src="/anfahrt-karte.jpg"
+              alt={t("directions.mapAlt")}
+              className="w-full rounded-xl border border-border"
+              loading="lazy"
+            />
+            <figcaption className="text-sm text-muted-foreground mt-2">
+              {t("directions.mapCaption")}
+            </figcaption>
+          </figure>
         </section>
 
         <section className="mb-12">
