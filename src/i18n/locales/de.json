@@ -27,8 +27,6 @@
     "step2": "Hinter Neukirchen beim Hotel Venedigerblick rechts abbiegen.",
     "step3": "Durch die S-Kurve bis zur Weggabelung, dort scharf rechts.",
     "step4": "Das Chalet ist auf der linken Straßenseite bereits zu sehen — siehe Foto oben.",
-    "mapAlt": "Kartenausschnitt mit eingezeichnetem Anfahrtsweg",
-    "mapCaption": "Der Weg von der B165 bis zum Chalet.",
     "parkingTitle": "Parken",
     "parkingText": "Stellplätze befinden sich direkt am Haus.",
     "arrivalTitle": "Anreise",
@@ -122,8 +120,9 @@
     "title": "Galerie",
     "subtitle": "Eindrücke und Wissenswertes rund um Ihren Aufenthalt",
     "viewToggle": {
-      "photos": "Bilder",
-      "info": "Erlebnisse & Ausflüge"
+      "photos": "Hausbilder",
+      "info": "Erlebnisse & Ausflüge",
+      "infoHint": "Wandern, Radfahren, Krimmler Wasserfälle, Skigebiete — unsere Tipps für die Region"
     },
     "addImages": "Bilder hinzufügen",
     "noImages": "Noch keine Bilder vorhanden",
