@@ -377,7 +377,7 @@ const Gallery = ({ houseId, initialView = "photos" }: GalleryProps) => {
             </Button>
           </div>
           {view !== "info" && (
-            <p className="text-center text-xs text-muted-foreground mt-3 max-w-md mx-auto">
+            <p className="text-center text-sm font-medium text-[#2f6b4f] mt-3 max-w-md mx-auto">
               {t("gallery.viewToggle.infoHint")}
             </p>
           )}
