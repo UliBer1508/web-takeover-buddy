@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import RegionIndex from "./pages/RegionIndex";
+import Anfahrt from "./pages/Anfahrt";
 import RegionArticle from "./pages/RegionArticle";
 import Impressum from "./pages/Impressum";
 import Datenschutz from "./pages/Datenschutz";
@@ -27,6 +28,8 @@ const App = () => (
           <Route path="/galerie/info" element={<Index initialGalleryView="info" startAtGallery />} />
           <Route path="/gallery" element={<Index initialGalleryView="photos" startAtGallery />} />
           <Route path="/gallery/info" element={<Index initialGalleryView="info" startAtGallery />} />
+          <Route path="/anfahrt" element={<Anfahrt />} />
+          <Route path="/directions" element={<Anfahrt />} />
           <Route path="/region" element={<RegionIndex />} />
           <Route path="/region/:slug" element={<RegionArticle />} />
           <Route path="/admin" element={<Auth />} />
