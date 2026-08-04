@@ -2,20 +2,28 @@ import { useState, useEffect } from "react";
 import { Menu, X, LogOut, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, signOut } = useAuth();
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(false);
+
+  // Auf der Startseite liegt oben ein dunkles Hero-Bild, dort ist die
+  // Navigation zunaechst transparent mit weisser Schrift. Unterseiten haben
+  // einen hellen Hintergrund - dort muss sie von Anfang an deckend sein,
+  // sonst ist das Menue unlesbar.
+  const istStartseite = location.pathname === "/";
+  const isScrolled = scrollPosition || !istStartseite;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setScrollPosition(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
