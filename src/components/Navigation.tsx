@@ -29,14 +29,34 @@ const Navigation = () => {
     }
   };
 
-  const navLinks = [
+  // Links mit `id` scrollen zu einem Abschnitt der Startseite, Links mit `path`
+  // fuehren auf eine eigene Seite.
+  const navLinks: { label: string; id?: string; path?: string }[] = [
     { label: t("navigation.home"), id: "hero" },
     { label: t("navigation.about"), id: "about" },
     { label: t("navigation.features"), id: "features" },
     { label: t("navigation.gallery"), id: "galerie" },
+    { label: t("navigation.directions"), path: "/anfahrt" },
     { label: t("navigation.booking"), id: "booking" },
     { label: t("navigation.contact"), id: "footer" },
   ];
+
+  // Abschnitts-Links funktionieren nur auf der Startseite. Von einer Unterseite
+  // aus wird zuerst dorthin gewechselt.
+  const handleNavClick = (link: { id?: string; path?: string }) => {
+    setIsMobileMenuOpen(false);
+    if (link.path) {
+      navigate(link.path);
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    if (!link.id) return;
+    if (window.location.pathname !== "/") {
+      navigate("/#" + link.id);
+      return;
+    }
+    scrollToSection(link.id);
+  };
 
   return (
     <>
@@ -62,8 +82,8 @@ const Navigation = () => {
             <div className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
                 <button
-                  key={link.id}
-                  onClick={() => scrollToSection(link.id)}
+                  key={link.id ?? link.path}
+                  onClick={() => handleNavClick(link)}
                   className={`text-sm font-medium transition-colors relative group ${
                     isScrolled ? "text-foreground hover:text-primary" : "text-white hover:text-white/80"
                   }`}
@@ -124,8 +144,8 @@ const Navigation = () => {
           <div className="flex flex-col items-center justify-center h-full gap-8">
             {navLinks.map((link) => (
               <button
-                key={link.id}
-                onClick={() => scrollToSection(link.id)}
+                key={link.id ?? link.path}
+                onClick={() => handleNavClick(link)}
                 className="text-2xl font-medium text-foreground hover:text-primary transition-colors"
               >
                 {link.label}
