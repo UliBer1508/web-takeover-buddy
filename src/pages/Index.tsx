@@ -190,8 +190,8 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
         {!startAtGallery && (
           <>
             <About house={selectedHouse} />
-            <Stats />
-            <Features />
+            <Stats house={selectedHouse} />
+            <Features house={selectedHouse} />
             <Testimonials />
           </>
         )}
