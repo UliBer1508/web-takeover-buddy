@@ -89,20 +89,20 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
     }, 80);
   };
 
-  // Galerie und Titelbild folgen der Admin-Vorschau, alles andere der
-  // normalen Auswahl.
   const galerieHausId = vorschauHausId ?? selectedHouseId;
 
-  // Auf der Startseite steht oben die Marke, nicht ein einzelnes Haus - sonst
-  // wirkt das zweite Chalet wie ein Anhaengsel. Bei nur einem Haus bleibt der
-  // bisherige Hero-Text stehen.
+  // Auf der Startseite steht oben die Marke, nicht ein einzelnes Haus.
   const heroTitle = hasMultipleHouses ? "Steinbock Chalets" : null;
   const heroSubtitle = hasMultipleHouses
     ? t(
         "hero.brandSubtitle",
-        "Zwei Ferienhäuser im Oberpinzgau — in Neukirchen am Großvenediger und in Wald im Pinzgau."
+        "Zwei Ferienhäuser im Oberpinzgau — Neukirchen am Großvenediger und Wald im Pinzgau"
       )
     : null;
+
+  // Beide Häuser stehen direkt im Titelbild, damit Gäste sie ohne Scrollen
+  // sehen. In der Admin-Bildvorschau bleiben sie weg: dort geht es um ein Haus.
+  const zeigeKartenImHero = hasMultipleHouses && !startAtGallery && !vorschauHausId;
 
   return (
     <div className="min-h-screen">
@@ -151,8 +151,16 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
           houseId={vorschauHausId ?? (hasMultipleHouses ? houses[0]?.id : selectedHouseId)}
           title={vorschauHausName ?? heroTitle}
           subtitle={vorschauHausName ? null : heroSubtitle}
-          scrollTarget={hasMultipleHouses ? "chalets" : "booking"}
-          ctaLabel={hasMultipleHouses ? t("chalets.heroCta", "Beide Chalets ansehen") : null}
+          scrollTarget="haus"
+          bottomSlot={
+            zeigeKartenImHero ? (
+              <ChaletCards
+                houses={houses}
+                onSelectHouse={handleChaletSelect}
+                variant="overlay"
+              />
+            ) : null
+          }
         />
       )}
 
@@ -164,11 +172,6 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
           setVorschauHausName(name);
         }}
       />
-
-      {/* Beide Chalets nebeneinander — erscheint ab zwei freigeschalteten Häusern */}
-      {!startAtGallery && (
-        <ChaletCards houses={houses} onSelectHouse={handleChaletSelect} />
-      )}
 
       {/* Ab hier geht es um EIN Haus: das ausgewählte */}
       <div id="haus">
