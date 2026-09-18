@@ -7,14 +7,28 @@ export interface SelectableHouse {
   id: string;
   name: string;
   slug: string;
+  description: string | null;
   short_description: string | null;
+  location: string | null;
+  highlights: string[] | null;
   max_guests: number;
+  price_winter: number | null;
+  price_summer: number | null;
+  price_offseason: number | null;
+  min_nights: number | null;
   is_active: boolean;
   sort_order: number;
   external_house_id: string | null;
   /** Aus sort_order abgeleitet, nicht aus der Datenbank. */
   color: string;
 }
+
+/** Niedrigster hinterlegter Saisonpreis, fuer "ab X € / Nacht". */
+export const abPreis = (haus: SelectableHouse): number | null => {
+  const preise = [haus.price_winter, haus.price_summer, haus.price_offseason]
+    .filter((p): p is number => typeof p === 'number' && p > 0);
+  return preise.length > 0 ? Math.min(...preise) : null;
+};
 
 export const useHouseSelection = () => {
   const [selectedHouseId, setSelectedHouseId] = useState<string | null>(null);
@@ -24,7 +38,7 @@ export const useHouseSelection = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('houses')
-        .select('id, name, slug, short_description, max_guests, is_active, sort_order, external_house_id')
+        .select('id, name, slug, description, short_description, location, highlights, max_guests, price_winter, price_summer, price_offseason, min_nights, is_active, sort_order, external_house_id')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
@@ -33,9 +47,8 @@ export const useHouseSelection = () => {
     },
   });
 
-  // Farbe einmal vergeben, stabil ueber die Reihenfolge.
   const houses: SelectableHouse[] = useMemo(
-    () => (data || []).map((h, i) => ({ ...h, color: houseColor(i) })),
+    () => (data || []).map((h: any, i: number) => ({ ...h, color: houseColor(i) })),
     [data]
   );
 
