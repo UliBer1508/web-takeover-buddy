@@ -13,6 +13,7 @@ import Gallery from "@/components/Gallery";
 import Footer from "@/components/Footer";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 import HouseSelector from "@/components/HouseSelector";
+import AdminHousesPanel from "@/components/AdminHousesPanel";
 import { useHouseSelection } from "@/hooks/useHouseSelection";
 
 interface IndexProps {
@@ -22,7 +23,8 @@ interface IndexProps {
 
 const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) => {
   const { t, i18n } = useTranslation();
-  const { selectedHouseId, setSelectedHouseId, hasMultipleHouses, selectedHouse } = useHouseSelection();
+  const { houses, selectedHouseId, setSelectedHouseId, hasMultipleHouses, selectedHouse } =
+    useHouseSelection();
   const [selectedDates, setSelectedDates] = useState<{
     checkIn: Date | null;
     checkOut: Date | null;
@@ -58,15 +60,21 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
     return () => clearTimeout(timer);
   }, [initialGalleryView]);
 
+  // Wechselt der Gast das Haus, ist die bisherige Datumsauswahl hinfaellig -
+  // sie galt fuer das andere Haus und kann dort belegt sein.
+  useEffect(() => {
+    setSelectedDates({ checkIn: null, checkOut: null });
+  }, [selectedHouseId]);
+
   const handleDateSelection = (checkIn: Date | null, checkOut: Date | null) => {
     setSelectedDates({ checkIn, checkOut });
-    
+
     // Smooth scroll to booking form after selection
     if (checkIn && checkOut) {
       setTimeout(() => {
-        document.getElementById('booking')?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start' 
+        document.getElementById('booking')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
         });
       }, 400);
     }
@@ -113,20 +121,32 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
         })}</script>
       </Helmet>
       <Navigation />
-      {!startAtGallery && <Hero />}
-      
-      {/* House Selector - only shown when multiple houses exist */}
+
+      {/* Admin-Schalter: steuert, welche Häuser Gäste sehen. Für Gäste unsichtbar. */}
+      <AdminHousesPanel />
+
+      {!startAtGallery && (
+        <Hero
+          houseId={selectedHouseId}
+          houseName={selectedHouse?.name}
+          houseSubtitle={selectedHouse?.short_description}
+          showHouseName={hasMultipleHouses}
+        />
+      )}
+
+      {/* Haus-Umschalter — erscheint automatisch ab zwei freigeschalteten Häusern */}
       {hasMultipleHouses && (
         <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b">
           <div className="container mx-auto px-4">
-            <HouseSelector 
-              selectedHouseId={selectedHouseId} 
-              onHouseChange={setSelectedHouseId} 
+            <HouseSelector
+              houses={houses}
+              selectedHouseId={selectedHouseId}
+              onHouseChange={setSelectedHouseId}
             />
           </div>
         </div>
       )}
-      
+
       {!startAtGallery && (
         <>
           <About />
@@ -146,11 +166,15 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
               {t('calendar.sectionSubtitle')}
             </p>
           </div>
-          <AvailabilityCalendar externalHouseId={selectedHouse?.external_house_id} onDateRangeSelect={handleDateSelection} />
+          <AvailabilityCalendar
+            houses={houses}
+            selectedHouseId={selectedHouseId}
+            onDateRangeSelect={handleDateSelection}
+          />
         </div>
       </section>
-      <BookingForm 
-        initialCheckIn={selectedDates.checkIn} 
+      <BookingForm
+        initialCheckIn={selectedDates.checkIn}
         initialCheckOut={selectedDates.checkOut}
         defaultHouseId={selectedHouseId}
       />
