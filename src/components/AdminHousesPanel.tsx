@@ -1,6 +1,15 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X } from "lucide-react";
+import {
+  Loader2,
+  AlertTriangle,
+  Plus,
+  Pencil,
+  EyeOff,
+  Image as ImageIcon,
+  X,
+  Euro,
+} from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,8 +60,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
 
   // Haeuser, die wir angelegt oder ausgeschaltet haben und die danach aus der
   // Liste verschwunden sind. Das passiert, wenn die Leserechte der Datenbank
-  // nur aktive Haeuser durchlassen. Ohne dieses Gedaechtnis waere ein einmal
-  // ausgeschaltetes Haus ohne SQL-Zugang nicht mehr erreichbar.
+  // nur aktive Haeuser durchlassen.
   const [verstecktGemerkt, setVerstecktGemerkt] = useState<
     { id: string; name: string }[]
   >([]);
@@ -128,9 +136,9 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
   const vorschauHaus = houses.find(h => h.id === vorschauHausId);
 
   return (
-    <section className="border-b bg-muted/40">
+    <section id="admin-haeuser" className="border-y bg-muted/40">
       <div className="container mx-auto px-4 py-5">
-        <div className="flex items-start justify-between gap-4 mb-3">
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
           <div>
             <h2 className="text-lg font-semibold">Häuser auf der Website</h2>
             <p className="text-sm text-muted-foreground">
@@ -138,7 +146,6 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             </p>
           </div>
           <Button
-            variant="outline"
             onClick={() => {
               setBearbeitet(null);
               setFormOpen(true);
@@ -152,9 +159,9 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
         {/* Bilder-Vorschau aktiv: Galerie und Titelbild zeigen dieses Haus,
             auch wenn es fuer Gaeste noch ausgeschaltet ist. */}
         {vorschauHaus && (
-          <div className="mb-3 flex items-center gap-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-950/40 dark:border-blue-800 px-3 py-2.5">
+          <div className="mb-3 flex flex-wrap items-center gap-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-950/40 dark:border-blue-800 px-3 py-2.5">
             <ImageIcon className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" />
-            <p className="flex-grow text-xs leading-relaxed text-blue-900 dark:text-blue-200">
+            <p className="flex-grow min-w-[12rem] text-xs leading-relaxed text-blue-900 dark:text-blue-200">
               Du bearbeitest gerade die Bilder von <strong>{vorschauHaus.name}</strong>.
               Titelbild und Galerie unten zeigen dieses Haus — Gäste sehen davon nichts.
             </p>
@@ -178,14 +185,14 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
               return (
                 <div
                   key={house.id}
-                  className={`flex items-center gap-3 px-4 py-4 ${istVorschau ? "bg-blue-50/60 dark:bg-blue-950/20" : ""}`}
+                  className={`flex flex-wrap items-center gap-2 px-4 py-4 ${istVorschau ? "bg-blue-50/60 dark:bg-blue-950/20" : ""}`}
                 >
                   <span
                     aria-hidden="true"
                     className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: houseColor(index) }}
                   />
-                  <div className="flex-grow min-w-0">
+                  <div className="flex-grow min-w-[10rem]">
                     <div className="font-semibold">{house.name}</div>
                     <div className="text-xs text-muted-foreground mt-0.5">
                       {house.is_active ? "sichtbar und buchbar" : "ausgeblendet"}
@@ -199,19 +206,19 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                     </div>
                   </div>
 
+                  {/* Drei klar getrennte Knoepfe: Bilder, Stammdaten, Preise */}
                   <Button
                     variant={istVorschau ? "default" : "outline"}
                     size="sm"
                     onClick={() => (istVorschau ? onVorschau?.(null, null) : bilderPflegen(house))}
                   >
-                    <ImageIcon className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Bilder</span>
+                    <ImageIcon className="h-4 w-4 mr-2" />
+                    Bilder
                   </Button>
 
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`${house.name} bearbeiten`}
+                    variant="outline"
+                    size="sm"
                     onClick={() => {
                       setBearbeitet({
                         id: house.id,
@@ -225,10 +232,19 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                       setFormOpen(true);
                     }}
                   >
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Name &amp; Kalender
                   </Button>
 
-                  <HouseSettingsDialog house={house} />
+                  <HouseSettingsDialog
+                    house={house}
+                    trigger={
+                      <Button variant="outline" size="sm">
+                        <Euro className="h-4 w-4 mr-2" />
+                        Preise
+                      </Button>
+                    }
+                  />
 
                   <Switch
                     checked={house.is_active}
@@ -265,7 +281,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
               {wirklichVersteckt.map(v => (
                 <div
                   key={v.id}
-                  className="flex items-center gap-3 rounded-lg bg-background border px-3 py-2"
+                  className="flex flex-wrap items-center gap-3 rounded-lg bg-background border px-3 py-2"
                 >
                   <span className="flex-grow text-sm font-medium">{v.name}</span>
                   <span className="font-mono text-[10px] text-muted-foreground hidden sm:inline">
@@ -291,7 +307,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             <p className="text-xs leading-relaxed text-amber-900 dark:text-amber-200">
               Ein freigeschaltetes Haus ohne Kalender-Verknüpfung zeigt Gästen einen
               leeren Verfügbarkeitskalender — jeder Zeitraum wirkt frei. Die house_id
-              aus der Hausverwaltung über den Stift nachtragen.
+              aus der Hausverwaltung unter „Name &amp; Kalender" nachtragen.
             </p>
           </div>
         )}
