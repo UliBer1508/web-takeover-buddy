@@ -13,6 +13,7 @@ import Gallery from "@/components/Gallery";
 import Footer from "@/components/Footer";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 import HouseSelector from "@/components/HouseSelector";
+import ChaletCards from "@/components/ChaletCards";
 import AdminHousesPanel from "@/components/AdminHousesPanel";
 import { useHouseSelection } from "@/hooks/useHouseSelection";
 
@@ -31,9 +32,7 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
   }>({ checkIn: null, checkOut: null });
 
   // Admin-Vorschau: Bilder eines Hauses pflegen, das fuer Gaeste noch
-  // ausgeschaltet ist. Sonst gaebe es ein Henne-Ei-Problem - ohne Freischaltung
-  // steht das Haus nicht im Umschalter, also koennte man ihm keine Bilder
-  // zuordnen, ohne es vorher unfertig live zu stellen.
+  // ausgeschaltet ist.
   const [vorschauHausId, setVorschauHausId] = useState<string | null>(null);
   const [vorschauHausName, setVorschauHausName] = useState<string | null>(null);
 
@@ -45,8 +44,6 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
   const pageTitle = t(`${seoKey}.title`);
   const pageDescription = t(`${seoKey}.description`);
 
-  // Canonicalize English aliases (/gallery, /gallery/info) to the German URLs
-  // to consolidate duplicate content under one canonical.
   const canonicalPath = isInfo
     ? "/galerie/info"
     : isGalleryPhotos
@@ -55,7 +52,6 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
   const canonicalUrl = `https://steinbockchalets.com${canonicalPath}`;
   const htmlLang = i18n.language?.startsWith("en") ? "en" : "de";
 
-  // Auto-scroll to gallery section for deep-link routes
   useEffect(() => {
     if (!initialGalleryView) return;
     const timer = setTimeout(() => {
@@ -75,8 +71,6 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
 
   const handleDateSelection = (checkIn: Date | null, checkOut: Date | null) => {
     setSelectedDates({ checkIn, checkOut });
-
-    // Smooth scroll to booking form after selection
     if (checkIn && checkOut) {
       setTimeout(() => {
         document.getElementById('booking')?.scrollIntoView({
@@ -87,23 +81,28 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
     }
   };
 
+  // Karte angeklickt: Haus auswaehlen und zum Hausbereich springen.
+  const handleChaletSelect = (houseId: string) => {
+    setSelectedHouseId(houseId);
+    setTimeout(() => {
+      document.getElementById('haus')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  };
+
   // Galerie und Titelbild folgen der Admin-Vorschau, alles andere der
-  // normalen Auswahl. Kalender und Buchungsformular bleiben bewusst am
-  // freigeschalteten Haus - ein ausgeschaltetes Haus wird nicht gebucht.
+  // normalen Auswahl.
   const galerieHausId = vorschauHausId ?? selectedHouseId;
 
-  // Das Admin-Panel steht UNTER dem Titelbild. Die Navigation liegt auf der
-  // Startseite transparent ganz oben und wuerde das Panel sonst ueberdecken -
-  // weisse Schrift auf hellem Kasten.
-  const adminPanel = (
-    <AdminHousesPanel
-      vorschauHausId={vorschauHausId}
-      onVorschau={(id, name) => {
-        setVorschauHausId(id);
-        setVorschauHausName(name);
-      }}
-    />
-  );
+  // Auf der Startseite steht oben die Marke, nicht ein einzelnes Haus - sonst
+  // wirkt das zweite Chalet wie ein Anhaengsel. Bei nur einem Haus bleibt der
+  // bisherige Hero-Text stehen.
+  const heroTitle = hasMultipleHouses ? "Steinbock Chalets" : null;
+  const heroSubtitle = hasMultipleHouses
+    ? t(
+        "hero.brandSubtitle",
+        "Zwei Ferienhäuser im Oberpinzgau — in Neukirchen am Großvenediger und in Wald im Pinzgau."
+      )
+    : null;
 
   return (
     <div className="min-h-screen">
@@ -149,60 +148,75 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
 
       {!startAtGallery && (
         <Hero
-          houseId={galerieHausId}
-          houseName={vorschauHausName ?? selectedHouse?.name}
-          houseSubtitle={selectedHouse?.short_description}
-          showHouseName={hasMultipleHouses || !!vorschauHausId}
+          houseId={vorschauHausId ?? (hasMultipleHouses ? houses[0]?.id : selectedHouseId)}
+          title={vorschauHausName ?? heroTitle}
+          subtitle={vorschauHausName ? null : heroSubtitle}
+          scrollTarget={hasMultipleHouses ? "chalets" : "booking"}
+          ctaLabel={hasMultipleHouses ? t("chalets.heroCta", "Beide Chalets ansehen") : null}
         />
       )}
 
       {/* Admin-Schalter: steuert, welche Häuser Gäste sehen. Für Gäste unsichtbar. */}
-      {adminPanel}
+      <AdminHousesPanel
+        vorschauHausId={vorschauHausId}
+        onVorschau={(id, name) => {
+          setVorschauHausId(id);
+          setVorschauHausName(name);
+        }}
+      />
 
-      {/* Haus-Umschalter — erscheint automatisch ab zwei freigeschalteten Häusern */}
-      {hasMultipleHouses && (
-        <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b">
-          <div className="container mx-auto px-4">
-            <HouseSelector
+      {/* Beide Chalets nebeneinander — erscheint ab zwei freigeschalteten Häusern */}
+      {!startAtGallery && (
+        <ChaletCards houses={houses} onSelectHouse={handleChaletSelect} />
+      )}
+
+      {/* Ab hier geht es um EIN Haus: das ausgewählte */}
+      <div id="haus">
+        {hasMultipleHouses && (
+          <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b">
+            <div className="container mx-auto px-4">
+              <HouseSelector
+                houses={houses}
+                selectedHouseId={selectedHouseId}
+                onHouseChange={setSelectedHouseId}
+              />
+            </div>
+          </div>
+        )}
+
+        {!startAtGallery && (
+          <>
+            <About house={selectedHouse} />
+            <Stats />
+            <Features />
+            <Testimonials />
+          </>
+        )}
+        <Gallery houseId={galerieHausId} initialView={initialGalleryView} />
+        <section className="py-12 md:py-16 bg-muted/30">
+          <div className="container mx-auto px-4 max-w-4xl">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold mb-3">
+                {t('calendar.sectionTitle')}
+              </h2>
+              <p className="text-muted-foreground">
+                {t('calendar.sectionSubtitle')}
+              </p>
+            </div>
+            <AvailabilityCalendar
               houses={houses}
               selectedHouseId={selectedHouseId}
-              onHouseChange={setSelectedHouseId}
+              onDateRangeSelect={handleDateSelection}
             />
           </div>
-        </div>
-      )}
+        </section>
+        <BookingForm
+          initialCheckIn={selectedDates.checkIn}
+          initialCheckOut={selectedDates.checkOut}
+          defaultHouseId={selectedHouseId}
+        />
+      </div>
 
-      {!startAtGallery && (
-        <>
-          <About />
-          <Stats />
-          <Features />
-          <Testimonials />
-        </>
-      )}
-      <Gallery houseId={galerieHausId} initialView={initialGalleryView} />
-      <section className="py-12 md:py-16 bg-muted/30">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold mb-3">
-              {t('calendar.sectionTitle')}
-            </h2>
-            <p className="text-muted-foreground">
-              {t('calendar.sectionSubtitle')}
-            </p>
-          </div>
-          <AvailabilityCalendar
-            houses={houses}
-            selectedHouseId={selectedHouseId}
-            onDateRangeSelect={handleDateSelection}
-          />
-        </div>
-      </section>
-      <BookingForm
-        initialCheckIn={selectedDates.checkIn}
-        initialCheckOut={selectedDates.checkOut}
-        defaultHouseId={selectedHouseId}
-      />
       <Footer />
     </div>
   );
