@@ -4,21 +4,51 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-const Hero = () => {
+interface HeroProps {
+  /** Aktuell gewaehltes Haus. Ohne Angabe verhaelt sich der Hero wie bisher. */
+  houseId?: string | null;
+  houseName?: string | null;
+  houseSubtitle?: string | null;
+  /** Erst ab zwei Haeusern wird der Hausname als Ueberschrift gezeigt. */
+  showHouseName?: boolean;
+}
+
+const Hero = ({ houseId, houseName, houseSubtitle, showHouseName = false }: HeroProps) => {
   const { t } = useTranslation();
-  
-  // Fetch hero image from database
+
+  // Hero-Bild je Haus. Reihenfolge der Versuche:
+  // 1. als Hero markiertes Bild dieses Hauses
+  // 2. erstes Galeriebild dieses Hauses
+  // 3. global als Hero markiertes Bild (alter Zustand, ein Haus)
   const { data: heroImage, isLoading } = useQuery({
-    queryKey: ['hero-image'],
+    queryKey: ['hero-image', houseId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      if (houseId) {
+        const { data: ownHero } = await supabase
+          .from('gallery_images')
+          .select('url')
+          .eq('house_id', houseId)
+          .eq('is_hero', true)
+          .maybeSingle();
+        if (ownHero?.url) return ownHero.url;
+
+        const { data: firstOfHouse } = await supabase
+          .from('gallery_images')
+          .select('url')
+          .eq('house_id', houseId)
+          .order('sort_order', { ascending: true })
+          .limit(1)
+          .maybeSingle();
+        if (firstOfHouse?.url) return firstOfHouse.url;
+      }
+
+      const { data: globalHero } = await supabase
         .from('gallery_images')
         .select('url')
         .eq('is_hero', true)
-        .single();
-      
-      if (error) return null;
-      return data?.url || null;
+        .limit(1)
+        .maybeSingle();
+      return globalHero?.url || null;
     },
   });
 
@@ -28,6 +58,9 @@ const Hero = () => {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const title = showHouseName && houseName ? houseName : t("hero.title");
+  const subtitle = showHouseName && houseSubtitle ? houseSubtitle : t("hero.subtitle");
 
   return (
     <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -61,10 +94,10 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 animate-fade-in-up">
         <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 drop-shadow-2xl ${heroImage ? "text-white" : "text-foreground"}`}>
-          {t("hero.title")}
+          {title}
         </h1>
         <p className={`text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto drop-shadow-lg ${heroImage ? "text-white/95" : "text-muted-foreground"}`}>
-          {t("hero.subtitle")}
+          {subtitle}
         </p>
         <Button
           onClick={scrollToBooking}

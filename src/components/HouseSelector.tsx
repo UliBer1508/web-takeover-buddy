@@ -1,62 +1,60 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Home } from "lucide-react";
-
-interface House {
-  id: string;
-  name: string;
-  slug: string;
-  short_description: string | null;
-  max_guests: number;
-  is_active: boolean;
-  sort_order: number;
-}
+import type { SelectableHouse } from "@/hooks/useHouseSelection";
 
 interface HouseSelectorProps {
+  houses: SelectableHouse[];
   selectedHouseId: string | null;
   onHouseChange: (houseId: string) => void;
 }
 
-const HouseSelector = ({ selectedHouseId, onHouseChange }: HouseSelectorProps) => {
-  const { data: houses, isLoading } = useQuery({
-    queryKey: ['houses-active'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('houses')
-        .select('id, name, slug, short_description, max_guests, is_active, sort_order')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
-      
-      if (error) throw error;
-      return data as House[];
-    },
-  });
+/**
+ * Umschalter zwischen den Haeusern. Wird nur gezeigt, wenn mehr als ein Haus
+ * freigeschaltet ist - bei einem Haus verhaelt sich die Seite wie vorher.
+ * Die Haeuser kommen als Prop herein, damit Selector und Kalender garantiert
+ * dieselbe Liste und dieselben Farben verwenden.
+ */
+const HouseSelector = ({ houses, selectedHouseId, onHouseChange }: HouseSelectorProps) => {
+  if (!houses || houses.length <= 1) return null;
 
-  if (isLoading || !houses || houses.length <= 1) {
-    return null;
-  }
+  const activeId = selectedHouseId || houses[0]?.id;
 
   return (
-    <div className="flex justify-center py-4">
-      <Tabs 
-        value={selectedHouseId || houses[0]?.id} 
-        onValueChange={onHouseChange}
-        className="w-auto"
+    <div className="flex justify-center py-3">
+      <div
+        role="tablist"
+        aria-label="Haus auswählen"
+        className="inline-flex gap-1 p-1 rounded-full bg-muted/70 border"
       >
-        <TabsList className="bg-muted/50 backdrop-blur-sm">
-          {houses.map((house) => (
-            <TabsTrigger 
-              key={house.id} 
-              value={house.id}
-              className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+        {houses.map((house) => {
+          const isActive = house.id === activeId;
+          return (
+            <button
+              key={house.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => onHouseChange(house.id)}
+              className={`
+                flex items-center gap-2 h-11 px-5 rounded-full text-sm transition-colors
+                ${isActive
+                  ? "bg-foreground text-background font-semibold shadow-sm"
+                  : "text-muted-foreground hover:text-foreground font-medium"}
+              `}
             >
-              <Home className="h-4 w-4" />
-              {house.name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+              <span
+                aria-hidden="true"
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ backgroundColor: house.color }}
+              />
+              <span className="hidden sm:inline">{house.name}</span>
+              <span className="sm:hidden flex items-center gap-1">
+                <Home className="h-4 w-4" />
+                {house.name}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
