@@ -7,26 +7,19 @@ import { SelectableHouse, abPreis } from "@/hooks/useHouseSelection";
 interface ChaletCardsProps {
   houses: SelectableHouse[];
   onSelectHouse: (houseId: string) => void;
+  /**
+   * "overlay" = kompakt am unteren Rand des Titelbilds, ohne Scrollen sichtbar.
+   * "section" = grosse Karten als eigener Abschnitt weiter unten.
+   */
+  variant?: "overlay" | "section";
 }
 
-/**
- * Der Abschnitt "Unsere Chalets" auf der Startseite. Zeigt jedes
- * freigeschaltete Haus als Karte mit Titelbild, Ort, Kurztext, Merkmalen und
- * Ab-Preis. Ein Klick waehlt das Haus aus und springt zum Hausbereich darunter.
- *
- * Bei nur einem Haus wird der Abschnitt nicht gezeigt - dann sieht die Seite
- * aus wie vorher.
- */
-const ChaletCards = ({ houses, onSelectHouse }: ChaletCardsProps) => {
-  const { t } = useTranslation();
-  const houseIds = houses.map(h => h.id);
-
-  // Ein Titelbild je Haus: bevorzugt das als Hero markierte, sonst das erste
-  // Galeriebild. Eine Abfrage fuer alle Haeuser statt einer pro Karte.
-  const { data: bilder = {} } = useQuery({
+/** Ein Titelbild je Haus, in einer Abfrage fuer alle. */
+const useCoverBilder = (houseIds: string[]) =>
+  useQuery({
     queryKey: ['chalet-cover', houseIds.join(',')],
     queryFn: async () => {
-      if (houseIds.length === 0) return {};
+      if (houseIds.length === 0) return {} as Record<string, string>;
       const { data, error } = await supabase
         .from('gallery_images')
         .select('house_id, url, is_hero, sort_order')
@@ -45,8 +38,80 @@ const ChaletCards = ({ houses, onSelectHouse }: ChaletCardsProps) => {
     enabled: houseIds.length > 0,
   });
 
+const ChaletCards = ({ houses, onSelectHouse, variant = "overlay" }: ChaletCardsProps) => {
+  const { t } = useTranslation();
+  const houseIds = houses.map(h => h.id);
+  const { data: bilder = {} } = useCoverBilder(houseIds);
+
+  // Bei einem Haus gibt es nichts zu wählen — dann sieht die Seite aus wie vorher.
   if (houses.length <= 1) return null;
 
+  // ---------------------------------------------------------------- overlay
+  if (variant === "overlay") {
+    return (
+      <div id="chalets" className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid sm:grid-cols-2 gap-3 md:gap-4 max-w-4xl mx-auto">
+          {houses.map(haus => {
+            const bild = bilder[haus.id];
+            const preis = abPreis(haus);
+            return (
+              <button
+                key={haus.id}
+                type="button"
+                onClick={() => onSelectHouse(haus.id)}
+                className="group flex items-center gap-3 md:gap-4 p-2.5 md:p-3 rounded-2xl text-left bg-background/92 hover:bg-background backdrop-blur-md border border-white/25 shadow-xl transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                {/* Bild */}
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-secondary shrink-0">
+                  {bild ? (
+                    <img src={bild} alt={haus.name} loading="lazy" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                      <ImageIcon className="h-5 w-5" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Text */}
+                <div className="flex-grow min-w-0">
+                  {haus.location && (
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span
+                        aria-hidden="true"
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ backgroundColor: haus.color }}
+                      />
+                      <span className="text-[11px] md:text-xs text-muted-foreground truncate">
+                        {haus.location}
+                      </span>
+                    </div>
+                  )}
+                  <div className="font-bold text-sm md:text-base leading-tight truncate">
+                    {haus.name}
+                  </div>
+                  <div className="flex items-center gap-2 mt-1 text-[11px] md:text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {haus.max_guests}
+                    </span>
+                    {preis !== null && (
+                      <span className="font-semibold text-primary">
+                        {t('chalets.from', 'ab')} {preis} €
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <ArrowRight className="h-4 w-4 text-primary shrink-0 transition-transform group-hover:translate-x-1" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ---------------------------------------------------------------- section
   return (
     <section id="chalets" className="py-14 md:py-20 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,7 +136,6 @@ const ChaletCards = ({ houses, onSelectHouse }: ChaletCardsProps) => {
                 onClick={() => onSelectHouse(haus.id)}
                 className="group text-left bg-background border rounded-2xl overflow-hidden hover:shadow-xl transition-shadow focus:outline-none focus:ring-2 focus:ring-primary"
               >
-                {/* Titelbild */}
                 <div className="relative h-48 md:h-56 bg-secondary overflow-hidden">
                   {bild ? (
                     <img
@@ -98,7 +162,6 @@ const ChaletCards = ({ houses, onSelectHouse }: ChaletCardsProps) => {
                   )}
                 </div>
 
-                {/* Text */}
                 <div className="p-5 md:p-6">
                   <div className="flex items-baseline justify-between gap-3 mb-2">
                     <h3 className="text-xl md:text-2xl font-bold">{haus.name}</h3>
@@ -128,11 +191,6 @@ const ChaletCards = ({ houses, onSelectHouse }: ChaletCardsProps) => {
                         {merkmal}
                       </span>
                     ))}
-                    {haus.min_nights && (
-                      <span className="text-xs px-2.5 py-1.5 rounded-md bg-secondary text-secondary-foreground">
-                        {t('chalets.minNights', 'ab')} {haus.min_nights} {t('chalets.nights', 'Nächte')}
-                      </span>
-                    )}
                   </div>
 
                   <span className="inline-flex items-center gap-2 text-sm font-semibold text-primary group-hover:gap-3 transition-all">

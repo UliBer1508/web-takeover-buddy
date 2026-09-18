@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,15 +8,26 @@ import { useTranslation } from "react-i18next";
 interface HeroProps {
   /** Haus, dessen Titelbild gezeigt wird. Null = global markiertes Bild. */
   houseId?: string | null;
-  /** Ueberschrift. Ohne Angabe der Text aus den Uebersetzungen. */
   title?: string | null;
   subtitle?: string | null;
-  /** Ziel des Knopfes: "chalets" auf der Marken-Startseite, sonst "booking". */
   scrollTarget?: string;
   ctaLabel?: string | null;
+  /**
+   * Inhalt am unteren Rand des Titelbilds - bei zwei Haeusern stehen hier die
+   * Chalet-Karten. Ist etwas gesetzt, entfallen Knopf und Pfeil: die Karten
+   * sind dann der Weg weiter, alles andere waere doppelt.
+   */
+  bottomSlot?: ReactNode;
 }
 
-const Hero = ({ houseId, title, subtitle, scrollTarget = "booking", ctaLabel }: HeroProps) => {
+const Hero = ({
+  houseId,
+  title,
+  subtitle,
+  scrollTarget = "booking",
+  ctaLabel,
+  bottomSlot,
+}: HeroProps) => {
   const { t } = useTranslation();
 
   // Hero-Bild je Haus. Reihenfolge der Versuche:
@@ -71,11 +83,11 @@ const Hero = ({ houseId, title, subtitle, scrollTarget = "booking", ctaLabel }: 
               decoding="async"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/30 to-foreground/60" />
+            <div className="absolute inset-0 bg-gradient-to-b from-foreground/45 via-foreground/25 to-foreground/75" />
           </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/20">
-            <div className="absolute inset-0 bg-gradient-to-b from-foreground/20 via-transparent to-foreground/40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-foreground/20 via-transparent to-foreground/50" />
           </div>
         )}
       </div>
@@ -86,31 +98,47 @@ const Hero = ({ houseId, title, subtitle, scrollTarget = "booking", ctaLabel }: 
         </div>
       )}
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 animate-fade-in-up">
+      {/* Überschrift — rückt nach oben, wenn unten Karten stehen */}
+      <div
+        className={`relative z-10 text-center px-4 sm:px-6 lg:px-8 animate-fade-in-up ${
+          bottomSlot ? "pb-[19rem] sm:pb-52 lg:pb-44" : ""
+        }`}
+      >
         <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 drop-shadow-2xl ${heroImage ? "text-white" : "text-foreground"}`}>
           {title || t("hero.title")}
         </h1>
-        <p className={`text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto drop-shadow-lg ${heroImage ? "text-white/95" : "text-muted-foreground"}`}>
+        <p className={`text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto drop-shadow-lg ${heroImage ? "text-white/95" : "text-muted-foreground"}`}>
           {subtitle || t("hero.subtitle")}
         </p>
-        <Button
-          onClick={() => scrollTo(scrollTarget)}
-          size="lg"
-          className="bg-primary hover:bg-primary/90 text-primary-foreground text-base md:text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-        >
-          {ctaLabel || t("hero.bookNow")}
-        </Button>
+
+        {!bottomSlot && (
+          <Button
+            onClick={() => scrollTo(scrollTarget)}
+            size="lg"
+            className="mt-8 md:mt-12 bg-primary hover:bg-primary/90 text-primary-foreground text-base md:text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+          >
+            {ctaLabel || t("hero.bookNow")}
+          </Button>
+        )}
       </div>
 
-      {/* Scroll Indicator */}
-      <button
-        onClick={() => scrollTo(scrollTarget)}
-        aria-label="Zur nächsten Sektion scrollen"
-        className={`absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform ${heroImage ? "text-white" : "text-foreground"}`}
-      >
-        <ChevronDown size={32} />
-      </button>
+      {/* Karten am unteren Rand */}
+      {bottomSlot && (
+        <div className="absolute bottom-0 left-0 right-0 z-20 pb-5 sm:pb-7">
+          {bottomSlot}
+        </div>
+      )}
+
+      {/* Scroll Indicator — nur ohne Karten, sonst überlagern sie sich */}
+      {!bottomSlot && (
+        <button
+          onClick={() => scrollTo(scrollTarget)}
+          aria-label="Zur nächsten Sektion scrollen"
+          className={`absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform ${heroImage ? "text-white" : "text-foreground"}`}
+        >
+          <ChevronDown size={32} />
+        </button>
+      )}
     </section>
   );
 };
