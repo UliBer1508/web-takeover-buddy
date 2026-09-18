@@ -124,11 +124,20 @@ const Gallery = ({ houseId, initialView = "photos" }: GalleryProps) => {
   // Set hero mutation
   const setHeroMutation = useMutation({
     mutationFn: async (image: GalleryImage) => {
-      // First, unset all hero images
-      await supabase
+      // Die Hero-Markierung nur INNERHALB dieses Hauses zuruecksetzen. Wuerde
+      // sie global geloescht, haette immer nur ein Haus ein Titelbild und das
+      // andere verloere seines bei jeder Aenderung.
+      let unsetQuery = supabase
         .from('gallery_images')
         .update({ is_hero: false })
         .eq('is_hero', true);
+
+      if (image.house_id) {
+        unsetQuery = unsetQuery.eq('house_id', image.house_id);
+      } else {
+        unsetQuery = unsetQuery.is('house_id', null);
+      }
+      await unsetQuery;
 
       // Then set the new hero
       const { error } = await supabase

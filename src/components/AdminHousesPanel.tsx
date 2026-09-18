@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, AlertTriangle, Plus, Pencil, EyeOff } from "lucide-react";
+import { Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -31,13 +31,19 @@ interface AdminHouse {
   price_offseason: number | null;
 }
 
+interface AdminHousesPanelProps {
+  /** Haus, dessen Bilder gerade bearbeitet werden (auch wenn ausgeschaltet). */
+  vorschauHausId?: string | null;
+  onVorschau?: (houseId: string | null, name: string | null) => void;
+}
+
 /**
- * Nur fuer Admins sichtbar. Haeuser anlegen, umbenennen und mit einem Schalter
- * fuer Gaeste freischalten. Der Schalter steuert houses.is_active - davon haengt
- * ab, ob ein Haus im Umschalter, in der Galerie, im Kalender und im
- * Buchungsformular erscheint.
+ * Nur fuer Admins sichtbar. Haeuser anlegen, umbenennen, Bilder pflegen und mit
+ * einem Schalter fuer Gaeste freischalten. Der Schalter steuert
+ * houses.is_active - davon haengt ab, ob ein Haus im Umschalter, in der
+ * Galerie, im Kalender und im Buchungsformular erscheint.
  */
-const AdminHousesPanel = () => {
+const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps) => {
   const { isAdmin, loading } = useAdmin();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
@@ -64,7 +70,6 @@ const AdminHousesPanel = () => {
     enabled: isAdmin,
   });
 
-  // Nur die anzeigen, die wirklich nicht in der Liste stehen.
   const wirklichVersteckt = useMemo(
     () => verstecktGemerkt.filter(v => !houses.some(h => h.id === v.id)),
     [verstecktGemerkt, houses]
@@ -102,12 +107,17 @@ const AdminHousesPanel = () => {
   });
 
   const ausschalten = (house: AdminHouse) => {
-    // Vorsorglich merken: Falls das Haus danach aus der Liste faellt, bleibt es
-    // ueber den Bereich "nicht sichtbar" erreichbar.
     setVerstecktGemerkt(prev =>
       prev.some(v => v.id === house.id) ? prev : [...prev, { id: house.id, name: house.name }]
     );
     toggleMutation.mutate({ id: house.id, isActive: false });
+  };
+
+  const bilderPflegen = (house: AdminHouse) => {
+    onVorschau?.(house.id, house.name);
+    setTimeout(() => {
+      document.getElementById("galerie")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   };
 
   if (loading || !isAdmin) return null;
@@ -115,6 +125,7 @@ const AdminHousesPanel = () => {
   const aktiveAnzahl = houses.filter(h => h.is_active).length;
   const naechsteReihenfolge =
     houses.length > 0 ? Math.max(...houses.map(h => h.sort_order ?? 0)) + 1 : 1;
+  const vorschauHaus = houses.find(h => h.id === vorschauHausId);
 
   return (
     <section className="border-b bg-muted/40">
@@ -138,6 +149,22 @@ const AdminHousesPanel = () => {
           </Button>
         </div>
 
+        {/* Bilder-Vorschau aktiv: Galerie und Titelbild zeigen dieses Haus,
+            auch wenn es fuer Gaeste noch ausgeschaltet ist. */}
+        {vorschauHaus && (
+          <div className="mb-3 flex items-center gap-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-950/40 dark:border-blue-800 px-3 py-2.5">
+            <ImageIcon className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" />
+            <p className="flex-grow text-xs leading-relaxed text-blue-900 dark:text-blue-200">
+              Du bearbeitest gerade die Bilder von <strong>{vorschauHaus.name}</strong>.
+              Titelbild und Galerie unten zeigen dieses Haus — Gäste sehen davon nichts.
+            </p>
+            <Button size="sm" variant="outline" onClick={() => onVorschau?.(null, null)}>
+              <X className="h-4 w-4 mr-1" />
+              Beenden
+            </Button>
+          </div>
+        )}
+
         {isLoading ? (
           <div className="flex items-center gap-2 text-muted-foreground py-6">
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -147,8 +174,12 @@ const AdminHousesPanel = () => {
           <div className="rounded-xl border bg-background divide-y">
             {houses.map((house, index) => {
               const kalenderFehlt = !house.external_house_id;
+              const istVorschau = house.id === vorschauHausId;
               return (
-                <div key={house.id} className="flex items-center gap-4 px-4 py-4">
+                <div
+                  key={house.id}
+                  className={`flex items-center gap-3 px-4 py-4 ${istVorschau ? "bg-blue-50/60 dark:bg-blue-950/20" : ""}`}
+                >
                   <span
                     aria-hidden="true"
                     className="w-2.5 h-2.5 rounded-full shrink-0"
@@ -167,6 +198,15 @@ const AdminHousesPanel = () => {
                       )}
                     </div>
                   </div>
+
+                  <Button
+                    variant={istVorschau ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => (istVorschau ? onVorschau?.(null, null) : bilderPflegen(house))}
+                  >
+                    <ImageIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Bilder</span>
+                  </Button>
 
                   <Button
                     variant="ghost"
@@ -263,8 +303,6 @@ const AdminHousesPanel = () => {
         house={bearbeitet}
         naechsteReihenfolge={naechsteReihenfolge}
         onCreated={(id, name) =>
-          // Neue Häuser entstehen ausgeschaltet. Sofort merken, damit sie nicht
-          // verloren gehen, falls die Leserechte sie gleich wieder ausblenden.
           setVerstecktGemerkt(prev =>
             prev.some(v => v.id === id) ? prev : [...prev, { id, name }]
           )
