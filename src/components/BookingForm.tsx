@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { CalendarIcon, Users, Mail, Phone, MessageSquare, Pencil, ChevronDown, Calculator, Tag } from "lucide-react";
+import { CalendarIcon, Users, Mail, Phone, MessageSquare, ChevronDown, Calculator, Tag } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,19 +27,13 @@ import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
 import { useAdmin } from "@/hooks/useAdmin";
 
-// Default house ID (will be replaced by actual house from database)
-const DEFAULT_HOUSE_ID = "00000000-0000-0000-0000-000000000001";
-
 // Season determination based on month
 type Season = 'winter' | 'summer' | 'offseason';
 
 const getSeason = (date: Date): Season => {
   const month = getMonth(date); // 0-11
-  // Winter: December (11), January (0), February (1), March (2)
   if (month === 11 || month <= 2) return 'winter';
-  // Summer: June (5), July (6), August (7), September (8)
   if (month >= 5 && month <= 8) return 'summer';
-  // Offseason: April (3), May (4), October (9), November (10)
   return 'offseason';
 };
 
@@ -69,7 +63,6 @@ interface PriceBreakdown {
   bedLinenFee: number;
   touristTaxTotal: number;
   grandTotal: number;
-  // Promotion fields
   discountAmount: number;
   discountLabel: string | null;
   originalTotal: number;
@@ -85,74 +78,59 @@ const calculatePriceBreakdown = (
   promotions: Promotion[] = []
 ): PriceBreakdown | null => {
   if (!house || !checkIn || !checkOut) return null;
-  
+
   const checkInDate = new Date(checkIn);
   const checkOutDate = new Date(checkOut);
-  
   if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) return null;
-  
+
   const nights = differenceInDays(checkOutDate, checkInDate);
   if (nights <= 0) return null;
-  
+
   const season = getSeason(checkInDate);
-  
-  // Get price per night based on season
-  let pricePerNight: number;
-  switch (season) {
-    case 'winter':
-      pricePerNight = house.price_winter ?? 450;
-      break;
-    case 'summer':
-      pricePerNight = house.price_summer ?? 380;
-      break;
-    default:
-      pricePerNight = house.price_offseason ?? 320;
-  }
-  
+
+  // Ohne hinterlegten Saisonpreis wird NICHT gerechnet. Frueher standen hier
+  // feste Ausweichwerte - die zeigten beim zweiten Haus stillschweigend die
+  // Preise des ersten.
+  const pricePerNight =
+    season === 'winter' ? house.price_winter
+    : season === 'summer' ? house.price_summer
+    : house.price_offseason;
+
+  if (pricePerNight == null || pricePerNight <= 0) return null;
+
   const accommodationTotal = pricePerNight * nights;
-  const cleaningFee = house.cleaning_fee ?? 240;
+  const cleaningFee = house.cleaning_fee ?? 0;
   const serviceFee = house.service_fee ?? 0;
   const bedLinenFee = house.bed_linen_fee ?? 0;
-  
-  // Tourist tax: per person per night (adults + children who count)
+
   const touristTaxPerPerson = house.tourist_tax ?? 0;
   const touristTaxTotal = touristTaxPerPerson * (adults + children) * nights;
-  
-  const subtotalBeforeDiscount = accommodationTotal + cleaningFee + serviceFee + bedLinenFee + touristTaxTotal;
-  
-  // Find applicable promotion (highest discount wins)
+
+  const subtotalBeforeDiscount =
+    accommodationTotal + cleaningFee + serviceFee + bedLinenFee + touristTaxTotal;
+
   let bestPromotion: Promotion | null = null;
   let bestDiscountAmount = 0;
-  
+
   for (const promo of promotions) {
-    // Check if promotion applies to this house
     if (promo.house_id !== null && promo.house_id !== house.id) continue;
-    
-    // Check if check-in is within booking_start/booking_end range
     if (promo.booking_start && new Date(promo.booking_start) > checkInDate) continue;
     if (promo.booking_end && new Date(promo.booking_end) < checkInDate) continue;
-    
-    // Check minimum nights requirement
     if (promo.min_nights && nights < promo.min_nights) continue;
-    
-    // Calculate discount amount
-    let discountAmount: number;
-    if (promo.discount_type === 'percentage') {
-      discountAmount = accommodationTotal * (promo.discount_value / 100);
-    } else {
-      discountAmount = promo.discount_value;
-    }
-    
-    // Keep the best discount
+
+    const discountAmount =
+      promo.discount_type === 'percentage'
+        ? accommodationTotal * (promo.discount_value / 100)
+        : promo.discount_value;
+
     if (discountAmount > bestDiscountAmount) {
       bestDiscountAmount = discountAmount;
       bestPromotion = promo;
     }
   }
-  
+
   const discountAmount = Math.round(bestDiscountAmount * 100) / 100;
-  const grandTotal = subtotalBeforeDiscount - discountAmount;
-  
+
   return {
     nights,
     season,
@@ -162,9 +140,9 @@ const calculatePriceBreakdown = (
     serviceFee,
     bedLinenFee,
     touristTaxTotal,
-    grandTotal,
+    grandTotal: subtotalBeforeDiscount - discountAmount,
     discountAmount,
-    discountLabel: bestPromotion 
+    discountLabel: bestPromotion
       ? `${bestPromotion.discount_type === 'percentage' ? `${bestPromotion.discount_value}%` : `${bestPromotion.discount_value}€`} ${bestPromotion.name}`
       : null,
     originalTotal: subtotalBeforeDiscount,
@@ -172,9 +150,8 @@ const calculatePriceBreakdown = (
   };
 };
 
-const formatCurrency = (amount: number): string => {
-  return amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
-};
+const formatCurrency = (amount: number): string =>
+  amount.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
 
 const getSeasonLabel = (season: Season, t: TFunction): string => {
   switch (season) {
@@ -184,46 +161,47 @@ const getSeasonLabel = (season: Season, t: TFunction): string => {
   }
 };
 
-const bookingSchema = z.object({
-  name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein").max(100, "Name zu lang"),
-  email: z.string().email("Ungültige E-Mail-Adresse").max(255, "E-Mail zu lang"),
-  phone: z.string().min(10, "Bitte geben Sie eine gültige Telefonnummer ein").max(20, "Telefonnummer zu lang"),
-  checkIn: z.string().min(1, "Check-in Datum erforderlich"),
-  checkOut: z.string().min(1, "Check-out Datum erforderlich"),
-  adults: z.string().refine((val) => {
-    const num = parseInt(val);
-    return num >= 1 && num <= 6;
-  }, "Mindestens 1 Erwachsener erforderlich"),
-  children: z.string().refine((val) => {
-    const num = parseInt(val);
-    return num >= 0 && num <= 5;
-  }, "Anzahl Kinder muss zwischen 0 und 5 liegen"),
-  message: z.string().max(1000, "Nachricht zu lang").optional()
-}).refine((data) => {
-  const adults = parseInt(data.adults);
-  const children = parseInt(data.children);
-  return (adults + children) <= 6;
-}, {
-  message: "Maximale Gästezahl ist 6 (Erwachsene + Kinder)",
-  path: ["children"]
-}).refine((data) => {
-  const checkIn = new Date(data.checkIn);
-  const checkOut = new Date(data.checkOut);
-  return checkOut > checkIn;
-}, {
-  message: "Abreisedatum muss nach dem Anreisedatum liegen",
-  path: ["checkOut"]
-}).refine((data) => {
-  const checkIn = new Date(data.checkIn);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return checkIn >= today;
-}, {
-  message: "Anreisedatum muss heute oder in der Zukunft liegen",
-  path: ["checkIn"]
-});
+/**
+ * Das Schema haengt von der Gaestezahl des gewaehlten Hauses ab. Frueher war
+ * hier fest 6 hinterlegt - beim Venedigersiedlung Chalet mit 10 Gaesten liessen
+ * sich also gar nicht alle Plaetze anfragen.
+ */
+const makeBookingSchema = (maxGuests: number) =>
+  z.object({
+    name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein").max(100, "Name zu lang"),
+    email: z.string().email("Ungültige E-Mail-Adresse").max(255, "E-Mail zu lang"),
+    phone: z.string().min(10, "Bitte geben Sie eine gültige Telefonnummer ein").max(20, "Telefonnummer zu lang"),
+    checkIn: z.string().min(1, "Check-in Datum erforderlich"),
+    checkOut: z.string().min(1, "Check-out Datum erforderlich"),
+    adults: z.string().refine(val => {
+      const num = parseInt(val);
+      return num >= 1 && num <= maxGuests;
+    }, "Mindestens 1 Erwachsener erforderlich"),
+    children: z.string().refine(val => {
+      const num = parseInt(val);
+      return num >= 0 && num < maxGuests;
+    }, `Anzahl Kinder muss zwischen 0 und ${maxGuests - 1} liegen`),
+    message: z.string().max(1000, "Nachricht zu lang").optional()
+  })
+    .refine(data => parseInt(data.adults) + parseInt(data.children) <= maxGuests, {
+      message: `Maximale Gästezahl ist ${maxGuests} (Erwachsene + Kinder)`,
+      path: ["children"]
+    })
+    .refine(data => new Date(data.checkOut) > new Date(data.checkIn), {
+      message: "Abreisedatum muss nach dem Anreisedatum liegen",
+      path: ["checkOut"]
+    })
+    .refine(data => {
+      const checkIn = new Date(data.checkIn);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return checkIn >= today;
+    }, {
+      message: "Anreisedatum muss heute oder in der Zukunft liegen",
+      path: ["checkIn"]
+    });
 
-type BookingFormData = z.infer<typeof bookingSchema>;
+type BookingFormData = z.infer<ReturnType<typeof makeBookingSchema>>;
 
 interface BookingFormProps {
   initialCheckIn?: Date | null;
@@ -260,23 +238,24 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isAdmin } = useAdmin();
   const canEdit = isAdmin;
-  
-  // Fetch houses from database
+
+  // EIGENER Schluessel. Frueher stand hier 'houses-active' - derselbe wie in
+  // useHouseSelection, aber mit anderer Spaltenliste. Je nachdem, welche
+  // Abfrage zuerst lief, fehlten dem Formular Gebuehren und Zeiten, und es
+  // zeigte stattdessen Ausweichwerte.
   const { data: houses = [] } = useQuery({
-    queryKey: ['houses-active'],
+    queryKey: ['houses-booking'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('houses')
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
-      
       if (error) throw error;
       return data as House[];
     },
   });
 
-  // Fetch booking statuses to get "pending" status ID
   const { data: statuses = [] } = useQuery({
     queryKey: ['booking-statuses'],
     queryFn: async () => {
@@ -284,116 +263,106 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
         .from('booking_statuses')
         .select('*')
         .order('sort_order', { ascending: true });
-      
       if (error) throw error;
       return data as BookingStatus[];
     },
   });
 
-  // Get house from defaultHouseId prop, or use first house
-  const selectedHouse = defaultHouseId 
+  const selectedHouse = defaultHouseId
     ? houses.find(h => h.id === defaultHouseId) || houses[0]
     : houses[0];
-  const maxGuests = selectedHouse?.max_guests || 10;
+  const maxGuests = selectedHouse?.max_guests || 6;
   const pendingStatusId = statuses.find(s => s.name === 'pending')?.id;
 
-  // Fetch active promotions
   const { data: promotions = [] } = useQuery({
     queryKey: ['active-promotions', selectedHouse?.id],
     queryFn: async () => {
       const today = new Date().toISOString().split('T')[0];
-      
       const { data, error } = await supabase
         .from('promotions')
         .select('*')
         .eq('is_active', true)
         .lte('valid_from', today)
         .gte('valid_until', today);
-
       if (error) throw error;
-      return (data as Promotion[]).filter(p => 
+      return (data as Promotion[]).filter(p =>
         p.house_id === null || p.house_id === selectedHouse?.id
       );
     },
     enabled: !!selectedHouse,
   });
 
+  const schema = useMemo(() => makeBookingSchema(maxGuests), [maxGuests]);
+
   const form = useForm<BookingFormData>({
-    resolver: zodResolver(bookingSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      checkIn: "",
-      checkOut: "",
-      adults: "",
-      children: "0",
-      message: ""
+      name: "", email: "", phone: "", checkIn: "", checkOut: "",
+      adults: "", children: "0", message: ""
     }
   });
 
-  // Watch form fields for price calculation
   const watchedCheckIn = useWatch({ control: form.control, name: 'checkIn' });
   const watchedCheckOut = useWatch({ control: form.control, name: 'checkOut' });
   const watchedAdults = useWatch({ control: form.control, name: 'adults' });
   const watchedChildren = useWatch({ control: form.control, name: 'children' });
 
-  // Calculate dynamic guest limits (max 6 total)
   const currentAdults = parseInt(watchedAdults) || 0;
   const currentChildren = parseInt(watchedChildren) || 0;
-  const maxAdults = Math.max(1, 6 - currentChildren);
-  const maxChildren = 6 - currentAdults;
+  const maxAdults = Math.max(1, maxGuests - currentChildren);
+  const maxChildren = Math.max(0, maxGuests - currentAdults);
 
-  // Auto-reset children if adults selection makes current children invalid
   useEffect(() => {
     if (currentAdults > 0 && currentChildren > maxChildren) {
       form.setValue('children', maxChildren.toString());
     }
   }, [currentAdults, currentChildren, maxChildren, form]);
 
-  // Calculate price breakdown reactively (including promotions)
-  const priceBreakdown = useMemo(() => {
-    return calculatePriceBreakdown(selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren, promotions);
-  }, [selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren, promotions]);
-
-  // Auto-fill form when dates are selected from calendar
+  // Wechselt der Gast das Haus, passt die bisherige Gaesteauswahl womoeglich
+  // nicht mehr - dann zuruecksetzen statt eine ungueltige Zahl stehen lassen.
   useEffect(() => {
-    if (initialCheckIn) {
-      form.setValue('checkIn', format(initialCheckIn, 'yyyy-MM-dd'));
-    }
-    if (initialCheckOut) {
-      form.setValue('checkOut', format(initialCheckOut, 'yyyy-MM-dd'));
-    }
+    if (currentAdults > maxGuests) form.setValue('adults', "");
+    if (currentChildren > maxGuests - 1) form.setValue('children', "0");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedHouse?.id]);
+
+  const priceBreakdown = useMemo(
+    () => calculatePriceBreakdown(selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren, promotions),
+    [selectedHouse, watchedCheckIn, watchedCheckOut, currentAdults, currentChildren, promotions]
+  );
+
+  useEffect(() => {
+    if (initialCheckIn) form.setValue('checkIn', format(initialCheckIn, 'yyyy-MM-dd'));
+    if (initialCheckOut) form.setValue('checkOut', format(initialCheckOut, 'yyyy-MM-dd'));
   }, [initialCheckIn, initialCheckOut, form]);
 
   const onSubmit = async (data: BookingFormData) => {
     if (!pendingStatusId) {
-      toast({
-        title: t('common.error'),
-        description: t('booking.statusError'),
-        variant: "destructive"
-      });
+      toast({ title: t('common.error'), description: t('booking.statusError'), variant: "destructive" });
+      return;
+    }
+    if (!selectedHouse) {
+      toast({ title: t('common.error'), description: "Kein Haus ausgewählt.", variant: "destructive" });
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Convert date strings to ISO timestamps
       const checkInDate = new Date(data.checkIn);
       const checkOutDate = new Date(data.checkOut);
-      const totalGuests = parseInt(data.adults) + parseInt(data.children);
-
-      // Calculate price for storage
       const adults = parseInt(data.adults);
       const children = parseInt(data.children);
-      const calculatedPrice = calculatePriceBreakdown(selectedHouse, data.checkIn, data.checkOut, adults, children);
+      const totalGuests = adults + children;
 
-      // 1. Insert into local Lovable Cloud database
+      const calculatedPrice = calculatePriceBreakdown(
+        selectedHouse, data.checkIn, data.checkOut, adults, children, promotions
+      );
+
       const { error: localError } = await supabase
         .from('booking_inquiries')
         .insert({
-          house_id: selectedHouse?.id || DEFAULT_HOUSE_ID,
+          house_id: selectedHouse.id,
           guest_name: data.name.trim(),
           guest_email: data.email.trim().toLowerCase(),
           guest_phone: data.phone.trim(),
@@ -403,24 +372,22 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           number_of_children: children,
           message: data.message?.trim() || null,
           status_id: pendingStatusId,
-          // Price fields
           total_price: calculatedPrice?.grandTotal ?? null,
           price_per_night: calculatedPrice?.pricePerNight ?? null,
           nights: calculatedPrice?.nights ?? null,
           cleaning_fee: calculatedPrice?.cleaningFee ?? null,
           service_fee: calculatedPrice?.serviceFee ?? null,
           bed_linen_fee: calculatedPrice?.bedLinenFee ?? null,
-          tourist_tax_total: calculatedPrice?.touristTaxTotal ?? null
+          tourist_tax_total: calculatedPrice?.touristTaxTotal ?? null,
+          promotion_id: calculatedPrice?.promotionId ?? null,
+          discount_amount: calculatedPrice?.discountAmount ?? null
         });
 
-      if (localError) {
-        throw localError;
-      }
+      if (localError) throw localError;
 
-      // 2. Insert into external "my sweet-home manager" database
       let externalErrorOccurred = false;
 
-      if (selectedHouse?.external_house_id) {
+      if (selectedHouse.external_house_id) {
         const { error: externalError } = await externalSupabase
           .from('booking_inquiries')
           .insert({
@@ -442,7 +409,8 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           externalErrorOccurred = true;
         }
       } else {
-        console.error("External house ID is missing for selected house:", selectedHouse?.id);
+        console.error("External house ID is missing for selected house:", selectedHouse.id);
+        externalErrorOccurred = true;
       }
 
       toast({
@@ -451,7 +419,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           ? "Ihre Anfrage wurde gespeichert. Falls Sie innerhalb von 24 Stunden keine Antwort erhalten, kontaktieren Sie uns bitte zusätzlich per E-Mail an steinbockchalets@gmail.com."
           : t('booking.successDesc')
       });
-      
+
       form.reset();
     } catch (error: any) {
       console.error("Booking inquiry error:", error);
@@ -464,6 +432,12 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
       setIsSubmitting(false);
     }
   };
+
+  /** Preis anzeigen, aber nichts erfinden. */
+  const preisZeile = (wert: number | null | undefined) =>
+    wert != null && wert > 0
+      ? `${t('booking.from')} ${wert}€ ${t('booking.perNight')}`
+      : "auf Anfrage";
 
   return (
     <section id="booking" className="py-16 md:py-24 bg-background">
@@ -483,7 +457,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
               <CardTitle>{t('booking.checkAvailability')}</CardTitle>
               <CardDescription>
                 {t('booking.formDescription')}
-                {selectedHouse && <span className="block mt-1">{t('booking.property')}: {selectedHouse.name}</span>}
+                {selectedHouse && <span className="block mt-1 font-medium text-foreground">{t('booking.property')}: {selectedHouse.name}</span>}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -536,17 +510,12 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                             <FormControl>
                               <Button
                                 variant="outline"
-                                className={cn(
-                                  "w-full pl-3 text-left font-normal justify-start",
-                                  !field.value && "text-muted-foreground"
-                                )}
+                                className={cn("w-full pl-3 text-left font-normal justify-start", !field.value && "text-muted-foreground")}
                               >
                                 <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
-                                {field.value ? (
-                                  format(parse(field.value, 'yyyy-MM-dd', new Date()), 'dd.MM.yyyy')
-                                ) : (
-                                  <span>{t('booking.selectDate')}</span>
-                                )}
+                                {field.value
+                                  ? format(parse(field.value, 'yyyy-MM-dd', new Date()), 'dd.MM.yyyy')
+                                  : <span>{t('booking.selectDate')}</span>}
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
@@ -554,8 +523,8 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                             <Calendar
                               mode="single"
                               selected={field.value ? parse(field.value, 'yyyy-MM-dd', new Date()) : undefined}
-                              onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                              onSelect={date => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                              disabled={date => date < new Date(new Date().setHours(0, 0, 0, 0))}
                               initialFocus
                               locale={de}
                               className="pointer-events-auto"
@@ -563,9 +532,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                           </PopoverContent>
                         </Popover>
                         {initialCheckIn && (
-                          <Badge variant="secondary" className="mt-1 text-xs">
-                            ✓ {t('booking.fromCalendar')}
-                          </Badge>
+                          <Badge variant="secondary" className="mt-1 text-xs">✓ {t('booking.fromCalendar')}</Badge>
                         )}
                         <FormMessage />
                       </FormItem>
@@ -574,7 +541,6 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                     <FormField control={form.control} name="checkOut" render={({ field }) => {
                       const checkInValue = form.watch('checkIn');
                       const checkInDate = checkInValue ? parse(checkInValue, 'yyyy-MM-dd', new Date()) : undefined;
-                      
                       return (
                         <FormItem className="min-w-0 flex flex-col">
                           <FormLabel>{t('booking.checkOut')}</FormLabel>
@@ -583,17 +549,12 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                               <FormControl>
                                 <Button
                                   variant="outline"
-                                  className={cn(
-                                    "w-full pl-3 text-left font-normal justify-start",
-                                    !field.value && "text-muted-foreground"
-                                  )}
+                                  className={cn("w-full pl-3 text-left font-normal justify-start", !field.value && "text-muted-foreground")}
                                 >
                                   <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
-                                  {field.value ? (
-                                    format(parse(field.value, 'yyyy-MM-dd', new Date()), 'dd.MM.yyyy')
-                                  ) : (
-                                    <span>{t('booking.selectDate')}</span>
-                                  )}
+                                  {field.value
+                                    ? format(parse(field.value, 'yyyy-MM-dd', new Date()), 'dd.MM.yyyy')
+                                    : <span>{t('booking.selectDate')}</span>}
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
@@ -601,13 +562,11 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                               <Calendar
                                 mode="single"
                                 selected={field.value ? parse(field.value, 'yyyy-MM-dd', new Date()) : undefined}
-                                onSelect={(date) => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
-                                disabled={(date) => {
+                                onSelect={date => field.onChange(date ? format(date, 'yyyy-MM-dd') : '')}
+                                disabled={date => {
                                   const today = new Date();
                                   today.setHours(0, 0, 0, 0);
-                                  if (checkInDate) {
-                                    return date <= checkInDate;
-                                  }
+                                  if (checkInDate) return date <= checkInDate;
                                   return date < today;
                                 }}
                                 initialFocus
@@ -617,9 +576,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                             </PopoverContent>
                           </Popover>
                           {initialCheckOut && (
-                            <Badge variant="secondary" className="mt-1 text-xs">
-                              ✓ {t('booking.fromCalendar')}
-                            </Badge>
+                            <Badge variant="secondary" className="mt-1 text-xs">✓ {t('booking.fromCalendar')}</Badge>
                           )}
                           <FormMessage />
                         </FormItem>
@@ -629,7 +586,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                     <FormField control={form.control} name="adults" render={({ field }) => (
                       <FormItem className="min-w-0">
                         <FormLabel>{t('booking.adults')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger className="w-full">
                               <Users className="h-4 w-4 mr-2 flex-shrink-0" />
@@ -651,7 +608,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                     <FormField control={form.control} name="children" render={({ field }) => (
                       <FormItem className="min-w-0">
                         <FormLabel>{t('booking.children')}</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger className="w-full">
                               <Users className="h-4 w-4 mr-2 flex-shrink-0" />
@@ -687,7 +644,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                           </span>
                           <span className="font-medium">{formatCurrency(priceBreakdown.accommodationTotal)}</span>
                         </div>
-                        
+
                         <Collapsible>
                           <CollapsibleTrigger className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 font-medium transition-colors [&[data-state=open]>svg]:rotate-180">
                             {t('booking.showFees')}
@@ -715,7 +672,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                             {priceBreakdown.touristTaxTotal > 0 && (
                               <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">
-                                  {t('booking.touristTax')} ({parseInt(watchedAdults) + parseInt(watchedChildren)} {t('booking.persons')} × {priceBreakdown.nights} {priceBreakdown.nights === 1 ? t('booking.night') : t('booking.nights')})
+                                  {t('booking.touristTax')} ({currentAdults + currentChildren} {t('booking.persons')} × {priceBreakdown.nights} {priceBreakdown.nights === 1 ? t('booking.night') : t('booking.nights')})
                                 </span>
                                 <span>{formatCurrency(priceBreakdown.touristTaxTotal)}</span>
                               </div>
@@ -723,7 +680,6 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                           </CollapsibleContent>
                         </Collapsible>
 
-                        {/* Discount display */}
                         {priceBreakdown.discountAmount > 0 && priceBreakdown.discountLabel && (
                           <div className="flex justify-between items-center text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 p-2 rounded-md">
                             <span className="flex items-center gap-2">
@@ -733,7 +689,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                             <span className="font-medium">-{formatCurrency(priceBreakdown.discountAmount)}</span>
                           </div>
                         )}
-                        
+
                         <div className="border-t pt-3 flex justify-between items-center">
                           <span className="font-semibold text-lg">{t('booking.totalPrice')}</span>
                           <div className="text-right">
@@ -774,7 +730,12 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
           <div className="mt-12 grid sm:grid-cols-2 gap-6 animate-fade-in-up">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl">{t('booking.prices')}</CardTitle>
+                <div>
+                  <CardTitle className="text-xl">{t('booking.prices')}</CardTitle>
+                  {selectedHouse && (
+                    <CardDescription className="mt-1">{selectedHouse.name}</CardDescription>
+                  )}
+                </div>
                 {canEdit && selectedHouse && (
                   <Suspense fallback={null}>
                     <HouseSettingsDialog house={selectedHouse} />
@@ -784,18 +745,17 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
               <CardContent className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('booking.winter')}</span>
-                  <span className="font-semibold">{t('booking.from')} {selectedHouse?.price_winter ?? 450}€ {t('booking.perNight')}</span>
+                  <span className="font-semibold">{preisZeile(selectedHouse?.price_winter)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('booking.summer')}</span>
-                  <span className="font-semibold">{t('booking.from')} {selectedHouse?.price_summer ?? 380}€ {t('booking.perNight')}</span>
+                  <span className="font-semibold">{preisZeile(selectedHouse?.price_summer)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t('booking.offseason')}</span>
-                  <span className="font-semibold">{t('booking.from')} {selectedHouse?.price_offseason ?? 320}€ {t('booking.perNight')}</span>
+                  <span className="font-semibold">{preisZeile(selectedHouse?.price_offseason)}</span>
                 </div>
-                
-                {/* Promotion Banner - now under prices */}
+
                 {promotions.length > 0 && selectedHouse && (
                   <div className="mt-4 pt-4 border-t">
                     <PromotionBanner houseId={selectedHouse.id} checkInDate={watchedCheckIn} />
@@ -806,7 +766,12 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl">{t('booking.importantInfo')}</CardTitle>
+                <div>
+                  <CardTitle className="text-xl">{t('booking.importantInfo')}</CardTitle>
+                  {selectedHouse && (
+                    <CardDescription className="mt-1">{selectedHouse.name}</CardDescription>
+                  )}
+                </div>
                 {canEdit && selectedHouse && (
                   <Suspense fallback={null}>
                     <HouseSettingsDialog house={selectedHouse} />
@@ -814,11 +779,20 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
                 )}
               </CardHeader>
               <CardContent className="space-y-2 text-sm text-muted-foreground">
-                <p>✓ {t('booking.minStay')}: {selectedHouse?.min_nights ?? 4} {t('booking.nights')}</p>
-                <p>✓ {t('booking.checkInTime')} {selectedHouse?.check_in_time ?? "15:00"} {t('booking.clock')}</p>
-                <p>✓ {t('booking.checkOutTime')} {selectedHouse?.check_out_time ?? "10:00"} {t('booking.clock')}</p>
-                <p>✓ {t('booking.cleaningFee')}: {selectedHouse?.cleaning_fee ?? 240}€</p>
-                
+                {selectedHouse?.min_nights && (
+                  <p>✓ {t('booking.minStay')}: {selectedHouse.min_nights} {t('booking.nights')}</p>
+                )}
+                {selectedHouse?.check_in_time && (
+                  <p>✓ {t('booking.checkInTime')} {selectedHouse.check_in_time} {t('booking.clock')}</p>
+                )}
+                {selectedHouse?.check_out_time && (
+                  <p>✓ {t('booking.checkOutTime')} {selectedHouse.check_out_time} {t('booking.clock')}</p>
+                )}
+                {(selectedHouse?.cleaning_fee ?? 0) > 0 && (
+                  <p>✓ {t('booking.cleaningFee')}: {selectedHouse?.cleaning_fee}€</p>
+                )}
+                <p>✓ {t('booking.adults')} / {t('booking.children')}: max. {maxGuests}</p>
+
                 <Collapsible className="mt-3">
                   <CollapsibleTrigger className="flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors [&[data-state=open]>svg]:rotate-180">
                     {t('booking.additionalFees')}
