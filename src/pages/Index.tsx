@@ -92,6 +92,19 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
   // freigeschalteten Haus - ein ausgeschaltetes Haus wird nicht gebucht.
   const galerieHausId = vorschauHausId ?? selectedHouseId;
 
+  // Das Admin-Panel steht UNTER dem Titelbild. Die Navigation liegt auf der
+  // Startseite transparent ganz oben und wuerde das Panel sonst ueberdecken -
+  // weisse Schrift auf hellem Kasten.
+  const adminPanel = (
+    <AdminHousesPanel
+      vorschauHausId={vorschauHausId}
+      onVorschau={(id, name) => {
+        setVorschauHausId(id);
+        setVorschauHausName(name);
+      }}
+    />
+  );
+
   return (
     <div className="min-h-screen">
       <Helmet>
@@ -134,15 +147,6 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
       </Helmet>
       <Navigation />
 
-      {/* Admin-Schalter: steuert, welche Häuser Gäste sehen. Für Gäste unsichtbar. */}
-      <AdminHousesPanel
-        vorschauHausId={vorschauHausId}
-        onVorschau={(id, name) => {
-          setVorschauHausId(id);
-          setVorschauHausName(name);
-        }}
-      />
-
       {!startAtGallery && (
         <Hero
           houseId={galerieHausId}
@@ -151,6 +155,9 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
           showHouseName={hasMultipleHouses || !!vorschauHausId}
         />
       )}
+
+      {/* Admin-Schalter: steuert, welche Häuser Gäste sehen. Für Gäste unsichtbar. */}
+      {adminPanel}
 
       {/* Haus-Umschalter — erscheint automatisch ab zwei freigeschalteten Häusern */}
       {hasMultipleHouses && (
