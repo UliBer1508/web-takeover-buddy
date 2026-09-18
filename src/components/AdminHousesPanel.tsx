@@ -1,18 +1,23 @@
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, AlertTriangle, Plus, Pencil, EyeOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdmin } from "@/hooks/useAdmin";
 import { toast } from "@/hooks/use-toast";
 import { houseColor } from "@/lib/houseColors";
 import HouseSettingsDialog from "./HouseSettingsDialog";
+import HouseFormDialog, { HouseFormValues } from "./HouseFormDialog";
 
 interface AdminHouse {
   id: string;
   name: string;
   slug: string;
+  short_description: string | null;
   is_active: boolean;
   sort_order: number;
+  max_guests: number;
   external_house_id: string | null;
   min_nights: number | null;
   check_in_time: string | null;
@@ -27,42 +32,59 @@ interface AdminHouse {
 }
 
 /**
- * Nur fuer Admins sichtbar. Ein Schalter je Haus steuert is_active - und damit,
- * ob das Haus im Umschalter, in der Galerie, im Kalender und im
- * Buchungsformular auftaucht. Ist nur ein Haus aktiv, sieht die Seite fuer
- * Gaeste genauso aus wie vorher.
+ * Nur fuer Admins sichtbar. Haeuser anlegen, umbenennen und mit einem Schalter
+ * fuer Gaeste freischalten. Der Schalter steuert houses.is_active - davon haengt
+ * ab, ob ein Haus im Umschalter, in der Galerie, im Kalender und im
+ * Buchungsformular erscheint.
  */
 const AdminHousesPanel = () => {
   const { isAdmin, loading } = useAdmin();
   const queryClient = useQueryClient();
+  const [formOpen, setFormOpen] = useState(false);
+  const [bearbeitet, setBearbeitet] = useState<HouseFormValues | null>(null);
+
+  // Haeuser, die wir angelegt oder ausgeschaltet haben und die danach aus der
+  // Liste verschwunden sind. Das passiert, wenn die Leserechte der Datenbank
+  // nur aktive Haeuser durchlassen. Ohne dieses Gedaechtnis waere ein einmal
+  // ausgeschaltetes Haus ohne SQL-Zugang nicht mehr erreichbar.
+  const [verstecktGemerkt, setVerstecktGemerkt] = useState<
+    { id: string; name: string }[]
+  >([]);
 
   const { data: houses = [], isLoading } = useQuery({
-    queryKey: ['houses-all'],
+    queryKey: ["houses-all"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('houses')
-        .select('*')
-        .order('sort_order', { ascending: true });
+        .from("houses")
+        .select("*")
+        .order("sort_order", { ascending: true });
       if (error) throw error;
       return (data || []) as AdminHouse[];
     },
     enabled: isAdmin,
   });
 
+  // Nur die anzeigen, die wirklich nicht in der Liste stehen.
+  const wirklichVersteckt = useMemo(
+    () => verstecktGemerkt.filter(v => !houses.some(h => h.id === v.id)),
+    [verstecktGemerkt, houses]
+  );
+
   const toggleMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
       const { error } = await supabase
-        .from('houses')
+        .from("houses")
         .update({ is_active: isActive })
-        .eq('id', id);
+        .eq("id", id);
       if (error) throw error;
-      return isActive;
+      return { id, isActive };
     },
-    onSuccess: (isActive) => {
-      queryClient.invalidateQueries({ queryKey: ['houses-all'] });
-      queryClient.invalidateQueries({ queryKey: ['houses-active'] });
-      queryClient.invalidateQueries({ queryKey: ['gallery-images'] });
-      queryClient.invalidateQueries({ queryKey: ['availability'] });
+    onSuccess: ({ isActive }) => {
+      queryClient.invalidateQueries({ queryKey: ["houses-all"] });
+      queryClient.invalidateQueries({ queryKey: ["houses-active"] });
+      queryClient.invalidateQueries({ queryKey: ["gallery-images"] });
+      queryClient.invalidateQueries({ queryKey: ["hero-image"] });
+      queryClient.invalidateQueries({ queryKey: ["availability"] });
       toast({
         title: isActive ? "Haus ist auf der Website sichtbar" : "Haus ist ausgeblendet",
         description: isActive
@@ -79,20 +101,41 @@ const AdminHousesPanel = () => {
     },
   });
 
+  const ausschalten = (house: AdminHouse) => {
+    // Vorsorglich merken: Falls das Haus danach aus der Liste faellt, bleibt es
+    // ueber den Bereich "nicht sichtbar" erreichbar.
+    setVerstecktGemerkt(prev =>
+      prev.some(v => v.id === house.id) ? prev : [...prev, { id: house.id, name: house.name }]
+    );
+    toggleMutation.mutate({ id: house.id, isActive: false });
+  };
+
   if (loading || !isAdmin) return null;
 
-  const activeCount = houses.filter(h => h.is_active).length;
+  const aktiveAnzahl = houses.filter(h => h.is_active).length;
+  const naechsteReihenfolge =
+    houses.length > 0 ? Math.max(...houses.map(h => h.sort_order ?? 0)) + 1 : 1;
 
   return (
     <section className="border-b bg-muted/40">
       <div className="container mx-auto px-4 py-5">
-        <div className="flex items-baseline justify-between mb-3">
+        <div className="flex items-start justify-between gap-4 mb-3">
           <div>
             <h2 className="text-lg font-semibold">Häuser auf der Website</h2>
             <p className="text-sm text-muted-foreground">
-              Nur für Admins sichtbar. {activeCount} von {houses.length} freigeschaltet.
+              Nur für Admins sichtbar. {aktiveAnzahl} von {houses.length} freigeschaltet.
             </p>
           </div>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setBearbeitet(null);
+              setFormOpen(true);
+            }}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Haus anlegen
+          </Button>
         </div>
 
         {isLoading ? (
@@ -115,21 +158,45 @@ const AdminHousesPanel = () => {
                     <div className="font-semibold">{house.name}</div>
                     <div className="text-xs text-muted-foreground mt-0.5">
                       {house.is_active ? "sichtbar und buchbar" : "ausgeblendet"}
+                      {" · "}
+                      {house.max_guests} Gäste
                       {kalenderFehlt && (
                         <span className="text-amber-700 dark:text-amber-500">
-                          {" "}· keine Kalender-Verknüpfung
+                          {" · keine Kalender-Verknüpfung"}
                         </span>
                       )}
                     </div>
                   </div>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`${house.name} bearbeiten`}
+                    onClick={() => {
+                      setBearbeitet({
+                        id: house.id,
+                        name: house.name,
+                        slug: house.slug,
+                        short_description: house.short_description,
+                        max_guests: house.max_guests,
+                        external_house_id: house.external_house_id,
+                        sort_order: house.sort_order,
+                      });
+                      setFormOpen(true);
+                    }}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
 
                   <HouseSettingsDialog house={house} />
 
                   <Switch
                     checked={house.is_active}
                     disabled={toggleMutation.isPending}
-                    onCheckedChange={(checked) =>
-                      toggleMutation.mutate({ id: house.id, isActive: checked })
+                    onCheckedChange={checked =>
+                      checked
+                        ? toggleMutation.mutate({ id: house.id, isActive: true })
+                        : ausschalten(house)
                     }
                     aria-label={`${house.name} auf der Website anzeigen`}
                   />
@@ -139,17 +206,70 @@ const AdminHousesPanel = () => {
           </div>
         )}
 
+        {/* Rettungsanker: Haeuser, die die Datenbank uns nicht mehr zeigt */}
+        {wirklichVersteckt.length > 0 && (
+          <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/40 dark:border-amber-800 px-4 py-3">
+            <div className="flex items-start gap-2 mb-3">
+              <EyeOff className="h-4 w-4 text-amber-700 dark:text-amber-500 shrink-0 mt-0.5" />
+              <p className="text-xs leading-relaxed text-amber-900 dark:text-amber-200">
+                Diese Häuser sind ausgeschaltet und werden von der Datenbank nicht mehr
+                zurückgegeben — die Leserechte lassen nur aktive Häuser durch. Solange
+                diese Seite offen bleibt, kannst du sie hier wieder einschalten.
+                <strong className="font-semibold">
+                  {" "}
+                  Schließt du den Browser vorher, brauchst du dafür den SQL-Editor.
+                </strong>
+              </p>
+            </div>
+            <div className="space-y-2">
+              {wirklichVersteckt.map(v => (
+                <div
+                  key={v.id}
+                  className="flex items-center gap-3 rounded-lg bg-background border px-3 py-2"
+                >
+                  <span className="flex-grow text-sm font-medium">{v.name}</span>
+                  <span className="font-mono text-[10px] text-muted-foreground hidden sm:inline">
+                    {v.id}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={toggleMutation.isPending}
+                    onClick={() => toggleMutation.mutate({ id: v.id, isActive: true })}
+                  >
+                    Wieder einschalten
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {houses.some(h => h.is_active && !h.external_house_id) && (
           <div className="mt-3 flex gap-2 items-start rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/40 dark:border-amber-800 px-3 py-2.5">
             <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-500 shrink-0 mt-0.5" />
             <p className="text-xs leading-relaxed text-amber-900 dark:text-amber-200">
               Ein freigeschaltetes Haus ohne Kalender-Verknüpfung zeigt Gästen einen
-              leeren Verfügbarkeitskalender — jeder Zeitraum wirkt frei. Verknüpfung
-              in den Hauseinstellungen nachtragen.
+              leeren Verfügbarkeitskalender — jeder Zeitraum wirkt frei. Die house_id
+              aus der Hausverwaltung über den Stift nachtragen.
             </p>
           </div>
         )}
       </div>
+
+      <HouseFormDialog
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        house={bearbeitet}
+        naechsteReihenfolge={naechsteReihenfolge}
+        onCreated={(id, name) =>
+          // Neue Häuser entstehen ausgeschaltet. Sofort merken, damit sie nicht
+          // verloren gehen, falls die Leserechte sie gleich wieder ausblenden.
+          setVerstecktGemerkt(prev =>
+            prev.some(v => v.id === id) ? prev : [...prev, { id, name }]
+          )
+        }
+      />
     </section>
   );
 };
