@@ -30,6 +30,13 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
     checkOut: Date | null;
   }>({ checkIn: null, checkOut: null });
 
+  // Admin-Vorschau: Bilder eines Hauses pflegen, das fuer Gaeste noch
+  // ausgeschaltet ist. Sonst gaebe es ein Henne-Ei-Problem - ohne Freischaltung
+  // steht das Haus nicht im Umschalter, also koennte man ihm keine Bilder
+  // zuordnen, ohne es vorher unfertig live zu stellen.
+  const [vorschauHausId, setVorschauHausId] = useState<string | null>(null);
+  const [vorschauHausName, setVorschauHausName] = useState<string | null>(null);
+
   const location = useLocation();
 
   const isInfo = initialGalleryView === "info";
@@ -80,6 +87,11 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
     }
   };
 
+  // Galerie und Titelbild folgen der Admin-Vorschau, alles andere der
+  // normalen Auswahl. Kalender und Buchungsformular bleiben bewusst am
+  // freigeschalteten Haus - ein ausgeschaltetes Haus wird nicht gebucht.
+  const galerieHausId = vorschauHausId ?? selectedHouseId;
+
   return (
     <div className="min-h-screen">
       <Helmet>
@@ -123,14 +135,20 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
       <Navigation />
 
       {/* Admin-Schalter: steuert, welche Häuser Gäste sehen. Für Gäste unsichtbar. */}
-      <AdminHousesPanel />
+      <AdminHousesPanel
+        vorschauHausId={vorschauHausId}
+        onVorschau={(id, name) => {
+          setVorschauHausId(id);
+          setVorschauHausName(name);
+        }}
+      />
 
       {!startAtGallery && (
         <Hero
-          houseId={selectedHouseId}
-          houseName={selectedHouse?.name}
+          houseId={galerieHausId}
+          houseName={vorschauHausName ?? selectedHouse?.name}
           houseSubtitle={selectedHouse?.short_description}
-          showHouseName={hasMultipleHouses}
+          showHouseName={hasMultipleHouses || !!vorschauHausId}
         />
       )}
 
@@ -155,7 +173,7 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
           <Testimonials />
         </>
       )}
-      <Gallery houseId={selectedHouseId} initialView={initialGalleryView} />
+      <Gallery houseId={galerieHausId} initialView={initialGalleryView} />
       <section className="py-12 md:py-16 bg-muted/30">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-8">
