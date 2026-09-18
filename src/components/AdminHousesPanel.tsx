@@ -23,7 +23,10 @@ interface AdminHouse {
   id: string;
   name: string;
   slug: string;
+  location: string | null;
   short_description: string | null;
+  description: string | null;
+  highlights: string[] | null;
   is_active: boolean;
   sort_order: number;
   max_guests: number;
@@ -47,10 +50,10 @@ interface AdminHousesPanelProps {
 }
 
 /**
- * Nur fuer Admins sichtbar. Haeuser anlegen, umbenennen, Bilder pflegen und mit
- * einem Schalter fuer Gaeste freischalten. Der Schalter steuert
- * houses.is_active - davon haengt ab, ob ein Haus im Umschalter, in der
- * Galerie, im Kalender und im Buchungsformular erscheint.
+ * Nur fuer Admins sichtbar. Haeuser anlegen, Texte pflegen, Bilder zuordnen und
+ * mit einem Schalter fuer Gaeste freischalten. Der Schalter steuert
+ * houses.is_active - davon haengt ab, ob ein Haus in der Uebersicht, im
+ * Umschalter, in der Galerie, im Kalender und im Formular erscheint.
  */
 const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps) => {
   const { isAdmin, loading } = useAdmin();
@@ -59,8 +62,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
   const [bearbeitet, setBearbeitet] = useState<HouseFormValues | null>(null);
 
   // Haeuser, die wir angelegt oder ausgeschaltet haben und die danach aus der
-  // Liste verschwunden sind. Das passiert, wenn die Leserechte der Datenbank
-  // nur aktive Haeuser durchlassen.
+  // Liste verschwunden sind - falls die Leserechte nur aktive durchlassen.
   const [verstecktGemerkt, setVerstecktGemerkt] = useState<
     { id: string; name: string }[]
   >([]);
@@ -97,6 +99,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
       queryClient.invalidateQueries({ queryKey: ["houses-active"] });
       queryClient.invalidateQueries({ queryKey: ["gallery-images"] });
       queryClient.invalidateQueries({ queryKey: ["hero-image"] });
+      queryClient.invalidateQueries({ queryKey: ["chalet-cover"] });
       queryClient.invalidateQueries({ queryKey: ["availability"] });
       toast({
         title: isActive ? "Haus ist auf der Website sichtbar" : "Haus ist ausgeblendet",
@@ -128,6 +131,22 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
     }, 100);
   };
 
+  const bearbeiten = (house: AdminHouse) => {
+    setBearbeitet({
+      id: house.id,
+      name: house.name,
+      slug: house.slug,
+      location: house.location,
+      short_description: house.short_description,
+      description: house.description,
+      highlights: house.highlights,
+      max_guests: house.max_guests,
+      external_house_id: house.external_house_id,
+      sort_order: house.sort_order,
+    });
+    setFormOpen(true);
+  };
+
   if (loading || !isAdmin) return null;
 
   const aktiveAnzahl = houses.filter(h => h.is_active).length;
@@ -156,8 +175,6 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
           </Button>
         </div>
 
-        {/* Bilder-Vorschau aktiv: Galerie und Titelbild zeigen dieses Haus,
-            auch wenn es fuer Gaeste noch ausgeschaltet ist. */}
         {vorschauHaus && (
           <div className="mb-3 flex flex-wrap items-center gap-3 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-950/40 dark:border-blue-800 px-3 py-2.5">
             <ImageIcon className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0" />
@@ -181,6 +198,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
           <div className="rounded-xl border bg-background divide-y">
             {houses.map((house, index) => {
               const kalenderFehlt = !house.external_house_id;
+              const textFehlt = !house.description;
               const istVorschau = house.id === vorschauHausId;
               return (
                 <div
@@ -200,13 +218,17 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                       {house.max_guests} Gäste
                       {kalenderFehlt && (
                         <span className="text-amber-700 dark:text-amber-500">
-                          {" · keine Kalender-Verknüpfung"}
+                          {" · kein Kalender"}
+                        </span>
+                      )}
+                      {textFehlt && (
+                        <span className="text-amber-700 dark:text-amber-500">
+                          {" · keine Beschreibung"}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Drei klar getrennte Knoepfe: Bilder, Stammdaten, Preise */}
                   <Button
                     variant={istVorschau ? "default" : "outline"}
                     size="sm"
@@ -216,24 +238,9 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                     Bilder
                   </Button>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setBearbeitet({
-                        id: house.id,
-                        name: house.name,
-                        slug: house.slug,
-                        short_description: house.short_description,
-                        max_guests: house.max_guests,
-                        external_house_id: house.external_house_id,
-                        sort_order: house.sort_order,
-                      });
-                      setFormOpen(true);
-                    }}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => bearbeiten(house)}>
                     <Pencil className="h-4 w-4 mr-2" />
-                    Name &amp; Kalender
+                    Texte &amp; Kalender
                   </Button>
 
                   <HouseSettingsDialog
@@ -262,19 +269,14 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
           </div>
         )}
 
-        {/* Rettungsanker: Haeuser, die die Datenbank uns nicht mehr zeigt */}
         {wirklichVersteckt.length > 0 && (
           <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/40 dark:border-amber-800 px-4 py-3">
             <div className="flex items-start gap-2 mb-3">
               <EyeOff className="h-4 w-4 text-amber-700 dark:text-amber-500 shrink-0 mt-0.5" />
               <p className="text-xs leading-relaxed text-amber-900 dark:text-amber-200">
                 Diese Häuser sind ausgeschaltet und werden von der Datenbank nicht mehr
-                zurückgegeben — die Leserechte lassen nur aktive Häuser durch. Solange
-                diese Seite offen bleibt, kannst du sie hier wieder einschalten.
-                <strong className="font-semibold">
-                  {" "}
-                  Schließt du den Browser vorher, brauchst du dafür den SQL-Editor.
-                </strong>
+                zurückgegeben. Solange diese Seite offen bleibt, kannst du sie hier wieder
+                einschalten.
               </p>
             </div>
             <div className="space-y-2">
@@ -284,9 +286,6 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                   className="flex flex-wrap items-center gap-3 rounded-lg bg-background border px-3 py-2"
                 >
                   <span className="flex-grow text-sm font-medium">{v.name}</span>
-                  <span className="font-mono text-[10px] text-muted-foreground hidden sm:inline">
-                    {v.id}
-                  </span>
                   <Button
                     size="sm"
                     variant="outline"
@@ -306,8 +305,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-500 shrink-0 mt-0.5" />
             <p className="text-xs leading-relaxed text-amber-900 dark:text-amber-200">
               Ein freigeschaltetes Haus ohne Kalender-Verknüpfung zeigt Gästen einen
-              leeren Verfügbarkeitskalender — jeder Zeitraum wirkt frei. Die house_id
-              aus der Hausverwaltung unter „Name &amp; Kalender" nachtragen.
+              leeren Verfügbarkeitskalender — jeder Zeitraum wirkt frei.
             </p>
           </div>
         )}

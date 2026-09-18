@@ -5,21 +5,23 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 interface HeroProps {
-  /** Aktuell gewaehltes Haus. Ohne Angabe verhaelt sich der Hero wie bisher. */
+  /** Haus, dessen Titelbild gezeigt wird. Null = global markiertes Bild. */
   houseId?: string | null;
-  houseName?: string | null;
-  houseSubtitle?: string | null;
-  /** Erst ab zwei Haeusern wird der Hausname als Ueberschrift gezeigt. */
-  showHouseName?: boolean;
+  /** Ueberschrift. Ohne Angabe der Text aus den Uebersetzungen. */
+  title?: string | null;
+  subtitle?: string | null;
+  /** Ziel des Knopfes: "chalets" auf der Marken-Startseite, sonst "booking". */
+  scrollTarget?: string;
+  ctaLabel?: string | null;
 }
 
-const Hero = ({ houseId, houseName, houseSubtitle, showHouseName = false }: HeroProps) => {
+const Hero = ({ houseId, title, subtitle, scrollTarget = "booking", ctaLabel }: HeroProps) => {
   const { t } = useTranslation();
 
   // Hero-Bild je Haus. Reihenfolge der Versuche:
   // 1. als Hero markiertes Bild dieses Hauses
   // 2. erstes Galeriebild dieses Hauses
-  // 3. global als Hero markiertes Bild (alter Zustand, ein Haus)
+  // 3. global als Hero markiertes Bild
   const { data: heroImage, isLoading } = useQuery({
     queryKey: ['hero-image', houseId],
     queryFn: async () => {
@@ -52,15 +54,9 @@ const Hero = ({ houseId, houseName, houseSubtitle, showHouseName = false }: Hero
     },
   });
 
-  const scrollToBooking = () => {
-    const element = document.getElementById("booking");
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
-
-  const title = showHouseName && houseName ? houseName : t("hero.title");
-  const subtitle = showHouseName && houseSubtitle ? houseSubtitle : t("hero.subtitle");
 
   return (
     <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -84,7 +80,6 @@ const Hero = ({ houseId, houseName, houseSubtitle, showHouseName = false }: Hero
         )}
       </div>
 
-      {/* Small loader overlay */}
       {isLoading && (
         <div className="absolute top-20 right-6 z-20" aria-live="polite">
           <Loader2 className="h-5 w-5 animate-spin text-white/80" aria-label={t("hero.altImage")} />
@@ -94,26 +89,23 @@ const Hero = ({ houseId, houseName, houseSubtitle, showHouseName = false }: Hero
       {/* Content */}
       <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 animate-fade-in-up">
         <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 drop-shadow-2xl ${heroImage ? "text-white" : "text-foreground"}`}>
-          {title}
+          {title || t("hero.title")}
         </h1>
         <p className={`text-lg sm:text-xl md:text-2xl mb-8 md:mb-12 max-w-2xl mx-auto drop-shadow-lg ${heroImage ? "text-white/95" : "text-muted-foreground"}`}>
-          {subtitle}
+          {subtitle || t("hero.subtitle")}
         </p>
         <Button
-          onClick={scrollToBooking}
+          onClick={() => scrollTo(scrollTarget)}
           size="lg"
           className="bg-primary hover:bg-primary/90 text-primary-foreground text-base md:text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
         >
-          {t("hero.bookNow")}
+          {ctaLabel || t("hero.bookNow")}
         </Button>
       </div>
 
       {/* Scroll Indicator */}
       <button
-        onClick={() => {
-          const element = document.getElementById("about");
-          if (element) element.scrollIntoView({ behavior: "smooth" });
-        }}
+        onClick={() => scrollTo(scrollTarget)}
         aria-label="Zur nächsten Sektion scrollen"
         className={`absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform ${heroImage ? "text-white" : "text-foreground"}`}
       >

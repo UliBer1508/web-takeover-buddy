@@ -29,7 +29,10 @@ export interface HouseFormValues {
   id?: string;
   name: string;
   slug: string;
+  location: string | null;
   short_description: string | null;
+  description: string | null;
+  highlights: string[] | null;
   max_guests: number;
   external_house_id: string | null;
   sort_order: number;
@@ -40,14 +43,10 @@ interface HouseFormDialogProps {
   onOpenChange: (open: boolean) => void;
   /** Ohne Haus = neues Haus anlegen. */
   house?: HouseFormValues | null;
-  /** Vorschlag für die Reihenfolge beim Anlegen. */
   naechsteReihenfolge?: number;
-  /** Bekommt die id des neu angelegten Hauses. */
   onCreated?: (id: string, name: string) => void;
 }
 
-// Aus dem Namen einen Slug bauen: Kleinbuchstaben, Umlaute aufgelöst,
-// alles andere zu Bindestrichen.
 const slugAusName = (name: string) =>
   name
     .toLowerCase()
@@ -78,7 +77,10 @@ const HouseFormDialog = ({
       .trim()
       .min(2, "Kürzel ist zu kurz")
       .regex(/^[a-z0-9-]+$/, "Nur Kleinbuchstaben, Ziffern und Bindestriche"),
-    short_description: z.string().trim().max(300, "Höchstens 300 Zeichen").optional(),
+    location: z.string().trim().max(80, "Höchstens 80 Zeichen"),
+    short_description: z.string().trim().max(300, "Höchstens 300 Zeichen"),
+    description: z.string().trim().max(4000, "Höchstens 4000 Zeichen"),
+    highlights: z.string().trim().max(400, "Höchstens 400 Zeichen"),
     max_guests: z.coerce.number().min(1, "Mindestens 1").max(30, "Höchstens 30"),
     external_house_id: z
       .string()
@@ -89,28 +91,27 @@ const HouseFormDialog = ({
 
   type FormData = z.infer<typeof schema>;
 
+  const standard = (): FormData => ({
+    name: house?.name ?? "",
+    slug: house?.slug ?? "",
+    location: house?.location ?? "",
+    short_description: house?.short_description ?? "",
+    description: house?.description ?? "",
+    highlights: (house?.highlights ?? []).join(", "),
+    max_guests: house?.max_guests ?? 6,
+    external_house_id: house?.external_house_id ?? "",
+    sort_order: house?.sort_order ?? naechsteReihenfolge,
+  });
+
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      name: house?.name ?? "",
-      slug: house?.slug ?? "",
-      short_description: house?.short_description ?? "",
-      max_guests: house?.max_guests ?? 6,
-      external_house_id: house?.external_house_id ?? "",
-      sort_order: house?.sort_order ?? naechsteReihenfolge,
-    },
+    defaultValues: standard(),
   });
 
   useEffect(() => {
-    form.reset({
-      name: house?.name ?? "",
-      slug: house?.slug ?? "",
-      short_description: house?.short_description ?? "",
-      max_guests: house?.max_guests ?? 6,
-      external_house_id: house?.external_house_id ?? "",
-      sort_order: house?.sort_order ?? naechsteReihenfolge,
-    });
-  }, [house, naechsteReihenfolge, open, form]);
+    form.reset(standard());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [house, naechsteReihenfolge, open]);
 
   // Beim Anlegen das Kürzel aus dem Namen vorschlagen, solange es niemand
   // von Hand geändert hat.
@@ -119,15 +120,24 @@ const HouseFormDialog = ({
     if (!istNeu) return;
     if (form.formState.dirtyFields.slug) return;
     form.setValue("slug", slugAusName(nameWert || ""));
-  }, [nameWert, istNeu, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nameWert, istNeu]);
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
+      const merkmale = data.highlights
+        .split(",")
+        .map(m => m.trim())
+        .filter(Boolean);
+
       const werte = {
         name: data.name,
         slug: data.slug,
-        short_description: data.short_description?.trim() || null,
+        location: data.location || null,
+        short_description: data.short_description || null,
+        description: data.description || null,
+        highlights: merkmale.length > 0 ? merkmale : null,
         max_guests: data.max_guests,
         external_house_id: data.external_house_id.trim() || null,
         sort_order: data.sort_order,
@@ -157,22 +167,18 @@ const HouseFormDialog = ({
 
         if (error) throw error;
 
-        toast({
-          title: "Gespeichert",
-          description: `${werte.name} wurde aktualisiert.`,
-        });
+        toast({ title: "Gespeichert", description: `${werte.name} wurde aktualisiert.` });
       }
 
       queryClient.invalidateQueries({ queryKey: ["houses-all"] });
       queryClient.invalidateQueries({ queryKey: ["houses-active"] });
+      queryClient.invalidateQueries({ queryKey: ["chalet-cover"] });
       queryClient.invalidateQueries({ queryKey: ["availability"] });
       onOpenChange(false);
     } catch (error: any) {
       console.error("Haus speichern:", error);
       toast({
         title: "Konnte nicht gespeichert werden",
-        // Die echte Meldung der Datenbank zeigen — bei fehlenden Pflichtfeldern
-        // oder Rechteproblemen steht dort der Grund im Klartext.
         description: error?.message ?? "Unbekannter Fehler.",
         variant: "destructive",
       });
@@ -183,13 +189,13 @@ const HouseFormDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{istNeu ? "Haus anlegen" : "Haus bearbeiten"}</DialogTitle>
           <DialogDescription>
             {istNeu
               ? "Das Haus wird zunächst ausgeschaltet angelegt und ist für Gäste nicht sichtbar."
-              : "Name, Kürzel und Kalender-Verknüpfung. Preise und Gebühren stehen in den Einstellungen."}
+              : "Texte, Kürzel und Kalender-Verknüpfung. Preise und Gebühren stehen unter „Preise“."}
           </DialogDescription>
         </DialogHeader>
 
@@ -204,7 +210,7 @@ const HouseFormDialog = ({
                   <FormControl>
                     <Input placeholder="Wald Chalet" {...field} />
                   </FormControl>
-                  <FormDescription>So steht es im Umschalter und in der Überschrift.</FormDescription>
+                  <FormDescription>Überschrift der Karte und des Hausbereichs.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -212,14 +218,14 @@ const HouseFormDialog = ({
 
             <FormField
               control={form.control}
-              name="slug"
+              name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Kürzel</FormLabel>
+                  <FormLabel>Ort</FormLabel>
                   <FormControl>
-                    <Input placeholder="wald" {...field} />
+                    <Input placeholder="Wald im Pinzgau" {...field} />
                   </FormControl>
-                  <FormDescription>Nur Kleinbuchstaben, Ziffern und Bindestriche.</FormDescription>
+                  <FormDescription>Steht als Marke auf dem Kartenbild.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -234,24 +240,63 @@ const HouseFormDialog = ({
                   <FormControl>
                     <Textarea
                       rows={2}
-                      placeholder="Wald im Pinzgau · 6 Gäste · Sauna"
+                      placeholder="Zwei Sätze, die neugierig machen."
                       {...field}
-                      value={field.value ?? ""}
                     />
                   </FormControl>
-                  <FormDescription>Erscheint unter dem Namen im Titelbild.</FormDescription>
+                  <FormDescription>Erscheint auf der Karte in der Übersicht.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Beschreibung</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={6}
+                      placeholder="Ausführlicher Text über das Haus.&#10;&#10;Leerzeile = neuer Absatz."
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Ersetzt im Abschnitt „Über das Haus“ den allgemeinen Text. Eine
+                    Leerzeile beginnt einen neuen Absatz.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="highlights"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Merkmale</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Private Sauna, Kaminofen, Panoramaterrasse" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Mit Komma trennen. Die ersten drei stehen auf der Karte, alle im
+                    Abschnitt „Über das Haus“.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="max_guests"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Gäste maximal</FormLabel>
+                    <FormLabel>Gäste max.</FormLabel>
                     <FormControl>
                       <Input type="number" min={1} {...field} />
                     </FormControl>
@@ -268,7 +313,19 @@ const HouseFormDialog = ({
                     <FormControl>
                       <Input type="number" min={0} {...field} />
                     </FormControl>
-                    <FormDescription>Kleinere Zahl steht links.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Kürzel</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -38,9 +38,11 @@ const Navigation = () => {
   };
 
   // Links mit `id` scrollen zu einem Abschnitt der Startseite, Links mit `path`
-  // fuehren auf eine eigene Seite.
+  // fuehren auf eine eigene Seite. "Unsere Chalets" gibt es nur, wenn der
+  // Abschnitt existiert - bei einem Haus wird er nicht gerendert.
   const navLinks: { label: string; id?: string; path?: string }[] = [
     { label: t("navigation.home"), id: "hero" },
+    { label: t("navigation.chalets", "Unsere Chalets"), id: "chalets" },
     { label: t("navigation.about"), id: "about" },
     { label: t("navigation.features"), id: "features" },
     { label: t("navigation.gallery"), id: "galerie" },
@@ -50,7 +52,8 @@ const Navigation = () => {
   ];
 
   // Abschnitts-Links funktionieren nur auf der Startseite. Von einer Unterseite
-  // aus wird zuerst dorthin gewechselt.
+  // aus wird zuerst dorthin gewechselt. Fehlt der Abschnitt (etwa "chalets" bei
+  // nur einem Haus), wird zum Seitenanfang gescrollt statt ins Leere.
   const handleNavClick = (link: { id?: string; path?: string }) => {
     setIsMobileMenuOpen(false);
     if (link.path) {
@@ -61,6 +64,10 @@ const Navigation = () => {
     if (!link.id) return;
     if (window.location.pathname !== "/") {
       navigate("/#" + link.id);
+      return;
+    }
+    if (!document.getElementById(link.id)) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     scrollToSection(link.id);
@@ -83,11 +90,11 @@ const Navigation = () => {
                 isScrolled ? "text-foreground hover:text-primary" : "text-white hover:text-white/80"
               }`}
             >
-              Steinbock Chalet
+              Steinbock Chalets
             </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-6">
               {navLinks.map((link) => (
                 <button
                   key={link.id ?? link.path}
@@ -133,10 +140,11 @@ const Navigation = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="flex items-center gap-4 md:hidden">
+            <div className="flex items-center gap-4 lg:hidden">
               <LanguageSwitcher isScrolled={isScrolled} />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Menü öffnen"
                 className={`transition-colors ${isScrolled ? "text-foreground" : "text-white"}`}
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -148,8 +156,8 @@ const Navigation = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-background/98 backdrop-blur-lg md:hidden">
-          <div className="flex flex-col items-center justify-center h-full gap-8">
+        <div className="fixed inset-0 z-40 bg-background/98 backdrop-blur-lg lg:hidden overflow-y-auto">
+          <div className="flex flex-col items-center justify-center min-h-full gap-6 py-24">
             {navLinks.map((link) => (
               <button
                 key={link.id ?? link.path}
