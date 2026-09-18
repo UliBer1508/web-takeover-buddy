@@ -1,14 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2,
-  AlertTriangle,
-  Plus,
-  Pencil,
-  EyeOff,
-  Image as ImageIcon,
-  X,
-  Euro,
+  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -18,6 +11,7 @@ import { toast } from "@/hooks/use-toast";
 import { houseColor } from "@/lib/houseColors";
 import HouseSettingsDialog from "./HouseSettingsDialog";
 import HouseFormDialog, { HouseFormValues } from "./HouseFormDialog";
+import HouseFeaturesDialog from "./HouseFeaturesDialog";
 
 interface AdminHouse {
   id: string;
@@ -27,6 +21,9 @@ interface AdminHouse {
   short_description: string | null;
   description: string | null;
   highlights: string[] | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  square_meters: number | null;
   is_active: boolean;
   sort_order: number;
   max_guests: number;
@@ -44,38 +41,42 @@ interface AdminHouse {
 }
 
 interface AdminHousesPanelProps {
-  /** Haus, dessen Bilder gerade bearbeitet werden (auch wenn ausgeschaltet). */
   vorschauHausId?: string | null;
   onVorschau?: (houseId: string | null, name: string | null) => void;
 }
 
-/**
- * Nur fuer Admins sichtbar. Haeuser anlegen, Texte pflegen, Bilder zuordnen und
- * mit einem Schalter fuer Gaeste freischalten. Der Schalter steuert
- * houses.is_active - davon haengt ab, ob ein Haus in der Uebersicht, im
- * Umschalter, in der Galerie, im Kalender und im Formular erscheint.
- */
 const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps) => {
   const { isAdmin, loading } = useAdmin();
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [bearbeitet, setBearbeitet] = useState<HouseFormValues | null>(null);
-
-  // Haeuser, die wir angelegt oder ausgeschaltet haben und die danach aus der
-  // Liste verschwunden sind - falls die Leserechte nur aktive durchlassen.
-  const [verstecktGemerkt, setVerstecktGemerkt] = useState<
-    { id: string; name: string }[]
-  >([]);
+  const [kachelnFuer, setKachelnFuer] = useState<{ id: string; name: string } | null>(null);
+  const [verstecktGemerkt, setVerstecktGemerkt] = useState<{ id: string; name: string }[]>([]);
 
   const { data: houses = [], isLoading } = useQuery({
     queryKey: ["houses-all"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("houses")
-        .select("*")
-        .order("sort_order", { ascending: true });
+        .from("houses").select("*").order("sort_order", { ascending: true });
       if (error) throw error;
       return (data || []) as AdminHouse[];
+    },
+    enabled: isAdmin,
+  });
+
+  // Wie viele Kacheln je Haus hinterlegt sind — damit man sieht, wo noch
+  // die allgemeinen Texte greifen.
+  const { data: kachelZahl = {} } = useQuery({
+    queryKey: ["house-features-count"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("house_features").select("house_id, section");
+      if (error) throw error;
+      const zaehler: Record<string, { highlight: number; feature: number }> = {};
+      (data || []).forEach((z: any) => {
+        zaehler[z.house_id] = zaehler[z.house_id] || { highlight: 0, feature: 0 };
+        zaehler[z.house_id][z.section as "highlight" | "feature"]++;
+      });
+      return zaehler;
     },
     enabled: isAdmin,
   });
@@ -87,20 +88,13 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
 
   const toggleMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
-      const { error } = await supabase
-        .from("houses")
-        .update({ is_active: isActive })
-        .eq("id", id);
+      const { error } = await supabase.from("houses").update({ is_active: isActive }).eq("id", id);
       if (error) throw error;
       return { id, isActive };
     },
     onSuccess: ({ isActive }) => {
-      queryClient.invalidateQueries({ queryKey: ["houses-all"] });
-      queryClient.invalidateQueries({ queryKey: ["houses-active"] });
-      queryClient.invalidateQueries({ queryKey: ["gallery-images"] });
-      queryClient.invalidateQueries({ queryKey: ["hero-image"] });
-      queryClient.invalidateQueries({ queryKey: ["chalet-cover"] });
-      queryClient.invalidateQueries({ queryKey: ["availability"] });
+      ["houses-all", "houses-active", "gallery-images", "hero-image", "chalet-cover", "availability"]
+        .forEach(key => queryClient.invalidateQueries({ queryKey: [key] }));
       toast({
         title: isActive ? "Haus ist auf der Website sichtbar" : "Haus ist ausgeblendet",
         description: isActive
@@ -140,6 +134,9 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
       short_description: house.short_description,
       description: house.description,
       highlights: house.highlights,
+      bedrooms: house.bedrooms,
+      bathrooms: house.bathrooms,
+      square_meters: house.square_meters,
       max_guests: house.max_guests,
       external_house_id: house.external_house_id,
       sort_order: house.sort_order,
@@ -164,12 +161,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
               Nur für Admins sichtbar. {aktiveAnzahl} von {houses.length} freigeschaltet.
             </p>
           </div>
-          <Button
-            onClick={() => {
-              setBearbeitet(null);
-              setFormOpen(true);
-            }}
-          >
+          <Button onClick={() => { setBearbeitet(null); setFormOpen(true); }}>
             <Plus className="h-4 w-4 mr-2" />
             Haus anlegen
           </Button>
@@ -197,9 +189,15 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
         ) : (
           <div className="rounded-xl border bg-background divide-y">
             {houses.map((house, index) => {
-              const kalenderFehlt = !house.external_house_id;
-              const textFehlt = !house.description;
+              const zahlen = kachelZahl[house.id] || { highlight: 0, feature: 0 };
+              const fehlt: string[] = [];
+              if (!house.external_house_id) fehlt.push("kein Kalender");
+              if (!house.description) fehlt.push("keine Beschreibung");
+              if (!house.square_meters) fehlt.push("keine m²");
+              if (zahlen.highlight === 0) fehlt.push("keine Highlights");
+              if (zahlen.feature === 0) fehlt.push("keine Ausstattung");
               const istVorschau = house.id === vorschauHausId;
+
               return (
                 <div
                   key={house.id}
@@ -214,24 +212,17 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                     <div className="font-semibold">{house.name}</div>
                     <div className="text-xs text-muted-foreground mt-0.5">
                       {house.is_active ? "sichtbar und buchbar" : "ausgeblendet"}
-                      {" · "}
-                      {house.max_guests} Gäste
-                      {kalenderFehlt && (
+                      {" · "}{house.max_guests} Gäste
+                      {fehlt.length > 0 && (
                         <span className="text-amber-700 dark:text-amber-500">
-                          {" · kein Kalender"}
-                        </span>
-                      )}
-                      {textFehlt && (
-                        <span className="text-amber-700 dark:text-amber-500">
-                          {" · keine Beschreibung"}
+                          {" · "}{fehlt.join(" · ")}
                         </span>
                       )}
                     </div>
                   </div>
 
                   <Button
-                    variant={istVorschau ? "default" : "outline"}
-                    size="sm"
+                    variant={istVorschau ? "default" : "outline"} size="sm"
                     onClick={() => (istVorschau ? onVorschau?.(null, null) : bilderPflegen(house))}
                   >
                     <ImageIcon className="h-4 w-4 mr-2" />
@@ -240,7 +231,15 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
 
                   <Button variant="outline" size="sm" onClick={() => bearbeiten(house)}>
                     <Pencil className="h-4 w-4 mr-2" />
-                    Texte &amp; Kalender
+                    Texte &amp; Daten
+                  </Button>
+
+                  <Button
+                    variant="outline" size="sm"
+                    onClick={() => setKachelnFuer({ id: house.id, name: house.name })}
+                  >
+                    <LayoutGrid className="h-4 w-4 mr-2" />
+                    Ausstattung
                   </Button>
 
                   <HouseSettingsDialog
@@ -281,14 +280,10 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             </div>
             <div className="space-y-2">
               {wirklichVersteckt.map(v => (
-                <div
-                  key={v.id}
-                  className="flex flex-wrap items-center gap-3 rounded-lg bg-background border px-3 py-2"
-                >
+                <div key={v.id} className="flex flex-wrap items-center gap-3 rounded-lg bg-background border px-3 py-2">
                   <span className="flex-grow text-sm font-medium">{v.name}</span>
                   <Button
-                    size="sm"
-                    variant="outline"
+                    size="sm" variant="outline"
                     disabled={toggleMutation.isPending}
                     onClick={() => toggleMutation.mutate({ id: v.id, isActive: true })}
                   >
@@ -321,6 +316,13 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             prev.some(v => v.id === id) ? prev : [...prev, { id, name }]
           )
         }
+      />
+
+      <HouseFeaturesDialog
+        open={!!kachelnFuer}
+        onOpenChange={offen => !offen && setKachelnFuer(null)}
+        houseId={kachelnFuer?.id ?? null}
+        houseName={kachelnFuer?.name ?? ""}
       />
     </section>
   );

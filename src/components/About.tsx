@@ -1,6 +1,8 @@
-import { Mountain, Sparkles, Snowflake, Heart, Check } from "lucide-react";
+import { Mountain, Sparkles, Snowflake, Heart } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SelectableHouse } from "@/hooks/useHouseSelection";
+import { useHouseFeatures } from "@/hooks/useHouseFeatures";
+import { featureIcon } from "@/lib/featureIcons";
 
 interface AboutProps {
   /** Aktuell gewaehltes Haus. Ohne Angabe bleiben die festen Texte stehen. */
@@ -9,28 +11,14 @@ interface AboutProps {
 
 const About = ({ house }: AboutProps) => {
   const { t } = useTranslation();
+  const { highlights } = useHouseFeatures(house?.id);
 
-  const highlights = [
-    {
-      icon: Mountain,
-      titleKey: "about.highlights.mountain.title",
-      descriptionKey: "about.highlights.mountain.description",
-    },
-    {
-      icon: Sparkles,
-      titleKey: "about.highlights.luxury.title",
-      descriptionKey: "about.highlights.luxury.description",
-    },
-    {
-      icon: Snowflake,
-      titleKey: "about.highlights.wellness.title",
-      descriptionKey: "about.highlights.wellness.description",
-    },
-    {
-      icon: Heart,
-      titleKey: "about.highlights.comfort.title",
-      descriptionKey: "about.highlights.comfort.description",
-    },
+  // Allgemeine Kacheln als Rueckfall, solange ein Haus keine eigenen hat.
+  const allgemein = [
+    { icon: Mountain,  titleKey: "about.highlights.mountain.title",  descriptionKey: "about.highlights.mountain.description" },
+    { icon: Sparkles,  titleKey: "about.highlights.luxury.title",    descriptionKey: "about.highlights.luxury.description" },
+    { icon: Snowflake, titleKey: "about.highlights.wellness.title",  descriptionKey: "about.highlights.wellness.description" },
+    { icon: Heart,     titleKey: "about.highlights.comfort.title",   descriptionKey: "about.highlights.comfort.description" },
   ];
 
   // Beschreibung des Hauses in Absaetze zerlegen. Leerzeile = neuer Absatz.
@@ -38,9 +26,6 @@ const About = ({ house }: AboutProps) => {
     .split(/\n\s*\n/)
     .map(a => a.trim())
     .filter(Boolean);
-
-  const hatEigenenText = absaetze.length > 0;
-  const eigeneMerkmale = house?.highlights || [];
 
   return (
     <section id="about" className="py-16 md:py-24 bg-background">
@@ -57,7 +42,7 @@ const About = ({ house }: AboutProps) => {
             {house ? house.name : t("about.title")}
           </h2>
 
-          {hatEigenenText ? (
+          {absaetze.length > 0 ? (
             absaetze.map((absatz, i) => (
               <p key={i} className="text-base md:text-lg text-muted-foreground leading-relaxed">
                 {absatz}
@@ -74,39 +59,39 @@ const About = ({ house }: AboutProps) => {
             </>
           )}
 
-          {/* Merkmale: eigene des Hauses, sonst die allgemeinen vier Kacheln */}
-          {eigeneMerkmale.length > 0 ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-8">
-              {eigeneMerkmale.map(merkmal => (
-                <div
-                  key={merkmal}
-                  className="flex items-center justify-center gap-3 p-5 rounded-lg bg-secondary/50"
-                >
-                  <Check className="w-5 h-5 text-primary shrink-0" />
-                  <span className="font-medium text-foreground text-left">{merkmal}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-8">
-              {highlights.map((highlight, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col items-center gap-3 p-6 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
-                >
-                  <highlight.icon className="w-8 h-8 text-primary" />
-                  <div className="text-center">
-                    <h3 className="font-semibold text-foreground mb-1">
-                      {t(highlight.titleKey)}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {t(highlight.descriptionKey)}
-                    </p>
+          {/* Highlight-Kacheln: eigene des Hauses, sonst die allgemeinen */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-8">
+            {highlights.length > 0
+              ? highlights.map(eintrag => {
+                  const Symbol = featureIcon(eintrag.icon);
+                  return (
+                    <div
+                      key={eintrag.id}
+                      className="flex flex-col items-center gap-3 p-6 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
+                    >
+                      <Symbol className="w-8 h-8 text-primary" />
+                      <div className="text-center">
+                        <h3 className="font-semibold text-foreground mb-1">{eintrag.title}</h3>
+                        {eintrag.description && (
+                          <p className="text-sm text-muted-foreground">{eintrag.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              : allgemein.map((eintrag, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-center gap-3 p-6 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
+                  >
+                    <eintrag.icon className="w-8 h-8 text-primary" />
+                    <div className="text-center">
+                      <h3 className="font-semibold text-foreground mb-1">{t(eintrag.titleKey)}</h3>
+                      <p className="text-sm text-muted-foreground">{t(eintrag.descriptionKey)}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+          </div>
 
         </div>
       </div>
