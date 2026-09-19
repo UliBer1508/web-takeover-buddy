@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 const HouseSettingsDialog = lazy(() => import("@/components/HouseSettingsDialog"));
 
 import PromotionBanner from "@/components/PromotionBanner";
+import ExternalBookingInfo from "@/components/ExternalBookingInfo";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
 import { useAdmin } from "@/hooks/useAdmin";
@@ -214,6 +215,7 @@ interface House {
   name: string;
   max_guests: number;
   is_active?: boolean;
+  direct_booking?: boolean;
   min_nights?: number | null;
   check_in_time?: string | null;
   check_out_time?: string | null;
@@ -438,6 +440,27 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
     wert != null && wert > 0
       ? `${t('booking.from')} ${wert}€ ${t('booking.perNight')}`
       : "auf Anfrage";
+
+  // Nicht direkt buchbar (z. B. Vermietung ueber Belvilla): statt Formular und
+  // Preisen der Hinweis aus house_booking_info. Der Kalender bleibt sichtbar.
+  const direktBuchbar = selectedHouse?.direct_booking !== false;
+
+  if (selectedHouse && !direktBuchbar) {
+    return (
+      <section id="booking" className="py-16 md:py-24 bg-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12 animate-fade-in">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                {t('booking.title')}
+              </h2>
+            </div>
+            <ExternalBookingInfo houseId={selectedHouse.id} houseName={selectedHouse.name} />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="booking" className="py-16 md:py-24 bg-background">

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2,
+  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import HouseSettingsDialog from "./HouseSettingsDialog";
 import HouseFormDialog, { HouseFormValues } from "./HouseFormDialog";
 import HouseFeaturesDialog from "./HouseFeaturesDialog";
 import HouseDirectionsDialog from "./HouseDirectionsDialog";
+import HouseBookingInfoDialog from "./HouseBookingInfoDialog";
 
 interface AdminHouse {
   id: string;
@@ -26,6 +27,7 @@ interface AdminHouse {
   bathrooms: number | null;
   square_meters: number | null;
   is_active: boolean;
+  direct_booking: boolean;
   sort_order: number;
   max_guests: number;
   external_house_id: string | null;
@@ -53,6 +55,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
   const [bearbeitet, setBearbeitet] = useState<HouseFormValues | null>(null);
   const [kachelnFuer, setKachelnFuer] = useState<{ id: string; name: string } | null>(null);
   const [anfahrtFuer, setAnfahrtFuer] = useState<{ id: string; name: string } | null>(null);
+  const [vermietungFuer, setVermietungFuer] = useState<{ id: string; name: string; direkt: boolean } | null>(null);
 
   // Link, den Uli Gaesten nach der Buchung schickt (Booking, Airbnb, Belvilla).
   const gaesteLinkKopieren = async (house: AdminHouse) => {
@@ -224,7 +227,11 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                   <div className="flex-grow min-w-[10rem]">
                     <div className="font-semibold">{house.name}</div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      {house.is_active ? "sichtbar und buchbar" : "ausgeblendet"}
+                      {!house.is_active
+                        ? "ausgeblendet"
+                        : house.direct_booking === false
+                          ? "sichtbar · nicht direkt buchbar (Plattform)"
+                          : "sichtbar und buchbar"}
                       {" · "}{house.max_guests} Gäste
                       {fehlt.length > 0 && (
                         <span className="text-amber-700 dark:text-amber-500">
@@ -261,6 +268,14 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                   >
                     <MapPin className="h-4 w-4 mr-2" />
                     Anfahrt
+                  </Button>
+
+                  <Button
+                    variant="outline" size="sm"
+                    onClick={() => setVermietungFuer({ id: house.id, name: house.name, direkt: house.direct_booking !== false })}
+                  >
+                    <Store className="h-4 w-4 mr-2" />
+                    Vermietung
                   </Button>
 
                   <Button
@@ -346,6 +361,14 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             prev.some(v => v.id === id) ? prev : [...prev, { id, name }]
           )
         }
+      />
+
+      <HouseBookingInfoDialog
+        open={!!vermietungFuer}
+        onOpenChange={offen => !offen && setVermietungFuer(null)}
+        houseId={vermietungFuer?.id ?? null}
+        houseName={vermietungFuer?.name ?? ""}
+        directBooking={vermietungFuer?.direkt ?? true}
       />
 
       <HouseDirectionsDialog
