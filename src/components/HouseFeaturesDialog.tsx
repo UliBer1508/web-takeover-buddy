@@ -149,8 +149,7 @@ const HouseFeaturesDialog = ({ open, onOpenChange, houseId, houseName }: HouseFe
 
         {liste.length === 0 ? (
           <p className="text-sm text-muted-foreground border rounded-lg px-3 py-4">
-            Noch nichts eingetragen — solange hier nichts steht, zeigt die Website die
-            allgemeinen Texte.
+            Noch nichts eingetragen — die Website zeigt hier für dieses Haus nichts an.
           </p>
         ) : (
           <div className="space-y-2">
@@ -230,6 +229,7 @@ const HouseFeaturesDialog = ({ open, onOpenChange, houseId, houseName }: HouseFe
             eigenen Angaben.
           </DialogDescription>
         </DialogHeader>
+
 
         {laedt ? (
           <div className="flex items-center gap-2 text-muted-foreground py-10 justify-center">
