@@ -7,7 +7,10 @@
     "booking": "Buchen",
     "contact": "Kontakt",
     "bookNow": "Jetzt Buchen",
-    "directions": "Anfahrt"
+    "directions": "Anfahrt",
+    "chalets": "Unsere Chalets",
+    "openMenu": "Menü öffnen",
+    "chooseHouse": "Haus auswählen"
   },
   "directions": {
     "title": "Anfahrt",
@@ -50,7 +53,9 @@
     "title": "Steinbock Chalet",
     "subtitle": "Luxuriöser Alpen-Rückzugsort mit atemberaubendem Bergpanorama",
     "bookNow": "Jetzt Buchen",
-    "altImage": "Steinbock Chalet in den Alpen"
+    "altImage": "Steinbock Chalet in den Alpen",
+    "brandSubtitle": "Zwei Ferienhäuser im Oberpinzgau — Neukirchen am Großvenediger und Wald im Pinzgau",
+    "scrollNext": "Zur nächsten Sektion scrollen"
   },
   "about": {
     "title": "Willkommen im Steinbock Chalet",
@@ -109,7 +114,7 @@
     "bedrooms": "Schlafzimmer",
     "guests": "Gäste",
     "squareMeters": "Quadratmeter",
-    "rating": "Booking Bewertung"
+    "rating": "Gästebewertung"
   },
   "testimonials": {
     "title": "Gästebewertungen",
@@ -190,7 +195,8 @@
     "minStay": "Mindestaufenthalt nicht erfüllt",
     "minStayDesc": "Bitte wählen Sie mindestens 4 Nächte",
     "notAvailable": "Zeitraum nicht verfügbar",
-    "notAvailableDesc": "Der gewählte Zeitraum enthält bereits belegte Tage"
+    "notAvailableDesc": "Der gewählte Zeitraum enthält bereits belegte Tage",
+    "selectedHouse": "ausgewählt"
   },
   "booking": {
     "title": "Buchungsanfrage",
@@ -265,8 +271,23 @@
       "maxGuests": "Maximale Gästezahl ist 6 (Erwachsene + Kinder)",
       "checkOutAfterIn": "Abreisedatum muss nach dem Anreisedatum liegen",
       "checkInFuture": "Anreisedatum muss heute oder in der Zukunft liegen",
-      "messageTooLong": "Nachricht zu lang"
-    }
+      "messageTooLong": "Nachricht zu lang",
+      "nameShort": "Name muss mindestens 2 Zeichen lang sein",
+      "nameLong": "Name zu lang",
+      "email": "Ungültige E-Mail-Adresse",
+      "emailLong": "E-Mail zu lang",
+      "phone": "Bitte geben Sie eine gültige Telefonnummer ein",
+      "phoneLong": "Telefonnummer zu lang",
+      "checkIn": "Check-in Datum erforderlich",
+      "checkOut": "Check-out Datum erforderlich",
+      "adults": "Mindestens 1 Erwachsener erforderlich",
+      "children": "Anzahl Kinder muss zwischen 0 und {{max}} liegen",
+      "messageLong": "Nachricht zu lang",
+      "checkOutAfter": "Abreisedatum muss nach dem Anreisedatum liegen"
+    },
+    "onRequest": "auf Anfrage",
+    "noHouse": "Kein Haus ausgewählt.",
+    "savedFallback": "Ihre Anfrage wurde gespeichert. Falls Sie innerhalb von 24 Stunden keine Antwort erhalten, kontaktieren Sie uns bitte zusätzlich per E-Mail an steinbockchalets@gmail.com."
   },
   "footer": {
     "contact": "Kontakt",
@@ -503,7 +524,8 @@
     "deleteConfirm": "Aktion löschen?",
     "deleteConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
     "appliedDiscount": "Rabatt",
-    "originalPrice": "Originalpreis"
+    "originalPrice": "Originalpreis",
+    "edit": "Aktion bearbeiten"
   },
   "infoGallery": {
     "title": "Info-Galerie",
@@ -586,5 +608,22 @@
       "jurisdictionText": "Es gilt österreichisches Recht. Gerichtsstand ist das sachlich zuständige Gericht in Österreich."
     },
     "backHome": "← Zurück zur Startseite"
+  },
+  "chalets": {
+    "title": "Unsere Chalets",
+    "subtitle": "Wählen Sie Ihr Haus — Bilder, Verfügbarkeit und Preise je Chalet",
+    "from": "ab",
+    "night": "Nacht",
+    "guests": "Gäste",
+    "noImage": "Noch keine Bilder",
+    "view": "Chalet ansehen"
+  },
+  "pwa": {
+    "title": "App installieren",
+    "bodyAndroid": "Steinbock Chalets als App installieren – schneller Zugriff vom Homescreen.",
+    "bodyIos": "Tippe auf Teilen und „Zum Home-Bildschirm“, um die App zu installieren.",
+    "install": "Installieren",
+    "later": "Später",
+    "dismiss": "Schließen"
   }
 }
