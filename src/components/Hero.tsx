@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 interface HeroProps {
@@ -64,6 +64,8 @@ const Hero = ({
         .maybeSingle();
       return globalHero?.url || null;
     },
+    // Beim Hauswechsel bleibt das alte Bild stehen, bis das neue da ist (kein Aufblitzen).
+    placeholderData: keepPreviousData,
   });
 
   const scrollTo = (id: string) => {

@@ -7,6 +7,8 @@ import { useSprache, lokal, lokalListe } from "@/lib/sprache";
 
 interface ChaletCardsProps {
   houses: SelectableHouse[];
+  /** Gewähltes Haus - dessen Karte wird hervorgehoben. */
+  selectedHouseId?: string | null;
   onSelectHouse: (houseId: string) => void;
   /**
    * "overlay" = kompakt am unteren Rand des Titelbilds, ohne Scrollen sichtbar.
@@ -39,7 +41,7 @@ const useCoverBilder = (houseIds: string[]) =>
     enabled: houseIds.length > 0,
   });
 
-const ChaletCards = ({ houses, onSelectHouse, variant = "overlay" }: ChaletCardsProps) => {
+const ChaletCards = ({ houses, selectedHouseId, onSelectHouse, variant = "overlay" }: ChaletCardsProps) => {
   const { t } = useTranslation();
   const sprache = useSprache();
   const houseIds = houses.map(h => h.id);
@@ -56,12 +58,17 @@ const ChaletCards = ({ houses, onSelectHouse, variant = "overlay" }: ChaletCards
           {houses.map(haus => {
             const bild = bilder[haus.id];
             const preis = abPreis(haus);
+            const gewaehlt = haus.id === selectedHouseId;
             return (
               <button
                 key={haus.id}
                 type="button"
+                aria-pressed={gewaehlt}
                 onClick={() => onSelectHouse(haus.id)}
-                className="group flex items-center gap-3 md:gap-4 p-2.5 md:p-3 rounded-2xl text-left bg-background/92 hover:bg-background backdrop-blur-md border border-white/25 shadow-xl transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                className={`group flex items-center gap-3 md:gap-4 p-2.5 md:p-3 rounded-2xl text-left bg-background/92 hover:bg-background backdrop-blur-md shadow-xl transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
+                  gewaehlt ? "border-2" : "border border-white/25"
+                }`}
+                style={gewaehlt ? { borderColor: haus.color } : undefined}
               >
                 {/* Bild */}
                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-secondary shrink-0">
