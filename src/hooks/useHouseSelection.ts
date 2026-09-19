@@ -20,14 +20,18 @@ export interface SelectableHouse {
   price_offseason: number | null;
   min_nights: number | null;
   is_active: boolean;
+  /** false = wird ueber eine Plattform vermietet (z. B. Belvilla): keine Preise, kein Anfrageformular. */
+  direct_booking: boolean;
   sort_order: number;
   external_house_id: string | null;
   /** Aus sort_order abgeleitet, nicht aus der Datenbank. */
   color: string;
 }
 
-/** Niedrigster hinterlegter Saisonpreis, fuer "ab X € / Nacht". */
+/** Niedrigster hinterlegter Saisonpreis, fuer "ab X € / Nacht".
+ *  Nicht direkt buchbare Haeuser zeigen keinen Preis. */
 export const abPreis = (haus: SelectableHouse): number | null => {
+  if (haus.direct_booking === false) return null;
   const preise = [haus.price_winter, haus.price_summer, haus.price_offseason]
     .filter((p): p is number => typeof p === 'number' && p > 0);
   return preise.length > 0 ? Math.min(...preise) : null;
@@ -41,7 +45,7 @@ export const useHouseSelection = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('houses')
-        .select('id, name, slug, description, short_description, location, highlights, bedrooms, bathrooms, square_meters, max_guests, price_winter, price_summer, price_offseason, min_nights, is_active, sort_order, external_house_id')
+        .select('id, name, slug, description, short_description, location, highlights, bedrooms, bathrooms, square_meters, max_guests, price_winter, price_summer, price_offseason, min_nights, is_active, direct_booking, sort_order, external_house_id')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
