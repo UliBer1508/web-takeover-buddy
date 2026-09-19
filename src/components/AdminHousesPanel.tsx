@@ -21,8 +21,11 @@ interface AdminHouse {
   slug: string;
   location: string | null;
   short_description: string | null;
+  short_description_en: string | null;
   description: string | null;
+  description_en: string | null;
   highlights: string[] | null;
+  highlights_en: string[] | null;
   bedrooms: number | null;
   bathrooms: number | null;
   square_meters: number | null;
@@ -148,8 +151,11 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
       slug: house.slug,
       location: house.location,
       short_description: house.short_description,
+      short_description_en: house.short_description_en,
       description: house.description,
+      description_en: house.description_en,
       highlights: house.highlights,
+      highlights_en: house.highlights_en,
       bedrooms: house.bedrooms,
       bathrooms: house.bathrooms,
       square_meters: house.square_meters,

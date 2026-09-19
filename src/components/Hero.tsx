@@ -133,7 +133,7 @@ const Hero = ({
       {!bottomSlot && (
         <button
           onClick={() => scrollTo(scrollTarget)}
-          aria-label="Zur nächsten Sektion scrollen"
+          aria-label={t("hero.scrollNext")}
           className={`absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform ${heroImage ? "text-white" : "text-foreground"}`}
         >
           <ChevronDown size={32} />

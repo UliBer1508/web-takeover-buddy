@@ -167,29 +167,29 @@ const getSeasonLabel = (season: Season, t: TFunction): string => {
  * hier fest 6 hinterlegt - beim Venedigersiedlung Chalet mit 10 Gaesten liessen
  * sich also gar nicht alle Plaetze anfragen.
  */
-const makeBookingSchema = (maxGuests: number) =>
+const makeBookingSchema = (maxGuests: number, t: TFunction) =>
   z.object({
-    name: z.string().min(2, "Name muss mindestens 2 Zeichen lang sein").max(100, "Name zu lang"),
-    email: z.string().email("Ungültige E-Mail-Adresse").max(255, "E-Mail zu lang"),
-    phone: z.string().min(10, "Bitte geben Sie eine gültige Telefonnummer ein").max(20, "Telefonnummer zu lang"),
-    checkIn: z.string().min(1, "Check-in Datum erforderlich"),
-    checkOut: z.string().min(1, "Check-out Datum erforderlich"),
+    name: z.string().min(2, t("booking.validation.nameShort")).max(100, t("booking.validation.nameLong")),
+    email: z.string().email(t("booking.validation.email")).max(255, t("booking.validation.emailLong")),
+    phone: z.string().min(10, t("booking.validation.phone")).max(20, t("booking.validation.phoneLong")),
+    checkIn: z.string().min(1, t("booking.validation.checkIn")),
+    checkOut: z.string().min(1, t("booking.validation.checkOut")),
     adults: z.string().refine(val => {
       const num = parseInt(val);
       return num >= 1 && num <= maxGuests;
-    }, "Mindestens 1 Erwachsener erforderlich"),
+    }, t("booking.validation.adults")),
     children: z.string().refine(val => {
       const num = parseInt(val);
       return num >= 0 && num < maxGuests;
-    }, `Anzahl Kinder muss zwischen 0 und ${maxGuests - 1} liegen`),
-    message: z.string().max(1000, "Nachricht zu lang").optional()
+    }, t("booking.validation.children", { max: maxGuests - 1 })),
+    message: z.string().max(1000, t("booking.validation.messageLong")).optional()
   })
     .refine(data => parseInt(data.adults) + parseInt(data.children) <= maxGuests, {
-      message: `Maximale Gästezahl ist ${maxGuests} (Erwachsene + Kinder)`,
+      message: t("booking.validation.maxGuests", { max: maxGuests }),
       path: ["children"]
     })
     .refine(data => new Date(data.checkOut) > new Date(data.checkIn), {
-      message: "Abreisedatum muss nach dem Anreisedatum liegen",
+      message: t("booking.validation.checkOutAfter"),
       path: ["checkOut"]
     })
     .refine(data => {
@@ -198,7 +198,7 @@ const makeBookingSchema = (maxGuests: number) =>
       today.setHours(0, 0, 0, 0);
       return checkIn >= today;
     }, {
-      message: "Anreisedatum muss heute oder in der Zukunft liegen",
+      message: t("booking.validation.checkInFuture"),
       path: ["checkIn"]
     });
 
@@ -294,7 +294,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
     enabled: !!selectedHouse,
   });
 
-  const schema = useMemo(() => makeBookingSchema(maxGuests), [maxGuests]);
+  const schema = useMemo(() => makeBookingSchema(maxGuests, t), [maxGuests, t]);
 
   const form = useForm<BookingFormData>({
     resolver: zodResolver(schema),
@@ -344,7 +344,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
       return;
     }
     if (!selectedHouse) {
-      toast({ title: t('common.error'), description: "Kein Haus ausgewählt.", variant: "destructive" });
+      toast({ title: t('common.error'), description: t("booking.noHouse"), variant: "destructive" });
       return;
     }
 
@@ -418,7 +418,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
       toast({
         title: t('booking.successTitle'),
         description: externalErrorOccurred
-          ? "Ihre Anfrage wurde gespeichert. Falls Sie innerhalb von 24 Stunden keine Antwort erhalten, kontaktieren Sie uns bitte zusätzlich per E-Mail an steinbockchalets@gmail.com."
+          ? t('booking.savedFallback')
           : t('booking.successDesc')
       });
 
@@ -439,7 +439,7 @@ const BookingForm = ({ initialCheckIn, initialCheckOut, defaultHouseId }: Bookin
   const preisZeile = (wert: number | null | undefined) =>
     wert != null && wert > 0
       ? `${t('booking.from')} ${wert}€ ${t('booking.perNight')}`
-      : "auf Anfrage";
+      : t('booking.onRequest');
 
   // Nicht direkt buchbar (z. B. Vermietung ueber Belvilla): statt Formular und
   // Preisen der Hinweis aus house_booking_info. Der Kalender bleibt sichtbar.

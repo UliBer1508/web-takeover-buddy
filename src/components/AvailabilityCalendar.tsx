@@ -626,7 +626,7 @@ export const AvailabilityCalendar = ({
                           }`}
                         >
                           {house.name}
-                          {house.id === selectedHouse?.id && " (ausgewählt)"}
+                          {house.id === selectedHouse?.id && ` (${t("calendar.selectedHouse")})`}
                         </span>
                       </div>
                     ))}

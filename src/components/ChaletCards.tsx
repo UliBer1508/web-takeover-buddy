@@ -3,6 +3,7 @@ import { Users, ArrowRight, Image as ImageIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { SelectableHouse, abPreis } from "@/hooks/useHouseSelection";
+import { useSprache, lokal, lokalListe } from "@/lib/sprache";
 
 interface ChaletCardsProps {
   houses: SelectableHouse[];
@@ -40,6 +41,7 @@ const useCoverBilder = (houseIds: string[]) =>
 
 const ChaletCards = ({ houses, onSelectHouse, variant = "overlay" }: ChaletCardsProps) => {
   const { t } = useTranslation();
+  const sprache = useSprache();
   const houseIds = houses.map(h => h.id);
   const { data: bilder = {} } = useCoverBilder(houseIds);
 
@@ -172,9 +174,9 @@ const ChaletCards = ({ houses, onSelectHouse, variant = "overlay" }: ChaletCards
                     )}
                   </div>
 
-                  {haus.short_description && (
+                  {lokal(haus.short_description, haus.short_description_en, sprache) && (
                     <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4">
-                      {haus.short_description}
+                      {lokal(haus.short_description, haus.short_description_en, sprache)}
                     </p>
                   )}
 
@@ -183,7 +185,7 @@ const ChaletCards = ({ houses, onSelectHouse, variant = "overlay" }: ChaletCards
                       <Users className="h-3.5 w-3.5" />
                       {haus.max_guests} {t('chalets.guests', 'Gäste')}
                     </span>
-                    {(haus.highlights || []).slice(0, 3).map(merkmal => (
+                    {lokalListe(haus.highlights, haus.highlights_en, sprache).slice(0, 3).map(merkmal => (
                       <span
                         key={merkmal}
                         className="text-xs px-2.5 py-1.5 rounded-md bg-secondary text-secondary-foreground"

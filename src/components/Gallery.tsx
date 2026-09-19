@@ -598,7 +598,7 @@ const Gallery = ({ houseId, initialView = "photos" }: GalleryProps) => {
                   className="max-w-full max-h-[80vh] object-contain rounded-lg"
                 />
                 <div className="text-white text-center mt-4">
-                  <p className="text-sm text-accent">{filteredImages[selectedImageIndex].category?.display_name || 'Keine Kategorie'}</p>
+                  <p className="text-sm text-accent">{filteredImages[selectedImageIndex].category ? getCategoryName(filteredImages[selectedImageIndex].category!) : t('gallery.noCategory')}</p>
                   <p className="text-xl font-semibold">{filteredImages[selectedImageIndex].title}</p>
                   <p className="text-sm text-muted-foreground mt-2">
                     {selectedImageIndex + 1} / {filteredImages.length}

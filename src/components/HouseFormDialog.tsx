@@ -21,8 +21,11 @@ export interface HouseFormValues {
   slug: string;
   location: string | null;
   short_description: string | null;
+  short_description_en?: string | null;
   description: string | null;
+  description_en?: string | null;
   highlights: string[] | null;
+  highlights_en?: string[] | null;
   bedrooms: number | null;
   bathrooms: number | null;
   square_meters: number | null;
@@ -77,6 +80,9 @@ const HouseFormDialog = ({
     short_description: z.string().trim().max(300, "Höchstens 300 Zeichen"),
     description: z.string().trim().max(4000, "Höchstens 4000 Zeichen"),
     highlights: z.string().trim().max(400, "Höchstens 400 Zeichen"),
+    short_description_en: z.string().trim().max(300, "Höchstens 300 Zeichen"),
+    description_en: z.string().trim().max(4000, "Höchstens 4000 Zeichen"),
+    highlights_en: z.string().trim().max(400, "Höchstens 400 Zeichen"),
     bedrooms: zahlFeld(20),
     bathrooms: zahlFeld(20),
     square_meters: zahlFeld(2000),
@@ -95,6 +101,9 @@ const HouseFormDialog = ({
     short_description: house?.short_description ?? "",
     description: house?.description ?? "",
     highlights: (house?.highlights ?? []).join(", "),
+    short_description_en: house?.short_description_en ?? "",
+    description_en: house?.description_en ?? "",
+    highlights_en: (house?.highlights_en ?? []).join(", "),
     bedrooms: house?.bedrooms != null ? String(house.bedrooms) : "",
     bathrooms: house?.bathrooms != null ? String(house.bathrooms) : "",
     square_meters: house?.square_meters != null ? String(house.square_meters) : "",
@@ -122,6 +131,7 @@ const HouseFormDialog = ({
     setIsSubmitting(true);
     try {
       const merkmale = data.highlights.split(",").map(m => m.trim()).filter(Boolean);
+      const merkmaleEn = data.highlights_en.split(",").map(m => m.trim()).filter(Boolean);
 
       const werte = {
         name: data.name,
@@ -130,6 +140,9 @@ const HouseFormDialog = ({
         short_description: data.short_description || null,
         description: data.description || null,
         highlights: merkmale.length > 0 ? merkmale : null,
+        short_description_en: data.short_description_en || null,
+        description_en: data.description_en || null,
+        highlights_en: merkmaleEn.length > 0 ? merkmaleEn : null,
         bedrooms: zahlOderNull(data.bedrooms),
         bathrooms: zahlOderNull(data.bathrooms),
         square_meters: zahlOderNull(data.square_meters),
@@ -234,6 +247,34 @@ const HouseFormDialog = ({
                 <FormMessage />
               </FormItem>
             )} />
+
+            {/* Englische Fassung - leer = die englische Seite zeigt den deutschen Text */}
+            <div className="rounded-lg border p-3 space-y-4 bg-muted/30">
+              <p className="text-sm font-semibold">Englisch</p>
+              <FormField control={form.control} name="short_description_en" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Kurztext (Englisch)</FormLabel>
+                  <FormControl><Textarea rows={2} {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="description_en" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Beschreibung (Englisch)</FormLabel>
+                  <FormControl><Textarea rows={6} {...field} /></FormControl>
+                  <FormDescription>Leerzeile = neuer Absatz. Leer = die englische Seite zeigt den deutschen Text.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="highlights_en" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Merkmale für die Karte (Englisch)</FormLabel>
+                  <FormControl><Input placeholder="Private sauna, Wood-burning stove, Panoramic terrace" {...field} /></FormControl>
+                  <FormDescription>Mit Komma trennen, gleiche Reihenfolge wie auf Deutsch.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
 
             {/* Kennzahlen für die farbige Leiste */}
             <div className="grid grid-cols-4 gap-3">

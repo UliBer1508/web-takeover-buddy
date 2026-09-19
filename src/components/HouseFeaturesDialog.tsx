@@ -19,6 +19,8 @@ interface Zeile {
   icon: string;
   title: string;
   description: string;
+  title_en: string;
+  description_en: string;
 }
 
 interface HouseFeaturesDialogProps {
@@ -28,7 +30,7 @@ interface HouseFeaturesDialogProps {
   houseName: string;
 }
 
-const leer = (): Zeile => ({ icon: "sparkles", title: "", description: "" });
+const leer = (): Zeile => ({ icon: "sparkles", title: "", description: "", title_en: "", description_en: "" });
 
 /**
  * Die vier Kacheln unter der Hausbeschreibung ("Highlights") und die Karten im
@@ -58,7 +60,10 @@ const HouseFeaturesDialog = ({ open, onOpenChange, houseId, houseName }: HouseFe
           const zu = (s: FeatureSection): Zeile[] =>
             zeilen
               .filter(z => z.section === s)
-              .map(z => ({ icon: z.icon, title: z.title, description: z.description ?? "" }));
+              .map(z => ({
+                icon: z.icon, title: z.title, description: z.description ?? "",
+                title_en: z.title_en ?? "", description_en: z.description_en ?? "",
+              }));
           setHighlights(zu("highlight"));
           setFeatures(zu("feature"));
         }
@@ -85,6 +90,8 @@ const HouseFeaturesDialog = ({ open, onOpenChange, houseId, houseName }: HouseFe
             icon: z.icon,
             title: z.title.trim(),
             description: z.description.trim() || null,
+            title_en: z.title_en.trim() || null,
+            description_en: z.description_en.trim() || null,
             sort_order: i,
           })),
         ...features
@@ -95,6 +102,8 @@ const HouseFeaturesDialog = ({ open, onOpenChange, houseId, houseName }: HouseFe
             icon: z.icon,
             title: z.title.trim(),
             description: z.description.trim() || null,
+            title_en: z.title_en.trim() || null,
+            description_en: z.description_en.trim() || null,
             sort_order: i,
           })),
       ];
@@ -185,6 +194,18 @@ const HouseFeaturesDialog = ({ open, onOpenChange, houseId, houseName }: HouseFe
                       onChange={e => aendern(index, { description: e.target.value })}
                       placeholder="Kurze Erklärung (optional)"
                       aria-label="Beschreibung"
+                    />
+                    <Input
+                      value={zeile.title_en}
+                      onChange={e => aendern(index, { title_en: e.target.value })}
+                      placeholder="Überschrift Englisch (leer = deutsch)"
+                      aria-label="Überschrift Englisch"
+                    />
+                    <Input
+                      value={zeile.description_en}
+                      onChange={e => aendern(index, { description_en: e.target.value })}
+                      placeholder="Erklärung Englisch (optional)"
+                      aria-label="Beschreibung Englisch"
                     />
                   </div>
 

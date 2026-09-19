@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { SelectableHouse } from "@/hooks/useHouseSelection";
 import { useHouseFeatures } from "@/hooks/useHouseFeatures";
 import { featureIcon } from "@/lib/featureIcons";
+import { useSprache, lokal } from "@/lib/sprache";
 
 interface FeaturesProps {
   house?: SelectableHouse | null;
@@ -11,6 +12,7 @@ interface FeaturesProps {
 const Features = ({ house }: FeaturesProps) => {
   const { t } = useTranslation();
   const { features } = useHouseFeatures(house?.id);
+  const sprache = useSprache();
 
   // Ausstattung kommt ausschliesslich aus der Datenbank (house_features).
   // Ohne Eintraege entfaellt der Abschnitt.
@@ -44,10 +46,10 @@ const Features = ({ house }: FeaturesProps) => {
                         </div>
                         <div>
                           <h3 className="text-lg font-semibold text-foreground mb-2">
-                            {eintrag.title}
+                            {lokal(eintrag.title, eintrag.title_en, sprache)}
                           </h3>
-                          {eintrag.description && (
-                            <p className="text-sm text-muted-foreground">{eintrag.description}</p>
+                          {lokal(eintrag.description, eintrag.description_en, sprache) && (
+                            <p className="text-sm text-muted-foreground">{lokal(eintrag.description, eintrag.description_en, sprache)}</p>
                           )}
                         </div>
                       </div>

@@ -144,7 +144,7 @@ const Navigation = () => {
               <LanguageSwitcher isScrolled={isScrolled} />
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label="Menü öffnen"
+                aria-label={t("navigation.openMenu")}
                 className={`transition-colors ${isScrolled ? "text-foreground" : "text-white"}`}
               >
                 {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}

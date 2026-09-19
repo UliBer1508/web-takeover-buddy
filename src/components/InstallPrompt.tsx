@@ -100,7 +100,7 @@ const InstallPrompt = () => {
             {deferred
               ? t("pwa.bodyAndroid", {
                   defaultValue:
-                    "Steinbock Chalet als App installieren – schneller Zugriff vom Homescreen.",
+                    "Steinbock Chalets als App installieren – schneller Zugriff vom Homescreen.",
                 })
               : t("pwa.bodyIos", {
                   defaultValue:

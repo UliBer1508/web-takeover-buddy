@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { SelectableHouse } from "@/hooks/useHouseSelection";
 import { useHouseFeatures } from "@/hooks/useHouseFeatures";
 import { featureIcon } from "@/lib/featureIcons";
+import { useSprache, lokal } from "@/lib/sprache";
 
 interface AboutProps {
   /** Aktuell gewaehltes Haus. Ohne Angabe bleiben die festen Texte stehen. */
@@ -14,9 +15,10 @@ const About = ({ house }: AboutProps) => {
   const { t, i18n } = useTranslation();
   const anfahrtBasis = i18n.language?.startsWith("en") ? "/directions" : "/anfahrt";
   const { highlights } = useHouseFeatures(house?.id);
+  const sprache = useSprache();
 
   // Beschreibung des Hauses in Absaetze zerlegen. Leerzeile = neuer Absatz.
-  const absaetze = (house?.description || "")
+  const absaetze = (lokal(house?.description, house?.description_en, sprache) || "")
     .split(/\n\s*\n/)
     .map(a => a.trim())
     .filter(Boolean);
@@ -65,9 +67,9 @@ const About = ({ house }: AboutProps) => {
                   >
                     <Symbol className="w-8 h-8 text-primary" />
                     <div className="text-center">
-                      <h3 className="font-semibold text-foreground mb-1">{eintrag.title}</h3>
-                      {eintrag.description && (
-                        <p className="text-sm text-muted-foreground">{eintrag.description}</p>
+                      <h3 className="font-semibold text-foreground mb-1">{lokal(eintrag.title, eintrag.title_en, sprache)}</h3>
+                      {lokal(eintrag.description, eintrag.description_en, sprache) && (
+                        <p className="text-sm text-muted-foreground">{lokal(eintrag.description, eintrag.description_en, sprache)}</p>
                       )}
                     </div>
                   </div>

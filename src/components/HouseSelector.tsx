@@ -1,4 +1,5 @@
 import { Home } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { SelectableHouse } from "@/hooks/useHouseSelection";
 
 interface HouseSelectorProps {
@@ -14,6 +15,7 @@ interface HouseSelectorProps {
  * dieselbe Liste und dieselben Farben verwenden.
  */
 const HouseSelector = ({ houses, selectedHouseId, onHouseChange }: HouseSelectorProps) => {
+  const { t } = useTranslation();
   if (!houses || houses.length <= 1) return null;
 
   const activeId = selectedHouseId || houses[0]?.id;
@@ -22,7 +24,7 @@ const HouseSelector = ({ houses, selectedHouseId, onHouseChange }: HouseSelector
     <div className="flex justify-center py-3">
       <div
         role="tablist"
-        aria-label="Haus auswählen"
+        aria-label={t("navigation.chooseHouse")}
         className="inline-flex gap-1 p-1 rounded-full bg-muted/70 border"
       >
         {houses.map((house) => {
