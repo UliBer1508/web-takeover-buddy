@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store,
+  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import HouseFormDialog, { HouseFormValues } from "./HouseFormDialog";
 import HouseFeaturesDialog from "./HouseFeaturesDialog";
 import HouseDirectionsDialog from "./HouseDirectionsDialog";
 import HouseBookingInfoDialog from "./HouseBookingInfoDialog";
+import HousePlacesDialog from "./HousePlacesDialog";
 
 interface AdminHouse {
   id: string;
@@ -58,6 +59,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
   const [bearbeitet, setBearbeitet] = useState<HouseFormValues | null>(null);
   const [kachelnFuer, setKachelnFuer] = useState<{ id: string; name: string } | null>(null);
   const [anfahrtFuer, setAnfahrtFuer] = useState<{ id: string; name: string } | null>(null);
+  const [umgebungFuer, setUmgebungFuer] = useState<{ id: string; name: string } | null>(null);
   const [vermietungFuer, setVermietungFuer] = useState<{ id: string; name: string; direkt: boolean } | null>(null);
 
   // Link, den Uli Gaesten nach der Buchung schickt (Booking, Airbnb, Belvilla).
@@ -278,6 +280,14 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
 
                   <Button
                     variant="outline" size="sm"
+                    onClick={() => setUmgebungFuer({ id: house.id, name: house.name })}
+                  >
+                    <MapPinned className="h-4 w-4 mr-2" />
+                    Umgebung
+                  </Button>
+
+                  <Button
+                    variant="outline" size="sm"
                     onClick={() => setVermietungFuer({ id: house.id, name: house.name, direkt: house.direct_booking !== false })}
                   >
                     <Store className="h-4 w-4 mr-2" />
@@ -375,6 +385,13 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
         houseId={vermietungFuer?.id ?? null}
         houseName={vermietungFuer?.name ?? ""}
         directBooking={vermietungFuer?.direkt ?? true}
+      />
+
+      <HousePlacesDialog
+        open={!!umgebungFuer}
+        onOpenChange={offen => !offen && setUmgebungFuer(null)}
+        houseId={umgebungFuer?.id ?? null}
+        houseName={umgebungFuer?.name ?? ""}
       />
 
       <HouseDirectionsDialog
