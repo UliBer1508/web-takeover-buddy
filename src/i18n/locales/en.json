@@ -130,6 +130,23 @@
       "ev_charging": "EV charging"
     }
   },
+  "skiAreas": {
+    "title": "Ski areas",
+    "subtitle": "The major ski areas around our chalets – with piste maps to view.",
+    "pisteMap": "Piste map",
+    "elevation": "Altitude",
+    "lifts": "Lifts",
+    "slopes": "Slopes",
+    "total": "total",
+    "easy": "Easy",
+    "medium": "Intermediate",
+    "difficult": "Difficult",
+    "season": "Season",
+    "drive": "Drive from the chalets",
+    "minutes": "approx. {{min}} min",
+    "website": "Website",
+    "asOf": "As of {{date}} · no guarantee"
+  },
   "stats": {
     "bedrooms": "Bedrooms",
     "guests": "Guests",

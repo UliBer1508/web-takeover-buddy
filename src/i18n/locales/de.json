@@ -130,6 +130,23 @@
       "ev_charging": "E-Ladestation"
     }
   },
+  "skiAreas": {
+    "title": "Skigebiete",
+    "subtitle": "Die großen Skigebiete rund um unsere Chalets – mit Pistenplan zum Anschauen.",
+    "pisteMap": "Pistenplan",
+    "elevation": "Höhenlage",
+    "lifts": "Lifte",
+    "slopes": "Pisten",
+    "total": "gesamt",
+    "easy": "Leicht",
+    "medium": "Mittel",
+    "difficult": "Schwer",
+    "season": "Saison",
+    "drive": "Anfahrt ab den Chalets",
+    "minutes": "ca. {{min}} Min.",
+    "website": "Website",
+    "asOf": "Stand {{date}} · Angaben ohne Gewähr"
+  },
   "stats": {
     "bedrooms": "Schlafzimmer",
     "guests": "Gäste",
