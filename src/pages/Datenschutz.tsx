@@ -36,6 +36,10 @@ const Datenschutz = () => {
             <p>{t("legal.privacy.cookiesText")}</p>
           </section>
           <section>
+            <h2 className="text-xl font-semibold mb-3 text-primary">{t("legal.privacy.mapTitle")}</h2>
+            <p>{t("legal.privacy.mapText")}</p>
+          </section>
+          <section>
             <h2 className="text-xl font-semibold mb-3 text-primary">{t("legal.privacy.rightsTitle")}</h2>
             <p>{t("legal.privacy.rightsText")}</p>
           </section>
