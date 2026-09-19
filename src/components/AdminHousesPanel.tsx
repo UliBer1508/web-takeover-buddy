@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid,
+  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { houseColor } from "@/lib/houseColors";
 import HouseSettingsDialog from "./HouseSettingsDialog";
 import HouseFormDialog, { HouseFormValues } from "./HouseFormDialog";
 import HouseFeaturesDialog from "./HouseFeaturesDialog";
+import HouseDirectionsDialog from "./HouseDirectionsDialog";
 
 interface AdminHouse {
   id: string;
@@ -51,6 +52,18 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
   const [formOpen, setFormOpen] = useState(false);
   const [bearbeitet, setBearbeitet] = useState<HouseFormValues | null>(null);
   const [kachelnFuer, setKachelnFuer] = useState<{ id: string; name: string } | null>(null);
+  const [anfahrtFuer, setAnfahrtFuer] = useState<{ id: string; name: string } | null>(null);
+
+  // Link, den Uli Gaesten nach der Buchung schickt (Booking, Airbnb, Belvilla).
+  const gaesteLinkKopieren = async (house: AdminHouse) => {
+    const link = `https://steinbockchalets.com/anfahrt/${house.slug}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      toast({ title: "Anfahrts-Link kopiert", description: link });
+    } catch {
+      toast({ title: "Anfahrts-Link", description: link });
+    }
+  };
   const [verstecktGemerkt, setVerstecktGemerkt] = useState<{ id: string; name: string }[]>([]);
 
   const { data: houses = [], isLoading } = useQuery({
@@ -242,6 +255,23 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                     Ausstattung
                   </Button>
 
+                  <Button
+                    variant="outline" size="sm"
+                    onClick={() => setAnfahrtFuer({ id: house.id, name: house.name })}
+                  >
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Anfahrt
+                  </Button>
+
+                  <Button
+                    variant="ghost" size="sm"
+                    title={`https://steinbockchalets.com/anfahrt/${house.slug}`}
+                    onClick={() => gaesteLinkKopieren(house)}
+                  >
+                    <Link2 className="h-4 w-4 mr-2" />
+                    Gäste-Link
+                  </Button>
+
                   <HouseSettingsDialog
                     house={house}
                     trigger={
@@ -316,6 +346,13 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             prev.some(v => v.id === id) ? prev : [...prev, { id, name }]
           )
         }
+      />
+
+      <HouseDirectionsDialog
+        open={!!anfahrtFuer}
+        onOpenChange={offen => !offen && setAnfahrtFuer(null)}
+        houseId={anfahrtFuer?.id ?? null}
+        houseName={anfahrtFuer?.name ?? ""}
       />
 
       <HouseFeaturesDialog

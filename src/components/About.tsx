@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import { MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SelectableHouse } from "@/hooks/useHouseSelection";
 import { useHouseFeatures } from "@/hooks/useHouseFeatures";
@@ -9,7 +11,8 @@ interface AboutProps {
 }
 
 const About = ({ house }: AboutProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const anfahrtBasis = i18n.language?.startsWith("en") ? "/directions" : "/anfahrt";
   const { highlights } = useHouseFeatures(house?.id);
 
   // Beschreibung des Hauses in Absaetze zerlegen. Leerzeile = neuer Absatz.
@@ -39,6 +42,16 @@ const About = ({ house }: AboutProps) => {
                 {absatz}
               </p>
           ))}
+
+          {house?.slug && (
+            <Link
+              to={`${anfahrtBasis}/${house.slug}`}
+              className="inline-flex items-center gap-2 text-primary font-medium hover:underline"
+            >
+              <MapPin className="w-4 h-4" />
+              {t("directions.toDirections", "Anfahrt")}
+            </Link>
+          )}
 
           {/* Highlight-Kacheln des Hauses - ausschliesslich aus der Datenbank */}
           {highlights.length > 0 && (
