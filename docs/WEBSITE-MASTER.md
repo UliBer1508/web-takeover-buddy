@@ -296,7 +296,7 @@ Reihenfolge von oben nach unten und woher die Daten kommen:
 | Abschnitt | Komponente | Daten |
 |---|---|---|
 | Navigation | `Navigation.tsx` | — |
-| Titelbild mit Hauskarten | `Hero.tsx` + `ChaletCards.tsx` | Bild = Titelbild des **gewählten** Hauses (`gallery_images.is_hero`, sonst erstes Bild); Karten aus `houses`, gewählte Karte mit Rahmen in Hausfarbe. Klick auf Karte = Haus wählen |
+| Titelbild mit Hauskarten | `Hero.tsx` + `ChaletCards.tsx` | Bild = Titelbild des **gewählten** Hauses (`gallery_images.is_hero`, sonst erstes Bild); Karten aus `houses`, gewählte Karte mit Rahmen in Hausfarbe. Klick auf Karte = Haus wählen, **kein Sprung nach unten** (Gast sieht zuerst das Titelbild); Pfeil nur auf den nicht gewählten Karten |
 | Admin-Panel (nur für Admins) | `AdminHousesPanel.tsx` | `houses` (alle, auch ausgeblendete), `house_features` (Zähler) |
 | Haus-Umschalter | `HouseSelector.tsx` | `houses` (aktive) — **nur auf `/galerie`** (dort gibt es kein Titelbild). Auf der Startseite entfernt (Uli, 19.09.2026): gewechselt wird über die Karten im Titelbild |
 | Über das Haus | `About.tsx` | `houses.location/name/description`, `house_features` (highlight) |
@@ -543,6 +543,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 19.09.2026 | Hauskarte: kein Sprung nach unten beim Klick (5) |
 | 19.09.2026 | Skigebiete als Liste statt Karten (5d) |
 | 19.09.2026 | Skigebiete (3.4b, 5d) |
 | 19.09.2026 | Titelbild folgt dem gewählten Haus; Umschaltleiste auf der Startseite entfernt (5) |

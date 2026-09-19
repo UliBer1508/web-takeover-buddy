@@ -328,3 +328,10 @@ waagrechtes Scrollen.
 **Nachtrag Darstellung:** Uli fand die sechs großen Karten zu raumgreifend („können wir das
 nicht in eine Liste packen?“) → `SkiAreas.tsx` umgebaut zur Liste mit aufklappbaren Details
 (siehe Master 5d). Nur Frontend, keine DB-Änderung.
+
+## 13. Nachtrag: Hauskarte ohne Sprung
+
+Uli: Klick auf eine Hauskarte im Titelbild sprang zum Hausbereich — der Gast soll aber
+zuerst das Titelbild des Hauses sehen. `Index.tsx` `handleChaletSelect` wählt nur noch das
+Haus (kein `scrollIntoView`). `ChaletCards.tsx`: Pfeil nur noch auf den nicht gewählten
+Karten. Test: nach Klick `scrollY = 0`, Titelbild wechselt.
