@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import i18n from "i18next";
 import { Loader2, Plus, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -287,7 +288,7 @@ const HousePlacesDialog = ({ open, onOpenChange, houseId, houseName }: HousePlac
                       aria-label="Kategorie"
                       className="h-9 rounded-md border bg-background px-2 text-sm"
                     >
-                      {PLACE_CATEGORIES.map(k => <option key={k.key} value={k.key}>{k.key}</option>)}
+                      {PLACE_CATEGORIES.map(k => <option key={k.key} value={k.key}>{i18n.getFixedT("de")(`nearby.categories.${k.key}`)}</option>)}
                     </select>
                     <Input className="flex-1 min-w-[10rem]" value={z.name} placeholder="Name" aria-label="Name"
                       onChange={e => aendern(i, { name: e.target.value })} />

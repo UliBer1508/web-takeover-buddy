@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned,
+  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned, MountainSnow,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import HouseFeaturesDialog from "./HouseFeaturesDialog";
 import HouseDirectionsDialog from "./HouseDirectionsDialog";
 import HouseBookingInfoDialog from "./HouseBookingInfoDialog";
 import HousePlacesDialog from "./HousePlacesDialog";
+import SkiAreasDialog from "./SkiAreasDialog";
 
 interface AdminHouse {
   id: string;
@@ -59,6 +60,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
   const [bearbeitet, setBearbeitet] = useState<HouseFormValues | null>(null);
   const [kachelnFuer, setKachelnFuer] = useState<{ id: string; name: string } | null>(null);
   const [anfahrtFuer, setAnfahrtFuer] = useState<{ id: string; name: string } | null>(null);
+  const [skigebieteOffen, setSkigebieteOffen] = useState(false);
   const [umgebungFuer, setUmgebungFuer] = useState<{ id: string; name: string } | null>(null);
   const [vermietungFuer, setVermietungFuer] = useState<{ id: string; name: string; direkt: boolean } | null>(null);
 
@@ -185,10 +187,16 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
               Nur für Admins sichtbar. {aktiveAnzahl} von {houses.length} freigeschaltet.
             </p>
           </div>
-          <Button onClick={() => { setBearbeitet(null); setFormOpen(true); }}>
-            <Plus className="h-4 w-4 mr-2" />
-            Haus anlegen
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => setSkigebieteOffen(true)} title="Gilt für alle Häuser">
+              <MountainSnow className="h-4 w-4 mr-2" />
+              Skigebiete
+            </Button>
+            <Button onClick={() => { setBearbeitet(null); setFormOpen(true); }}>
+              <Plus className="h-4 w-4 mr-2" />
+              Haus anlegen
+            </Button>
+          </div>
         </div>
 
         {vorschauHaus && (
@@ -386,6 +394,8 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
         houseName={vermietungFuer?.name ?? ""}
         directBooking={vermietungFuer?.direkt ?? true}
       />
+
+      <SkiAreasDialog open={skigebieteOffen} onOpenChange={setSkigebieteOffen} />
 
       <HousePlacesDialog
         open={!!umgebungFuer}
