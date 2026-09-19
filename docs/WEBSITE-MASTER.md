@@ -220,6 +220,21 @@ RLS: lesen nur für sichtbare Häuser; Admins lesen/schreiben alles
   Neue Kategorie = Eintrag dort + i18n + `check` in der Tabelle erweitern.
 - Gepflegt im Admin unter **„Umgebung“** (`HousePlacesDialog.tsx`).
 
+### 3.4b `ski_areas` — Skigebiete, gemeinsam für alle Häuser (seit 19.09.2026)
+
+```
+id · name · region_de/_en · description_de/_en · website_url · piste_map_url · image_url
+elevation_min/max (m) · slopes_km · slopes_blue/red/black_km · lifts
+season_de/_en (Text) · distance_km · drive_minutes (Anfahrt ab den Chalets)
+facts_as_of (Stand) · facts_source (Quelle, nur Admin) · is_active · sort_order · updated_at
+RLS: öffentlich nur is_active; Admins lesen/schreiben alles
+```
+
+- **Keine Zuordnung je Haus** (Entscheidung Uli: alle Häuser nutzen dieselben Skigebiete,
+  Venediger–Wald ≈ 1,6 km Luftlinie). Eine Anfahrtsangabe gilt für alle Chalets.
+- Pistenplan = **Link** auf die offizielle PDF/Seite der Bergbahn (kein Kopieren fremder
+  Pläne — Urheberrecht). Bild = eigenes Foto, Upload nach Storage `gallery/skigebiete/`.
+
 ### 3.5 Weitere Tabellen
 
 | Tabelle | Inhalt |
@@ -288,6 +303,7 @@ Reihenfolge von oben nach unten und woher die Daten kommen:
 | Kennzahlen-Leiste | `Stats.tsx` | `houses.bedrooms/max_guests/square_meters`, Durchschnitt aus `reviews` des Hauses |
 | Ausstattung | `Features.tsx` | `house_features` (feature) |
 | In der Nähe | `NearbyPlaces.tsx` | `house_places` des Hauses, Mittelpunkt aus `house_directions`; fehlt ganz, wenn keine Orte eingetragen sind |
+| Skigebiete | `SkiAreas.tsx` | `ski_areas` (für alle Häuser gleich); fehlt, wenn keines aktiv ist |
 | Bewertungen | `Testimonials.tsx` | `reviews` (**alle Häuser, ohne Hausfilter**) |
 | Galerie | `Gallery.tsx` | `gallery_images` des Hauses |
 | Verfügbarkeit | `AvailabilityCalendar.tsx` | **Hausverwaltung**: View `public_availability`, gefiltert über `external_house_id` aller aktiven Häuser |
@@ -388,6 +404,23 @@ Voraussetzung: Hauskoordinaten in „Anfahrt“ eingetragen (sonst kein „Vorsc
 **Bibliothek:** `leaflet@1.9.4` (+ `@types/leaflet`), dynamisch importiert — landet in
 einem eigenen Bundle-Teil, die Startseite lädt es nicht mit.
 
+## 5d. Skigebiete (seit 19.09.2026)
+
+Vorbild: Skigebiet-Karte bei Belvilla. Website (`SkiAreas.tsx`, Abschnitt `#skigebiete`,
+nach „In der Nähe“): Raster aus Karten, je Karte Kopf (eigenes Foto oder dunkler Verlauf,
+Name, Orte, Knopf **„Pistenplan“** → offizieller Plan in neuem Tab), Höhenlage ↑/↓, Lifte,
+Pisten gesamt + Balken leicht/mittel/schwer (nur wenn aufgeteilt), Saison, Anfahrt
+(km · ca. Min.), „Stand … · Angaben ohne Gewähr“, Link Website. Jeder Block nur, wenn Wert da.
+
+Admin: Knopf **„Skigebiete“** oben im Panel „Häuser auf der Website“ → `SkiAreasDialog.tsx`
+(Liste links mit Reihenfolge, Formular rechts, Schalter „anzeigen“, Bild-Upload, Quelle).
+
+**Startwerte (Recherche 19.09.2026, SQL `20260919_skigebiete.sql`):** Vorrang Bergbahn-Zahlen,
+sonst Tourismusverband; Quelle je Gebiet in `facts_source`. Unsichere Werte leer gelassen:
+Wildkogel Höhen + schwarze km + Pistenplan-Link, KitzSki/Kitzsteinhorn/Zillertal Arena/Zillertal 3000
+Aufteilung nach Schwierigkeit, Saalbach Höhen, KitzSki Saison. Belvilla „Zillertal Arena 52 km“
+ist falsch (offiziell 150 km, 52 Lifte). Anfahrt km/min sind **Schätzungen** ab Neukirchen.
+
 ## 6. Admin-Bereich
 
 Anmelden über „Admin“ oben rechts (Seite `/auth`). Admin ist, wer in
@@ -402,6 +435,7 @@ Unter dem Titelbild erscheint das Panel **„Häuser auf der Website“**
 | Texte & Daten (Stift) | `HouseFormDialog.tsx` | `houses` (Name, Ort, Texte, Merkmale, Kennzahlen, Kalender-ID, Reihenfolge) |
 | Ausstattung | `HouseFeaturesDialog.tsx` | `house_features` des Hauses |
 | Anfahrt | `HouseDirectionsDialog.tsx` | `house_directions` des Hauses |
+| Skigebiete (oben, für alle Häuser) | `SkiAreasDialog.tsx` | `ski_areas`, Storage `gallery/skigebiete/` |
 | Umgebung | `HousePlacesDialog.tsx` | `house_places` des Hauses (Vorschläge aus OpenStreetMap) |
 | Vermietung | `HouseBookingInfoDialog.tsx` | `houses.direct_booking` + `house_booking_info` |
 | Gäste-Link | — | kopiert `https://steinbockchalets.com/anfahrt/<slug>` |
@@ -435,6 +469,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 | `20260919_vermietung_ueber_plattform.sql` | 19.09.2026 | `houses.direct_booking`, Tabelle `house_booking_info`, Wald über Belvilla |
 | `20260919_texte_englisch.sql` | 19.09.2026 | `_en`-Spalten in `houses` und `house_features`, englische Startwerte |
 | `20260919_in_der_naehe.sql` | 19.09.2026 | Tabelle `house_places` + RLS (leer; Befüllung im Admin „Umgebung“) |
+| `20260919_skigebiete.sql` | 19.09.2026 | Tabelle `ski_areas` + RLS, 6 Skigebiete mit Startwerten (nur wenn leer) |
 
 > Die Umzugs- und Zwischen-SQL-Dateien vom 18.09.2026 liegen nicht im Repo.
 > Das Tabellenschema von `house_features` ist oben in 3.2 festgehalten. Wer das
@@ -494,7 +529,8 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
     und Vercel-Experimenten) aufräumen.
 13. Datenschutzerklärung, Abschnitt „Hosting“ nennt noch „Supabase und Lovable Cloud“ —
     tatsächlich Vercel (Hosting) + Supabase (Datenbank). Text von Uli freigeben lassen.
-14. Skigebiete (Karten wie bei Belvilla) — nächster Schritt nach „In der Nähe“.
+14. ~~Skigebiete~~ — erledigt 19.09.2026 (5d). Offen: leere Werte (siehe 5d) prüfen/ergänzen,
+    Anfahrtszeiten prüfen, eigene Fotos je Skigebiet; ggf. Menüpunkt „Skigebiete“.
 12. `hausmanagement-selfhosted/docs/Steinbock-Chalets-Gesamtdokumentation-MASTER.md`
     nennt noch die alte Website-DB → Einfügetext
     `MASTER-Einfuegetext-Website-2026-09-19.md` einarbeiten.
@@ -505,6 +541,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 19.09.2026 | Skigebiete (3.4b, 5d) |
 | 19.09.2026 | Titelbild folgt dem gewählten Haus; Umschaltleiste auf der Startseite entfernt (5) |
 | 19.09.2026 | In der Nähe (3.4a, 5c), Datenschutz-Abschnitt OpenStreetMap |
 | 19.09.2026 | Zweisprachigkeit (3.1a) |

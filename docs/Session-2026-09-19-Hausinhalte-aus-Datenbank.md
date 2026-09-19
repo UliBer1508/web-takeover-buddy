@@ -305,3 +305,22 @@ Umschaltknöpfe sind doppelt.
 Titelbild wechselt h1 → h2 → h1, Startseite ohne Leiste, `/galerie` mit Leiste.
 Hinweis für Tests: der PWA-Service-Worker fängt Anfragen ab — im Playwright-Test
 `serviceWorkers: 'block'` setzen, sonst greifen nachgestellte Antworten nicht.
+
+## 12. Nachtrag: Skigebiete
+
+**Anlass:** Belvilla-Skigebietskarte (Zillertal Arena). Uli: „alle Häuser benutzen die
+gleichen Skigebiete … wir listen sie auf und zeigen die Pistenpläne“.
+
+**Recherche (19.09.2026, Unteragent + eigene Prüfung):** offizielle Seiten der Bergbahnen,
+wo nicht erreichbar Tourismusverband. Ergebnis und Quellen stehen je Gebiet in
+`ski_areas.facts_source`. Belvilla „52 km“ Zillertal Arena falsch (150 km, 52 Lifte).
+wildkogel-arena.at und kitzski.at waren für die Werkzeuge nicht abrufbar.
+
+**Umgesetzt:** SQL `20260919_skigebiete.sql` (Tabelle + 6 Startgebiete), `hooks/useSkiAreas.ts`,
+`components/SkiAreas.tsx` (Website), `components/SkiAreasDialog.tsx` (Admin, Knopf
+„Skigebiete“ im Panel), i18n `skiAreas.*` de/en. Nebenbei: Kategorie-Auswahl im Dialog
+„Umgebung“ zeigt deutsche Namen statt Schlüsseln.
+
+**Prüfung:** Build ok, `tsc` 10 bekannte Fehler. Browser-Test mit nachgestellten Daten
+(Desktop + 390 px): Karten, Balken, Pistenplan-Knopf, leere Blöcke entfallen, kein
+waagrechtes Scrollen.
