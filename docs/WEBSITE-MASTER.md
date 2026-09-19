@@ -126,6 +126,7 @@ TypeScript-Warnungen, siehe Abschnitt 8).
 | `max_guests` | Maximalbelegung (Kennzahl + Anfrageformular) | Texte & Daten |
 | `external_house_id` | ID des Hauses in der Hausverwaltung (Kalender + Anfragen) | Texte & Daten |
 | `is_active` | für Gäste sichtbar | Schalter im Admin-Panel |
+| `direct_booking` | direkt über die Website buchbar (seit 19.09.2026, Standard `true`) | Vermietung |
 | `sort_order` | Reihenfolge; bestimmt auch die Hausfarbe | Texte & Daten |
 | `price_winter`, `price_summer`, `price_offseason`, `min_nights`, `cleaning_fee`, `service_fee`, `bed_linen_fee`, `tourist_tax`, `check_in_time`, `check_out_time` | Preise und Gebühren | Preise |
 
@@ -166,7 +167,19 @@ RLS: lesen nur für sichtbare Häuser (exists houses.is_active); Admins lesen/sc
 - Startwerte (SQL `20260919_anfahrt_je_haus.sql`): Venediger mit den bisherigen
   Angaben (erkannt über `external_house_id`), **Wald bewusst leer**.
 
-### 3.4 Weitere Tabellen
+### 3.4 `house_booking_info` — Hinweis „wird über Plattform vermietet“ (seit 19.09.2026)
+
+```
+house_id uuid pk → houses(id) on delete cascade
+title_de/_en · text_de/_en · main_label · main_url
+platforms jsonb  [{ "name": "...", "url": "..." | null }]   · updated_at
+RLS: lesen nur für sichtbare Häuser; Admins lesen/schreiben alles
+```
+
+Wirkt nur, wenn `houses.direct_booking = false`. Gepflegt im Admin unter **„Vermietung“**
+(`HouseBookingInfoDialog.tsx`), dort auch der Schalter.
+
+### 3.5 Weitere Tabellen
 
 | Tabelle | Inhalt |
 |---|---|
@@ -282,15 +295,24 @@ Kalender — jeder Zeitraum wirkt frei (das Admin-Panel warnt davor).
 - Code: `pages/Anfahrt.tsx`, `hooks/useHouseDirections.ts`, `components/HouseDirectionsDialog.tsx`,
   Routen in `App.tsx`. Im Code stehen nur Oberflächen-Beschriftungen (i18n `directions.*`).
 
-**Festgelegt, noch nicht gebaut — „Vermietung über Belvilla“ (nächster Schritt):**
-Je Haus zwei Schalter: **„Auf der Website sichtbar“** (bestehend, `is_active`) und neu
-**„Direkt buchbar“**. Ist „direkt buchbar“ aus (Wald, solange über Belvilla vermietet):
-- Kalender/Belegung **wird angezeigt** (alle Buchungen stehen in der Hausverwaltung)
-- **Preise werden nicht angezeigt** (weder „ab … €“ noch Preisliste)
-- statt des Anfrageformulars ein Infokasten „wird über Belvilla vermietet“ mit Link(s),
-  Text und Links je Haus in der DB (deutsch/englisch)
-- Venediger bleibt „direkt buchbar = an“. Der Schalter ist trotzdem je Haus — kein
-  Sonderfall „Wald“ im Code.
+## 5b. Vermietung über Plattform (seit 19.09.2026)
+
+Je Haus zwei Schalter: **sichtbar** (`is_active`) und **direkt buchbar** (`direct_booking`).
+Ist „direkt buchbar“ aus (Wald Chalet, vermietet über Belvilla, Objekt 100015656):
+
+| Bereich | Verhalten |
+|---|---|
+| Kalender | **wird angezeigt** (Belegung aus der Hausverwaltung) |
+| „ab … €“ auf der Hauskarte | ausgeblendet (`abPreis()` liefert `null`) |
+| Anfrageformular, Preisliste, Gebühren | ersetzt durch `ExternalBookingInfo.tsx` |
+| Inhalt des Hinweises | `house_booking_info`: Überschrift, Text (de/en), Knopf, Plattformliste |
+
+- Kein Sonderfall „Wald“ im Code — Venediger steht auf `direct_booking = true`.
+- Startwerte (SQL `20260919_vermietung_ueber_plattform.sql`): Wald `direct_booking = false`,
+  Knopf „Belvilla“ → belvilla.de/at/100015656, 25 Plattformen laut Belvilla-Partnerseite;
+  Links nur bei gesicherter Zuordnung: Belvilla, Vrbo (8842832ha), Traum-Ferienwohnungen (240927).
+- Recherche 19.09.2026: Airbnb-Inserat nicht gefunden; Booking.com vermutlich als
+  „Chalet Trattenbach“ (nur über Weiterverkäufer belegt).
 
 ## 6. Admin-Bereich
 
@@ -306,6 +328,7 @@ Unter dem Titelbild erscheint das Panel **„Häuser auf der Website“**
 | Texte & Daten (Stift) | `HouseFormDialog.tsx` | `houses` (Name, Ort, Texte, Merkmale, Kennzahlen, Kalender-ID, Reihenfolge) |
 | Ausstattung | `HouseFeaturesDialog.tsx` | `house_features` des Hauses |
 | Anfahrt | `HouseDirectionsDialog.tsx` | `house_directions` des Hauses |
+| Vermietung | `HouseBookingInfoDialog.tsx` | `houses.direct_booking` + `house_booking_info` |
 | Gäste-Link | — | kopiert `https://steinbockchalets.com/anfahrt/<slug>` |
 | Preise | `HouseSettingsDialog.tsx` | `houses` (Preise, Gebühren, Zeiten) |
 | Schalter | — | `houses.is_active` |
@@ -334,6 +357,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 | Kennzahlen/Ausstattung (nicht im Repo) | 18.09.2026 | `bedrooms`, `bathrooms`, `square_meters`, Tabelle `house_features` + RLS, `houses.highlights` → Highlight-Kacheln |
 | `20260919_hausdaten_voreintragen.sql` | 19.09.2026 | Startwerte für jedes Haus (nur wo leer) |
 | `20260919_anfahrt_je_haus.sql` | 19.09.2026 | Tabelle `house_directions` + RLS, Venediger-Anfahrt übernommen |
+| `20260919_vermietung_ueber_plattform.sql` | 19.09.2026 | `houses.direct_booking`, Tabelle `house_booking_info`, Wald über Belvilla |
 
 > Die Umzugs- und Zwischen-SQL-Dateien vom 18.09.2026 liegen nicht im Repo.
 > Das Tabellenschema von `house_features` ist oben in 3.2 festgehalten. Wer das
@@ -401,5 +425,6 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 19.09.2026 | Vermietung über Plattform (3.4, 5b) |
 | 19.09.2026 | Anfahrt je Haus (3.3, 5a), Belvilla-Konzept festgehalten |
 | 19.09.2026 | Erstfassung: Infrastruktur, Datenbanken, Datenmodell, Grundsatz „alles aus der DB“, Seitenaufbau, Admin, SQL, Fallen, offene Punkte |

@@ -194,3 +194,29 @@ Live-Prüfung nach dem Hochladen offen.
 `warningText`, `metaTitle`, `metaDescription`, `imageAlt`, `mapAlt`, `mapCaption`
 (Inhalte jetzt in der DB). Dateien `public/chalet-anfahrt.jpg` und
 `public/anfahrt-karte.jpg` bleiben, weil die Venediger-Zeile auf sie verweist.
+
+---
+
+## 8. Nachtrag: Vermietung über Belvilla
+
+**Vorgabe Uli:** Wald wird nicht ausgeblendet. Stattdessen je Haus ein zweiter
+Schalter „direkt buchbar“. Aus = Kalender bleibt, Preise weg, statt Anfrageformular
+ein Hinweis, dass das Haus über Belvilla vermietet wird, mit den Plattformen, auf
+denen Belvilla es anbietet. Nur Wald nutzt das; Venediger vermietet Uli selbst.
+
+**Recherche:** Wald = Belvilla-Objekt **100015656** „Chalet in Wald nahe Wildkogel
+Ski Arena“ (6 Gäste, 3 SZ, 100 m², Sauna). Gefunden auf Belvilla, Vrbo (8842832ha),
+Traum-Ferienwohnungen (240927, Name dort „Susan Peter“ — ungeklärt), Gites.fr,
+Booking.com vermutlich als „Chalet Trattenbach“ (nur über Weiterverkäufer).
+Plattformliste laut partner.belvilla.de.
+
+**Umgesetzt:** SQL `20260919_vermietung_ueber_plattform.sql`; neu
+`hooks/useHouseBookingInfo.ts`, `components/ExternalBookingInfo.tsx`,
+`components/HouseBookingInfoDialog.tsx`; geändert `useHouseSelection.ts`
+(`direct_booking`, `abPreis`), `BookingForm.tsx` (Hinweis statt Formular/Preisen),
+`AdminHousesPanel.tsx` (Knopf „Vermietung“, Statuszeile).
+
+**Achtung:** `useHouseSelection` liest `direct_booking` — Code erst NACH dem SQL
+hochladen, sonst lädt die Seite keine Häuser.
+
+**Prüfung:** `vite build` ok, `tsc` unverändert 10 bekannte Fehler.
