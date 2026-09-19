@@ -111,7 +111,10 @@ const ChaletCards = ({ houses, selectedHouseId, onSelectHouse, variant = "overla
                   </div>
                 </div>
 
-                <ArrowRight className="h-4 w-4 text-primary shrink-0 transition-transform group-hover:translate-x-1" />
+                {/* Pfeil nur bei den anderen Häusern: „zu diesem Haus wechseln“ */}
+                {!gewaehlt && (
+                  <ArrowRight className="h-4 w-4 text-primary shrink-0 transition-transform group-hover:translate-x-1" />
+                )}
               </button>
             );
           })}
