@@ -83,12 +83,10 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
     }
   };
 
-  // Karte angeklickt: Haus auswaehlen und zum Hausbereich springen.
+  // Karte angeklickt: nur Haus auswaehlen. Kein Sprung nach unten - der Gast
+  // soll zuerst das Titelbild des Hauses sehen (Wunsch Uli, 19.09.2026).
   const handleChaletSelect = (houseId: string) => {
     setSelectedHouseId(houseId);
-    setTimeout(() => {
-      document.getElementById('haus')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 80);
   };
 
   const galerieHausId = vorschauHausId ?? selectedHouseId;
