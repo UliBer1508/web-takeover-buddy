@@ -158,3 +158,39 @@ bestätigt. Erwartetes Ergebnis danach: beide Häuser 4 Highlights und
 - **Nicht über Namen/IDs einzelne Häuser sonderbehandeln.** Der erste Ansatz
   erkannte das Venediger-Haus an einer ID aus der alten DB bzw. am Namen —
   fragil und gegen die Vorgabe.
+
+---
+
+## 7. Nachtrag: Anfahrt je Haus
+
+**Befund:** Die Anfahrtsseite (seit 04.08.2026) stand komplett im Code und
+kannte nur das Venedigersiedlung Chalet — Verstoß gegen den Grundsatz „alles aus
+der DB“. In der Erstfassung dieser Doku war sie fälschlich als „bekannte Ausnahme“
+geführt.
+
+**Entscheidungen Uli:**
+- Ablauf „Mischform“: eigener Link je Haus `/anfahrt/<slug>` (für Gäste nach der
+  Buchung, auch über Belvilla), `/anfahrt` = Auswahl, Umschalter auf der Seite.
+- Ausgeblendete Häuser zeigen keine Infos, auch keine Anfahrt.
+- Wald wird nicht ausgeblendet, sondern „nicht direkt buchbar“ (Belvilla) —
+  Konzept in `WEBSITE-MASTER.md` 5a, Umsetzung als nächster Schritt.
+
+**Umgesetzt:** Tabelle `house_directions` (SQL `20260919_anfahrt_je_haus.sql`),
+`pages/Anfahrt.tsx` liest nur noch aus der DB, Admin-Dialog „Anfahrt“ und Knopf
+„Gäste-Link“, Link „Anfahrt“ im Hausbereich, Routen `/anfahrt/:slug` und
+`/directions/:slug`, Beschriftungen `directions.address/noData/chooseHouse/
+houseNotFound/toDirections` in de/en. Venediger-Werte per SQL übernommen,
+Wald leer.
+
+**Prüfung:** `vite build` ok, `tsc` unverändert 10 bekannte Fehler.
+Live-Prüfung nach dem Hochladen offen.
+
+**Achtung Slug:** Venediger hat den Slug `haupthaus` → Gäste-Link heißt
+`/anfahrt/haupthaus`. Soll er sprechender werden, im Admin unter „Texte & Daten“
+ändern, **bevor** Links an Gäste gehen.
+
+**Nicht mehr benutzt:** i18n-Schlüssel `directions.step1–4`, `byCarText`,
+`parkingText`, `airportText`, `trainStationText`, `winterText`, `warningTitle`,
+`warningText`, `metaTitle`, `metaDescription`, `imageAlt`, `mapAlt`, `mapCaption`
+(Inhalte jetzt in der DB). Dateien `public/chalet-anfahrt.jpg` und
+`public/anfahrt-karte.jpg` bleiben, weil die Venediger-Zeile auf sie verweist.

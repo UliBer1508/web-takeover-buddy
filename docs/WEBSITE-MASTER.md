@@ -148,7 +148,25 @@ RLS: lesen für alle (anon, authenticated); schreiben nur is_admin()
 - Texte nur auf Deutsch; es gibt keine englischen Spalten. Die englische
   Seite zeigt dieselben deutschen Texte.
 
-### 3.3 Weitere Tabellen
+### 3.3 `house_directions` — Anfahrt je Haus (seit 19.09.2026)
+
+```
+house_id uuid pk → houses(id) on delete cascade
+address · latitude numeric(9,6) · longitude numeric(9,6) · plus_code
+warning_title_de/_en · warning_text_de/_en · steps_de/_en text[]
+parking_de/_en · by_car_de/_en · airport_de/_en · train_station_de/_en
+winter_de/_en · house_image_url · map_image_url · map_caption_de/_en · updated_at
+RLS: lesen nur für sichtbare Häuser (exists houses.is_active); Admins lesen/schreiben alles
+```
+
+- Eine Zeile je Haus, gepflegt im Admin unter **„Anfahrt“** (`HouseDirectionsDialog.tsx`).
+- Leeres englisches Feld → die englische Seite zeigt den deutschen Text.
+- Leere Felder werden auf der Anfahrtsseite weggelassen. Ohne Koordinaten keine Maps-Knöpfe.
+- Bilder werden in den Bucket `gallery` unter `anfahrt/` hochgeladen.
+- Startwerte (SQL `20260919_anfahrt_je_haus.sql`): Venediger mit den bisherigen
+  Angaben (erkannt über `external_house_id`), **Wald bewusst leer**.
+
+### 3.4 Weitere Tabellen
 
 | Tabelle | Inhalt |
 |---|---|
@@ -193,11 +211,10 @@ Die alten Texte `about.description1/2`, `about.highlights.*` und
 `features.items.*` in `de.json`/`en.json` werden im Code nicht mehr benutzt.
 Sie bleiben vorerst als Quelle stehen (siehe offene Punkte).
 
-**Bekannte Ausnahmen, die noch fest im Code stehen** (bewusst noch nicht
-umgestellt, siehe Abschnitt 9):
+**Verstöße, die noch fest im Code stehen** (werden Stück für Stück umgestellt,
+siehe Abschnitt 9):
 - `HouseSettingsDialog.tsx`: Vorschlagswerte, wenn ein Preisfeld leer ist
   (Reinigung 240, Winter 450, Sommer 380, Nebensaison 320)
-- `pages/Anfahrt.tsx` + i18n `directions.*`: nur Neukirchen
 - `pages/Index.tsx`: strukturierte Daten (JSON-LD) mit Adresse Venedigersiedlung 316
 - Hero-Titel und SEO-Texte aus i18n (markenbezogen, nicht hausbezogen)
 
@@ -246,6 +263,35 @@ Kalender — jeder Zeitraum wirkt frei (das Admin-Panel warnt davor).
 
 ---
 
+## 5a. Anfahrt je Haus (seit 19.09.2026)
+
+**Ablauf (Entscheidung Uli, 19.09.2026 — „Mischform“):**
+
+| Adresse | Inhalt |
+|---|---|
+| `/anfahrt/<slug>` (engl. `/directions/<slug>`) | Anfahrt eines Hauses. **Das ist der Link, den Uli Gästen nach der Buchung schickt** (Booking, Airbnb, Belvilla). Oben Hausname + Ort, darunter Umschalter zu den anderen sichtbaren Häusern. |
+| `/anfahrt` (engl. `/directions`) | Auswahl der sichtbaren Häuser |
+| Menü/Footer „Anfahrt“ | → `/anfahrt` (Auswahl) |
+| Hausbereich der Startseite („Über das Haus“) | Link „Anfahrt“ → `/anfahrt/<slug>` des gewählten Hauses |
+
+- Der `slug` kommt aus `houses.slug` (Admin → Texte & Daten). **Wird der Slug geändert,
+  ändert sich der Gäste-Link** — bereits verschickte Links funktionieren dann nicht mehr.
+- Im Admin je Haus: Knopf **„Gäste-Link“** kopiert `https://steinbockchalets.com/anfahrt/<slug>`.
+- Ein auf der Website ausgeblendetes Haus hat keine Anfahrtsseite (Vorgabe: keine Infos
+  über ausgeblendete Häuser).
+- Code: `pages/Anfahrt.tsx`, `hooks/useHouseDirections.ts`, `components/HouseDirectionsDialog.tsx`,
+  Routen in `App.tsx`. Im Code stehen nur Oberflächen-Beschriftungen (i18n `directions.*`).
+
+**Festgelegt, noch nicht gebaut — „Vermietung über Belvilla“ (nächster Schritt):**
+Je Haus zwei Schalter: **„Auf der Website sichtbar“** (bestehend, `is_active`) und neu
+**„Direkt buchbar“**. Ist „direkt buchbar“ aus (Wald, solange über Belvilla vermietet):
+- Kalender/Belegung **wird angezeigt** (alle Buchungen stehen in der Hausverwaltung)
+- **Preise werden nicht angezeigt** (weder „ab … €“ noch Preisliste)
+- statt des Anfrageformulars ein Infokasten „wird über Belvilla vermietet“ mit Link(s),
+  Text und Links je Haus in der DB (deutsch/englisch)
+- Venediger bleibt „direkt buchbar = an“. Der Schalter ist trotzdem je Haus — kein
+  Sonderfall „Wald“ im Code.
+
 ## 6. Admin-Bereich
 
 Anmelden über „Admin“ oben rechts (Seite `/auth`). Admin ist, wer in
@@ -259,6 +305,8 @@ Unter dem Titelbild erscheint das Panel **„Häuser auf der Website“**
 | Bilder | Admin-Vorschau der Galerie dieses Hauses (auch wenn ausgeschaltet) | `gallery_images`, Storage `gallery` |
 | Texte & Daten (Stift) | `HouseFormDialog.tsx` | `houses` (Name, Ort, Texte, Merkmale, Kennzahlen, Kalender-ID, Reihenfolge) |
 | Ausstattung | `HouseFeaturesDialog.tsx` | `house_features` des Hauses |
+| Anfahrt | `HouseDirectionsDialog.tsx` | `house_directions` des Hauses |
+| Gäste-Link | — | kopiert `https://steinbockchalets.com/anfahrt/<slug>` |
 | Preise | `HouseSettingsDialog.tsx` | `houses` (Preise, Gebühren, Zeiten) |
 | Schalter | — | `houses.is_active` |
 | Haus anlegen | `HouseFormDialog.tsx` (neu) | `houses`, **immer ausgeschaltet** angelegt |
@@ -285,6 +333,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 | `03-startseite.sql` (nicht im Repo) | 18.09.2026 | `houses.location`, `houses.highlights` |
 | Kennzahlen/Ausstattung (nicht im Repo) | 18.09.2026 | `bedrooms`, `bathrooms`, `square_meters`, Tabelle `house_features` + RLS, `houses.highlights` → Highlight-Kacheln |
 | `20260919_hausdaten_voreintragen.sql` | 19.09.2026 | Startwerte für jedes Haus (nur wo leer) |
+| `20260919_anfahrt_je_haus.sql` | 19.09.2026 | Tabelle `house_directions` + RLS, Venediger-Anfahrt übernommen |
 
 > Die Umzugs- und Zwischen-SQL-Dateien vom 18.09.2026 liegen nicht im Repo.
 > Das Tabellenschema von `house_features` ist oben in 3.2 festgehalten. Wer das
@@ -332,7 +381,8 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
    KI-Zugang umgestellt werden.
 5. `Testimonials.tsx` zeigt die Bewertungen aller Häuser, nicht nur die des
    gewählten.
-6. Anfahrtsseite und strukturierte Daten kennen nur Neukirchen.
+6. Strukturierte Daten (`index.html`, `Index.tsx`), SEO-Texte, `llms.txt`, Regionsseite
+   kennen nur Neukirchen. (Anfahrt: erledigt 19.09.2026.)
 7. Vorschlagswerte für Preise in `HouseSettingsDialog.tsx` fest im Code.
 8. Ungenutzte i18n-Texte (`about.description1/2`, `about.highlights.*`,
    `features.items.*`) entfernen, sobald beide Häuser gepflegt sind.
@@ -351,4 +401,5 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 19.09.2026 | Anfahrt je Haus (3.3, 5a), Belvilla-Konzept festgehalten |
 | 19.09.2026 | Erstfassung: Infrastruktur, Datenbanken, Datenmodell, Grundsatz „alles aus der DB“, Seitenaufbau, Admin, SQL, Fallen, offene Punkte |
