@@ -9,6 +9,9 @@ export interface SelectableHouse {
   slug: string;
   description: string | null;
   short_description: string | null;
+  short_description_en: string | null;
+  description_en: string | null;
+  highlights_en: string[] | null;
   location: string | null;
   highlights: string[] | null;
   bedrooms: number | null;
@@ -45,7 +48,7 @@ export const useHouseSelection = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('houses')
-        .select('id, name, slug, description, short_description, location, highlights, bedrooms, bathrooms, square_meters, max_guests, price_winter, price_summer, price_offseason, min_nights, is_active, direct_booking, sort_order, external_house_id')
+        .select('id, name, slug, description, description_en, short_description, short_description_en, location, highlights, highlights_en, bedrooms, bathrooms, square_meters, max_guests, price_winter, price_summer, price_offseason, min_nights, is_active, direct_booking, sort_order, external_house_id')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
