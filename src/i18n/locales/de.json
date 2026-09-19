@@ -110,6 +110,26 @@
       }
     }
   },
+  "nearby": {
+    "title": "In der Nähe",
+    "showMap": "Karte anzeigen",
+    "mapPrivacy": "Die Karte wird von OpenStreetMap geladen. Dabei wird Ihre IP-Adresse an die OpenStreetMap Foundation übertragen.",
+    "distanceNote": "Entfernungen in Luftlinie vom Haus, gerundet.",
+    "categories": {
+      "bakery": "Bäckerei",
+      "cafe": "Café",
+      "supermarket": "Supermarkt",
+      "doctor": "Arzt",
+      "hospital": "Krankenhaus",
+      "pharmacy": "Apotheke",
+      "restaurant": "Restaurant",
+      "spa": "Wellness & Bad",
+      "ski_lift": "Skilift",
+      "bus_stop": "Bushaltestelle",
+      "fuel": "Tankstelle",
+      "ev_charging": "E-Ladestation"
+    }
+  },
   "stats": {
     "bedrooms": "Schlafzimmer",
     "guests": "Gäste",
@@ -591,6 +611,8 @@
       "hostingText": "Diese Website wird über Supabase und Lovable Cloud gehostet. Server-Logfiles (IP-Adresse, Zeitpunkt, Browser) werden aus Sicherheitsgründen temporär gespeichert.",
       "cookiesTitle": "Cookies",
       "cookiesText": "Diese Website verwendet ausschließlich technisch notwendige Cookies (z. B. Spracheinstellung). Es werden keine Tracking- oder Marketing-Cookies eingesetzt.",
+      "mapTitle": "Karte (OpenStreetMap)",
+      "mapText": "Im Bereich „In der Nähe“ können Sie eine Karte einblenden. Erst nach Ihrem Klick auf „Karte anzeigen“ werden Kartenkacheln von den Servern der OpenStreetMap Foundation (St John’s Innovation Centre, Cambridge, Vereinigtes Königreich) geladen; dabei wird Ihre IP-Adresse übertragen. Ohne Klick findet keine Verbindung statt. Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Datenschutzerklärung von OpenStreetMap: https://osmfoundation.org/wiki/Privacy_Policy",
       "rightsTitle": "Ihre Rechte",
       "rightsText": "Ihnen stehen grundsätzlich die Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerruf und Widerspruch zu. Wenden Sie sich dazu an steinbockchalets@gmail.com."
     },

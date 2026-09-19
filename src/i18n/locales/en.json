@@ -110,6 +110,26 @@
       }
     }
   },
+  "nearby": {
+    "title": "Nearby",
+    "showMap": "Show map",
+    "mapPrivacy": "The map is loaded from OpenStreetMap. Your IP address is transmitted to the OpenStreetMap Foundation.",
+    "distanceNote": "Distances as the crow flies from the house, rounded.",
+    "categories": {
+      "bakery": "Bakery",
+      "cafe": "Café",
+      "supermarket": "Supermarket",
+      "doctor": "Doctor",
+      "hospital": "Hospital",
+      "pharmacy": "Pharmacy",
+      "restaurant": "Restaurant",
+      "spa": "Spa & pool",
+      "ski_lift": "Ski lift",
+      "bus_stop": "Bus stop",
+      "fuel": "Petrol station",
+      "ev_charging": "EV charging"
+    }
+  },
   "stats": {
     "bedrooms": "Bedrooms",
     "guests": "Guests",
@@ -591,6 +611,8 @@
       "hostingText": "This website is hosted via Supabase and Lovable Cloud. Server log files (IP address, timestamp, browser) are stored temporarily for security reasons.",
       "cookiesTitle": "Cookies",
       "cookiesText": "This website uses only technically necessary cookies (e.g. language settings). No tracking or marketing cookies are used.",
+      "mapTitle": "Map (OpenStreetMap)",
+      "mapText": "In the “Nearby” section you can display a map. Only after you click “Show map” are map tiles loaded from the servers of the OpenStreetMap Foundation (St John’s Innovation Centre, Cambridge, United Kingdom); your IP address is transmitted in the process. Without a click, no connection is made. The legal basis is your consent (Art. 6(1)(a) GDPR). OpenStreetMap privacy policy: https://osmfoundation.org/wiki/Privacy_Policy",
       "rightsTitle": "Your rights",
       "rightsText": "You have the right to information, correction, deletion, restriction, data portability, revocation and objection. To exercise these rights, please contact steinbockchalets@gmail.com."
     },
