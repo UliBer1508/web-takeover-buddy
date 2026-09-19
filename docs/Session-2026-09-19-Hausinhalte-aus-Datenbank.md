@@ -283,3 +283,25 @@ Echte OSM-Abfrage aus der Sandbox nicht möglich (gesperrt) → erster echter Te
 durch Uli im Admin.
 
 **Offen:** Datenschutz-Abschnitt „Hosting“ nennt noch Lovable Cloud (Master 9, Nr. 13).
+
+## 11. Nachtrag: Titelbild je Haus, Umschaltleiste entfernt
+
+**Anlass (Uli):** a) Bei Wahl von Wald soll oben das Titelbild von Wald erscheinen,
+bei Venediger das von Venediger. b) Karten im Titelbild und darunter nochmal die
+Umschaltknöpfe sind doppelt.
+
+**Befund:** `Index.tsx` gab dem Titelbild bei mehreren Häusern fest das **erste** Haus
+(`houses[0]`) — unabhängig von der Auswahl.
+
+**Umgesetzt:**
+- `Index.tsx`: Titelbild = gewähltes Haus (`vorschauHausId ?? selectedHouseId`).
+  Umschaltleiste (`HouseSelector`) nur noch, wenn keine Karten im Titelbild stehen
+  (= `/galerie`). Entscheidung Uli: „ganz entfernen“ (nicht erst beim Scrollen einblenden).
+- `Hero.tsx`: `placeholderData: keepPreviousData` — beim Wechsel bleibt das alte Bild
+  stehen, bis das neue geladen ist.
+- `ChaletCards.tsx`: gewählte Karte mit Rahmen in Hausfarbe, `aria-pressed`.
+
+**Prüfung:** Build ok, `tsc` 10 bekannte Fehler. Browser-Test mit nachgestellten Daten:
+Titelbild wechselt h1 → h2 → h1, Startseite ohne Leiste, `/galerie` mit Leiste.
+Hinweis für Tests: der PWA-Service-Worker fängt Anfragen ab — im Playwright-Test
+`serviceWorkers: 'block'` setzen, sonst greifen nachgestellte Antworten nicht.

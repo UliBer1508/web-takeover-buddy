@@ -281,9 +281,9 @@ Reihenfolge von oben nach unten und woher die Daten kommen:
 | Abschnitt | Komponente | Daten |
 |---|---|---|
 | Navigation | `Navigation.tsx` | — |
-| Titelbild mit Hauskarten | `Hero.tsx` + `ChaletCards.tsx` | `gallery_images` (Titelbild je Haus), `houses` |
+| Titelbild mit Hauskarten | `Hero.tsx` + `ChaletCards.tsx` | Bild = Titelbild des **gewählten** Hauses (`gallery_images.is_hero`, sonst erstes Bild); Karten aus `houses`, gewählte Karte mit Rahmen in Hausfarbe. Klick auf Karte = Haus wählen |
 | Admin-Panel (nur für Admins) | `AdminHousesPanel.tsx` | `houses` (alle, auch ausgeblendete), `house_features` (Zähler) |
-| Haus-Umschalter | `HouseSelector.tsx` | `houses` (aktive) |
+| Haus-Umschalter | `HouseSelector.tsx` | `houses` (aktive) — **nur auf `/galerie`** (dort gibt es kein Titelbild). Auf der Startseite entfernt (Uli, 19.09.2026): gewechselt wird über die Karten im Titelbild |
 | Über das Haus | `About.tsx` | `houses.location/name/description`, `house_features` (highlight) |
 | Kennzahlen-Leiste | `Stats.tsx` | `houses.bedrooms/max_guests/square_meters`, Durchschnitt aus `reviews` des Hauses |
 | Ausstattung | `Features.tsx` | `house_features` (feature) |
@@ -505,6 +505,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 19.09.2026 | Titelbild folgt dem gewählten Haus; Umschaltleiste auf der Startseite entfernt (5) |
 | 19.09.2026 | In der Nähe (3.4a, 5c), Datenschutz-Abschnitt OpenStreetMap |
 | 19.09.2026 | Zweisprachigkeit (3.1a) |
 | 19.09.2026 | Vermietung über Plattform (3.4, 5b) |
