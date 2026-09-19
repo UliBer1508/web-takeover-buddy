@@ -324,3 +324,7 @@ wildkogel-arena.at und kitzski.at waren für die Werkzeuge nicht abrufbar.
 **Prüfung:** Build ok, `tsc` 10 bekannte Fehler. Browser-Test mit nachgestellten Daten
 (Desktop + 390 px): Karten, Balken, Pistenplan-Knopf, leere Blöcke entfallen, kein
 waagrechtes Scrollen.
+
+**Nachtrag Darstellung:** Uli fand die sechs großen Karten zu raumgreifend („können wir das
+nicht in eine Liste packen?“) → `SkiAreas.tsx` umgebaut zur Liste mit aufklappbaren Details
+(siehe Master 5d). Nur Frontend, keine DB-Änderung.

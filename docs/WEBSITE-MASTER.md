@@ -406,11 +406,13 @@ einem eigenen Bundle-Teil, die Startseite lädt es nicht mit.
 
 ## 5d. Skigebiete (seit 19.09.2026)
 
-Vorbild: Skigebiet-Karte bei Belvilla. Website (`SkiAreas.tsx`, Abschnitt `#skigebiete`,
-nach „In der Nähe“): Raster aus Karten, je Karte Kopf (eigenes Foto oder dunkler Verlauf,
-Name, Orte, Knopf **„Pistenplan“** → offizieller Plan in neuem Tab), Höhenlage ↑/↓, Lifte,
-Pisten gesamt + Balken leicht/mittel/schwer (nur wenn aufgeteilt), Saison, Anfahrt
-(km · ca. Min.), „Stand … · Angaben ohne Gewähr“, Link Website. Jeder Block nur, wenn Wert da.
+Website (`SkiAreas.tsx`, Abschnitt `#skigebiete`, nach „In der Nähe“): **Liste**
+(Wunsch Uli 19.09.2026, statt großer Karten wie bei Belvilla). Je Zeile: Name + Orte
+(ggf. kleines eigenes Foto), Pisten gesamt, Lifte, Höhenlage von–bis, Anfahrt (km · ca. Min.),
+Knopf **„Pistenplan“** → offizieller Plan in neuem Tab. Klick auf den Namen klappt Details auf:
+Beschreibung, Balken leicht/mittel/schwer, Saison, „Stand … · Angaben ohne Gewähr“, Website.
+Am PC Tabellenkopf; fehlt ein Wert, steht „–“. Auf dem Handy Beschriftung über dem Wert,
+fehlende Werte entfallen.
 
 Admin: Knopf **„Skigebiete“** oben im Panel „Häuser auf der Website“ → `SkiAreasDialog.tsx`
 (Liste links mit Reihenfolge, Formular rechts, Schalter „anzeigen“, Bild-Upload, Quelle).
@@ -541,6 +543,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 19.09.2026 | Skigebiete als Liste statt Karten (5d) |
 | 19.09.2026 | Skigebiete (3.4b, 5d) |
 | 19.09.2026 | Titelbild folgt dem gewählten Haus; Umschaltleiste auf der Startseite entfernt (5) |
 | 19.09.2026 | In der Nähe (3.4a, 5c), Datenschutz-Abschnitt OpenStreetMap |
