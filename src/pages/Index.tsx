@@ -7,6 +7,7 @@ import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Features from "@/components/Features";
 import NearbyPlaces from "@/components/NearbyPlaces";
+import SkiAreas from "@/components/SkiAreas";
 import Stats from "@/components/Stats";
 import BookingForm from "@/components/BookingForm";
 import Testimonials from "@/components/Testimonials";
@@ -198,6 +199,7 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
             <Stats house={selectedHouse} />
             <Features house={selectedHouse} />
             <NearbyPlaces house={selectedHouse} />
+            <SkiAreas />
             <Testimonials />
           </>
         )}
