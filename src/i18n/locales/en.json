@@ -145,7 +145,10 @@
     "drive": "Drive from the chalets",
     "minutes": "approx. {{min}} min",
     "website": "Website",
-    "asOf": "As of {{date}} · no guarantee"
+    "asOf": "As of {{date}} · no guarantee",
+    "area": "Ski area",
+    "listHint": "Click a name for season and details.",
+    "driveShort": "Drive"
   },
   "stats": {
     "bedrooms": "Bedrooms",

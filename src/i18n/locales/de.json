@@ -145,7 +145,10 @@
     "drive": "Anfahrt ab den Chalets",
     "minutes": "ca. {{min}} Min.",
     "website": "Website",
-    "asOf": "Stand {{date}} · Angaben ohne Gewähr"
+    "asOf": "Stand {{date}} · Angaben ohne Gewähr",
+    "area": "Skigebiet",
+    "listHint": "Für Saison und Details auf den Namen klicken.",
+    "driveShort": "Anfahrt"
   },
   "stats": {
     "bedrooms": "Schlafzimmer",
