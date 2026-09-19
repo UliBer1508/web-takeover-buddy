@@ -149,7 +149,7 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
 
       {!startAtGallery && (
         <Hero
-          houseId={vorschauHausId ?? (hasMultipleHouses ? houses[0]?.id : selectedHouseId)}
+          houseId={vorschauHausId ?? selectedHouseId}
           title={vorschauHausName ?? heroTitle}
           subtitle={vorschauHausName ? null : heroSubtitle}
           scrollTarget="haus"
@@ -157,6 +157,7 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
             zeigeKartenImHero ? (
               <ChaletCards
                 houses={houses}
+                selectedHouseId={selectedHouseId}
                 onSelectHouse={handleChaletSelect}
                 variant="overlay"
               />
@@ -176,7 +177,10 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
 
       {/* Ab hier geht es um EIN Haus: das ausgewählte */}
       <div id="haus">
-        {hasMultipleHouses && (
+        {/* Umschaltleiste nur, wo es kein Titelbild mit Hauskarten gibt (/galerie).
+            Auf der Startseite wird über die Karten im Titelbild gewechselt
+            (Entscheidung Uli, 19.09.2026). */}
+        {hasMultipleHouses && !zeigeKartenImHero && (
           <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b">
             <div className="container mx-auto px-4">
               <HouseSelector
