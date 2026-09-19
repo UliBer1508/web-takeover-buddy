@@ -46,16 +46,21 @@ const Stats = ({ house }: StatsProps) => {
   if (house?.square_meters) stats.push({ value: house.square_meters, label: t("stats.squareMeters"), suffix: "m²" });
   if (note) stats.push({ value: note, label: t("stats.rating"), suffix: "★", decimals: 1 });
 
+  // Die Leiste gibt es erst, wenn Werte da sind - der Beobachter muss deshalb
+  // neu ansetzen, sobald sie erscheint, sonst bleiben alle Zahlen auf 0.
+  const hatWerte = stats.length > 0;
+
   useEffect(() => {
+    if (!hatWerte || !sectionRef.current) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) setIsVisible(true);
       },
       { threshold: 0.3 }
     );
-    if (sectionRef.current) observer.observe(sectionRef.current);
+    observer.observe(sectionRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [hatWerte]);
 
   // Ohne Kennzahlen gar keine Leiste - ein leerer farbiger Balken sieht aus
   // wie ein Fehler.
