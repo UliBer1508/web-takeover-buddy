@@ -39,7 +39,12 @@
     "winterTitle": "Im Winter",
     "winterText": "Winterreifen sind in Österreich von 1. November bis 15. April vorgeschrieben.",
     "questions": "Fragen zur Anreise? Rufen Sie uns an.",
-    "imageAlt": "Das Steinbock Chalet von der Straße aus gesehen"
+    "imageAlt": "Das Steinbock Chalet von der Straße aus gesehen",
+    "noData": "Für dieses Haus ist noch keine Anfahrt hinterlegt. Bitte fragen Sie uns direkt.",
+    "address": "Adresse",
+    "chooseHouse": "Bitte wählen Sie Ihr Haus.",
+    "houseNotFound": "Dieses Haus wurde nicht gefunden.",
+    "toDirections": "Anfahrt"
   },
   "hero": {
     "title": "Steinbock Chalet",

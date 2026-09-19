@@ -39,7 +39,12 @@
     "winterTitle": "In winter",
     "winterText": "Winter tyres are mandatory in Austria from 1 November to 15 April.",
     "questions": "Questions about your arrival? Give us a call.",
-    "imageAlt": "Steinbock Chalet seen from the road"
+    "imageAlt": "Steinbock Chalet seen from the road",
+    "noData": "Directions for this house have not been added yet. Please ask us directly.",
+    "address": "Address",
+    "chooseHouse": "Please choose your house.",
+    "houseNotFound": "This house could not be found.",
+    "toDirections": "Directions"
   },
   "hero": {
     "title": "Steinbock Chalet",
