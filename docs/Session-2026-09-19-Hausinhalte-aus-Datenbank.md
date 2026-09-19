@@ -220,3 +220,35 @@ Plattformliste laut partner.belvilla.de.
 hochladen, sonst lädt die Seite keine Häuser.
 
 **Prüfung:** `vite build` ok, `tsc` unverändert 10 bekannte Fehler.
+
+---
+
+## 9. Nachtrag: alle Texte zweisprachig
+
+**Auslöser:** Bei gewählter englischer Sprache blieben Beschreibung und
+Highlights deutsch. **Vorgabe Uli:** Alle Texte müssen auf Deutsch und Englisch
+anzeigbar sein.
+
+**Befund:** DB-Inhalte `houses` (Beschreibung, Kurztext, Merkmale) und
+`house_features` (Highlights, Ausstattung) hatten nur eine Sprachspalte.
+16 benutzte i18n-Schlüssel fehlten in beiden Sprachdateien (Hauskarten,
+Titelbild-Untertitel, Menü, App-Hinweis) → englische Seite zeigte die deutschen
+Standardtexte. Fehlermeldungen des Anfrageformulars und einige Beschriftungen
+standen fest auf Deutsch im Code.
+
+**Umgesetzt:**
+- SQL `20260919_texte_englisch.sql`: `_en`-Spalten + englische Startwerte für
+  die bekannten Texte (nur wo leer); Kontrollabfrage listet, was noch fehlt.
+- `src/lib/sprache.ts` (`useSprache`, `lokal`, `lokalListe`).
+- Anzeige: `About.tsx`, `Features.tsx`, `ChaletCards.tsx`, `useHouseSelection.ts`,
+  `useHouseFeatures.ts`.
+- Admin: Englisch-Felder in `HouseFormDialog.tsx` und `HouseFeaturesDialog.tsx`,
+  `AdminHousesPanel.tsx` reicht sie durch.
+- i18n: fehlende Schlüssel ergänzt; Formular-Fehlermeldungen, „auf Anfrage“,
+  Hinweistexte, aria-Beschriftungen (`BookingForm`, `Hero`, `Navigation`,
+  `HouseSelector`, `Gallery`, `AvailabilityCalendar`) übersetzt;
+  `stats.rating` „Booking Bewertung“ → „Gästebewertung“ (die Note stammt aus den
+  eigenen Bewertungen, nicht von Booking).
+
+**Prüfung:** `vite build` ok, `tsc` unverändert 10 bekannte Fehler; Schlüssel
+in `de.json` und `en.json` identisch.

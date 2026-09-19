@@ -130,6 +130,28 @@ TypeScript-Warnungen, siehe Abschnitt 8).
 | `sort_order` | Reihenfolge; bestimmt auch die Hausfarbe | Texte & Daten |
 | `price_winter`, `price_summer`, `price_offseason`, `min_nights`, `cleaning_fee`, `service_fee`, `bed_linen_fee`, `tourist_tax`, `check_in_time`, `check_out_time` | Preise und Gebühren | Preise |
 
+### 3.1a Zweisprachigkeit (seit 19.09.2026)
+
+**Regel: Jeder Text, den Gäste sehen, gibt es auf Deutsch und Englisch.**
+- Oberfläche (Knöpfe, Überschriften, Fehlermeldungen): `src/i18n/locales/de.json` + `en.json`,
+  beide Dateien haben dieselben Schlüssel. Kein deutscher Text direkt im Code.
+- Inhalte aus der DB: je Feld eine `_en`-Spalte bzw. `_de`/`_en`-Paar. Leeres Englisch →
+  die englische Seite zeigt Deutsch (`lokal()` in `src/lib/sprache.ts`).
+
+| Tabelle | zweisprachige Felder |
+|---|---|
+| `houses` | `description`/`description_en`, `short_description`/`short_description_en`, `highlights`/`highlights_en` |
+| `house_features` | `title`/`title_en`, `description`/`description_en` |
+| `house_directions` | alle Textfelder `_de`/`_en` (Adresse einsprachig) |
+| `house_booking_info` | `title_de/_en`, `text_de/_en` |
+| `gallery_images` | `title`/`title_en` |
+| `promotions` | `description_de`/`description_en` |
+| `reviews` | `text`/`text_en` |
+| `categories`, `seasons` | feste Liste, Übersetzung über i18n `gallery.categories.*`/`gallery.seasons.*` |
+
+Nicht übersetzt (Eigennamen): Hausname, Ort, Plattformnamen, Marke „Steinbock Chalets“.
+Admin-Oberfläche ist nur Deutsch (nur Uli).
+
 ### 3.2 `house_features` — Highlights und Ausstattung je Haus
 
 ```
@@ -358,6 +380,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 | `20260919_hausdaten_voreintragen.sql` | 19.09.2026 | Startwerte für jedes Haus (nur wo leer) |
 | `20260919_anfahrt_je_haus.sql` | 19.09.2026 | Tabelle `house_directions` + RLS, Venediger-Anfahrt übernommen |
 | `20260919_vermietung_ueber_plattform.sql` | 19.09.2026 | `houses.direct_booking`, Tabelle `house_booking_info`, Wald über Belvilla |
+| `20260919_texte_englisch.sql` | 19.09.2026 | `_en`-Spalten in `houses` und `house_features`, englische Startwerte |
 
 > Die Umzugs- und Zwischen-SQL-Dateien vom 18.09.2026 liegen nicht im Repo.
 > Das Tabellenschema von `house_features` ist oben in 3.2 festgehalten. Wer das
@@ -410,7 +433,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 7. Vorschlagswerte für Preise in `HouseSettingsDialog.tsx` fest im Code.
 8. Ungenutzte i18n-Texte (`about.description1/2`, `about.highlights.*`,
    `features.items.*`) entfernen, sobald beide Häuser gepflegt sind.
-9. Englische Texte für Beschreibung/Highlights/Ausstattung gibt es nicht (keine Spalten).
+9. ~~Englische Texte für Beschreibung/Highlights/Ausstattung~~ — erledigt 19.09.2026 (3.1a).
 10. Backups: Beide Datenbanken sind im Free-Tarif ohne Backups. Regelmäßigen
     Export oder bezahlten Tarif erwägen.
 11. Ungenutzte Supabase-Datenbanken im Vercel-Team (Überbleibsel aus Lovable-
@@ -425,6 +448,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 19.09.2026 | Zweisprachigkeit (3.1a) |
 | 19.09.2026 | Vermietung über Plattform (3.4, 5b) |
 | 19.09.2026 | Anfahrt je Haus (3.3, 5a), Belvilla-Konzept festgehalten |
 | 19.09.2026 | Erstfassung: Infrastruktur, Datenbanken, Datenmodell, Grundsatz „alles aus der DB“, Seitenaufbau, Admin, SQL, Fallen, offene Punkte |
