@@ -201,6 +201,25 @@ RLS: lesen nur für sichtbare Häuser; Admins lesen/schreiben alles
 Wirkt nur, wenn `houses.direct_booking = false`. Gepflegt im Admin unter **„Vermietung“**
 (`HouseBookingInfoDialog.tsx`), dort auch der Schalter.
 
+### 3.4a `house_places` — „In der Nähe“ (seit 19.09.2026)
+
+```
+id uuid pk · house_id → houses(id) on delete cascade
+category text  check in ('bakery','cafe','supermarket','doctor','hospital','pharmacy',
+                         'restaurant','spa','ski_lift','bus_stop','fuel','ev_charging')
+name text · latitude/longitude numeric(9,6) not null
+note_de/_en · url · osm_id ('node/123', unique je Haus) · sort_order · created_at
+RLS: lesen nur für sichtbare Häuser; Admins lesen/schreiben alles
+```
+
+- **Entfernung wird nicht gespeichert.** Die Website rechnet sie (Luftlinie, Haversine)
+  aus den Hauskoordinaten in `house_directions.latitude/longitude` und den Koordinaten
+  des Orts. Fehlen die Hauskoordinaten, gibt es keine Entfernung und keine Karte, nur die Liste.
+- **Kategorien** sind eine feste Liste im Code (`src/lib/placeCategories.ts`: Symbol,
+  Farbe, OSM-Suchfilter, Suchradius). Beschriftung de/en in i18n `nearby.categories.*`.
+  Neue Kategorie = Eintrag dort + i18n + `check` in der Tabelle erweitern.
+- Gepflegt im Admin unter **„Umgebung“** (`HousePlacesDialog.tsx`).
+
 ### 3.5 Weitere Tabellen
 
 | Tabelle | Inhalt |
@@ -268,6 +287,7 @@ Reihenfolge von oben nach unten und woher die Daten kommen:
 | Über das Haus | `About.tsx` | `houses.location/name/description`, `house_features` (highlight) |
 | Kennzahlen-Leiste | `Stats.tsx` | `houses.bedrooms/max_guests/square_meters`, Durchschnitt aus `reviews` des Hauses |
 | Ausstattung | `Features.tsx` | `house_features` (feature) |
+| In der Nähe | `NearbyPlaces.tsx` | `house_places` des Hauses, Mittelpunkt aus `house_directions`; fehlt ganz, wenn keine Orte eingetragen sind |
 | Bewertungen | `Testimonials.tsx` | `reviews` (**alle Häuser, ohne Hausfilter**) |
 | Galerie | `Gallery.tsx` | `gallery_images` des Hauses |
 | Verfügbarkeit | `AvailabilityCalendar.tsx` | **Hausverwaltung**: View `public_availability`, gefiltert über `external_house_id` aller aktiven Häuser |
@@ -336,6 +356,38 @@ Ist „direkt buchbar“ aus (Wald Chalet, vermietet über Belvilla, Objekt 1000
 - Recherche 19.09.2026: Airbnb-Inserat nicht gefunden; Booking.com vermutlich als
   „Chalet Trattenbach“ (nur über Weiterverkäufer belegt).
 
+## 5c. In der Nähe (seit 19.09.2026)
+
+Vorbild: Umgebungskarte bei Belvilla. Entscheidung Uli: OpenStreetMap, Kategorien wie
+Belvilla, Platz im Hausbereich unter „Ausstattung“; Skigebiete folgen als eigener Abschnitt.
+
+**Website (`NearbyPlaces.tsx`, Abschnitt `#nearby`):**
+- Links Kategorien mit Häkchen — nur Kategorien, zu denen es Orte gibt; Standard: alle an.
+- Rechts Liste der Orte, nach Entfernung sortiert (Name, ggf. Link, Kategorie, Hinweis de/en, Entfernung).
+- Knopf **„Karte anzeigen“**: erst dann wird Leaflet nachgeladen und die Kartenkacheln
+  kommen von `tile.openstreetmap.org` (Namensnennung eingeblendet). **Ohne Klick keine
+  Verbindung zu OSM** — daher kein Cookie-/Einwilligungsbanner nötig; Hinweis unter dem Knopf
+  und Abschnitt „Karte (OpenStreetMap)“ in der Datenschutzerklärung (`legal.privacy.mapTitle/mapText`).
+- Marker: Haus (dunkel, Haus-Symbol) + je Ort ein farbiger Kreis mit Kategoriesymbol.
+- Kein Ort eingetragen → Abschnitt fehlt (Grundsatz: fehlende Werte = Block weglassen).
+
+**Admin „Umgebung“ (`HousePlacesDialog.tsx`):**
+1. **„Vorschläge laden“** fragt die Overpass-API (`overpass-api.de`) **aus dem Browser des
+   Admins** ab — rund um die Hauskoordinaten, je Kategorie mit eigenem Radius
+   (z. B. Bus 2 km, Krankenhaus 45 km). Nur Einträge mit Namen; gleicher Name + Kategorie
+   innerhalb 200 m nur einmal (Bushaltestelle je Fahrtrichtung). Bereits übernommene
+   `osm_id` werden nicht erneut vorgeschlagen.
+   (Aus der Claude-Sandbox sind OSM/Overpass gesperrt — deshalb im Browser.)
+2. Vorschläge ankreuzen → „übernehmen“ → erscheinen als Zeilen.
+3. Zeilen frei bearbeiten oder von Hand ergänzen (Kategorie, Name, Breite, Länge,
+   Hinweis de/en, Link). Koordinaten z. B. aus Google Maps (Rechtsklick → Koordinaten).
+4. **Speichern** löscht alle Orte des Hauses und schreibt die Liste neu.
+
+Voraussetzung: Hauskoordinaten in „Anfahrt“ eingetragen (sonst kein „Vorschläge laden“).
+
+**Bibliothek:** `leaflet@1.9.4` (+ `@types/leaflet`), dynamisch importiert — landet in
+einem eigenen Bundle-Teil, die Startseite lädt es nicht mit.
+
 ## 6. Admin-Bereich
 
 Anmelden über „Admin“ oben rechts (Seite `/auth`). Admin ist, wer in
@@ -350,6 +402,7 @@ Unter dem Titelbild erscheint das Panel **„Häuser auf der Website“**
 | Texte & Daten (Stift) | `HouseFormDialog.tsx` | `houses` (Name, Ort, Texte, Merkmale, Kennzahlen, Kalender-ID, Reihenfolge) |
 | Ausstattung | `HouseFeaturesDialog.tsx` | `house_features` des Hauses |
 | Anfahrt | `HouseDirectionsDialog.tsx` | `house_directions` des Hauses |
+| Umgebung | `HousePlacesDialog.tsx` | `house_places` des Hauses (Vorschläge aus OpenStreetMap) |
 | Vermietung | `HouseBookingInfoDialog.tsx` | `houses.direct_booking` + `house_booking_info` |
 | Gäste-Link | — | kopiert `https://steinbockchalets.com/anfahrt/<slug>` |
 | Preise | `HouseSettingsDialog.tsx` | `houses` (Preise, Gebühren, Zeiten) |
@@ -381,6 +434,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 | `20260919_anfahrt_je_haus.sql` | 19.09.2026 | Tabelle `house_directions` + RLS, Venediger-Anfahrt übernommen |
 | `20260919_vermietung_ueber_plattform.sql` | 19.09.2026 | `houses.direct_booking`, Tabelle `house_booking_info`, Wald über Belvilla |
 | `20260919_texte_englisch.sql` | 19.09.2026 | `_en`-Spalten in `houses` und `house_features`, englische Startwerte |
+| `20260919_in_der_naehe.sql` | 19.09.2026 | Tabelle `house_places` + RLS (leer; Befüllung im Admin „Umgebung“) |
 
 > Die Umzugs- und Zwischen-SQL-Dateien vom 18.09.2026 liegen nicht im Repo.
 > Das Tabellenschema von `house_features` ist oben in 3.2 festgehalten. Wer das
@@ -438,6 +492,9 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
     Export oder bezahlten Tarif erwägen.
 11. Ungenutzte Supabase-Datenbanken im Vercel-Team (Überbleibsel aus Lovable-
     und Vercel-Experimenten) aufräumen.
+13. Datenschutzerklärung, Abschnitt „Hosting“ nennt noch „Supabase und Lovable Cloud“ —
+    tatsächlich Vercel (Hosting) + Supabase (Datenbank). Text von Uli freigeben lassen.
+14. Skigebiete (Karten wie bei Belvilla) — nächster Schritt nach „In der Nähe“.
 12. `hausmanagement-selfhosted/docs/Steinbock-Chalets-Gesamtdokumentation-MASTER.md`
     nennt noch die alte Website-DB → Einfügetext
     `MASTER-Einfuegetext-Website-2026-09-19.md` einarbeiten.
@@ -448,6 +505,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 19.09.2026 | In der Nähe (3.4a, 5c), Datenschutz-Abschnitt OpenStreetMap |
 | 19.09.2026 | Zweisprachigkeit (3.1a) |
 | 19.09.2026 | Vermietung über Plattform (3.4, 5b) |
 | 19.09.2026 | Anfahrt je Haus (3.3, 5a), Belvilla-Konzept festgehalten |

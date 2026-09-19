@@ -252,3 +252,34 @@ standen fest auf Deutsch im Code.
 
 **Prüfung:** `vite build` ok, `tsc` unverändert 10 bekannte Fehler; Schlüssel
 in `de.json` und `en.json` identisch.
+
+## 10. Nachtrag: „In der Nähe“ (Umgebungskarte)
+
+**Anlass:** Uli zeigte die Umgebungskarte von Belvilla (Kategorien mit Häkchen,
+Karte mit farbigen Markern). Entscheidung: OpenStreetMap statt Google, dieselben
+Kategorien, Platz im Hausbereich unter „Ausstattung“, danach Skigebiet-Karten.
+
+**Umgesetzt:**
+- SQL `20260919_in_der_naehe.sql`: Tabelle `house_places` (je Haus und Ort eine
+  Zeile, Kategorie aus fester Liste, Koordinaten, Hinweis de/en, Link, `osm_id`) + RLS.
+  Entfernung wird nicht gespeichert, sondern aus den Anfahrt-Koordinaten gerechnet.
+- `src/lib/placeCategories.ts` (Kategorien: Symbol, Farbe, OSM-Filter, Radius;
+  Entfernung, Formatierung), `src/hooks/useHousePlaces.ts`.
+- Website: `src/components/NearbyPlaces.tsx` in `Index.tsx` nach `Features`.
+  Karte (Leaflet + OSM-Kacheln) lädt erst nach Klick auf „Karte anzeigen“.
+- Admin: Knopf „Umgebung“ → `src/components/HousePlacesDialog.tsx`; Vorschläge
+  per Overpass-API aus dem Browser, prüfen, übernehmen, ergänzen, speichern.
+- i18n `nearby.*` (Titel, Knopf, Hinweise, 12 Kategorien) de/en;
+  Datenschutzerklärung: neuer Abschnitt „Karte (OpenStreetMap)“ (`Datenschutz.tsx`,
+  `legal.privacy.mapTitle/mapText`).
+- `package.json`/`package-lock.json`: `leaflet`, `@types/leaflet`. Die Lockfile
+  war veraltet (enthielt noch `lovable-tagger`, es fehlten `tsx` und
+  `react-helmet-async`) und ist jetzt neu erzeugt.
+
+**Prüfung:** `vite build` ok, `tsc` unverändert 10 bekannte Fehler. Browser-Test mit
+nachgestellten DB-Antworten: Abschnitt erscheint, Häkchen filtern Liste und Karte,
+Karte zeigt Haus- und Ortsmarker, Entfernungen stimmen (Beispiel 150 m / 640 m / 5,7 km).
+Echte OSM-Abfrage aus der Sandbox nicht möglich (gesperrt) → erster echter Test
+durch Uli im Admin.
+
+**Offen:** Datenschutz-Abschnitt „Hosting“ nennt noch Lovable Cloud (Master 9, Nr. 13).
