@@ -6,7 +6,7 @@
 > `docs/`. Grund: Am 18.09.2026 ging über eine Stunde verloren, weil nirgends
 > stand, welche Datenbank die Website benutzt.
 >
-> **Stand:** 19.09.2026 · **Repo:** github.com/UliBer1508/web-takeover-buddy ·
+> **Stand:** 20.09.2026 · **Repo:** github.com/UliBer1508/web-takeover-buddy ·
 > **Live:** https://steinbockchalets.com
 
 **Lesereihenfolge**
@@ -16,6 +16,7 @@
    eigene Datenbank entstand, Zwei-Häuser-Umbau)
 3. `docs/Session-2026-09-19-Hausinhalte-aus-Datenbank.md` (Beschreibung,
    Highlights, Ausstattung nur noch aus der DB; Kennzahlen-Leiste)
+3a. `docs/Session-2026-09-20-Ueber-uns.md` (Abschnitt „Über uns“)
 4. Für das Gesamtsystem (Hausverwaltung, Max, Portale):
    `hausmanagement-selfhosted/docs/Steinbock-Chalets-Gesamtdokumentation-MASTER.md`
    sowie dort `PROJEKT-REGELN.md` und `ARBEITSWEISE-CLAUDE-LESSONS.md`.
@@ -235,6 +236,17 @@ RLS: öffentlich nur is_active; Admins lesen/schreiben alles
 - Pistenplan = **Link** auf die offizielle PDF/Seite der Bergbahn (kein Kopieren fremder
   Pläne — Urheberrecht). Bild = eigenes Foto, Upload nach Storage `gallery/skigebiete/`.
 
+### 3.4c `about_us` — „Über uns“ / Gastgeber (seit 20.09.2026)
+
+```
+id boolean pk default true check(id)   -- genau eine Zeile
+title_de/_en · text_de/_en (Absätze durch Leerzeile) · image_url · is_active · updated_at
+RLS: öffentlich nur is_active; Admins lesen/schreiben alles
+```
+
+Gilt für die ganze Website (nicht je Haus). Kein Startinhalt. Ohne Text oder
+ausgeschaltet fehlen Abschnitt, Menüpunkt und Footer-Link „Über uns“.
+
 ### 3.5 Weitere Tabellen
 
 | Tabelle | Inhalt |
@@ -308,7 +320,8 @@ Reihenfolge von oben nach unten und woher die Daten kommen:
 | Galerie | `Gallery.tsx` | `gallery_images` des Hauses |
 | Verfügbarkeit | `AvailabilityCalendar.tsx` | **Hausverwaltung**: View `public_availability`, gefiltert über `external_house_id` aller aktiven Häuser |
 | Anfrage | `BookingForm.tsx` | `houses`, `booking_statuses`, `promotions`; schreibt `booking_inquiries` in **beide** Datenbanken |
-| Footer | `Footer.tsx` | — |
+| Über uns (außerhalb des Hausbereichs, vor dem Footer) | `AboutUs.tsx` | `about_us`; fehlt ohne Text/ausgeschaltet |
+| Footer | `Footer.tsx` | Link „Über uns“ nur wenn `about_us` Inhalt hat |
 
 **Hausauswahl:** `useHouseSelection()` (`src/hooks/useHouseSelection.ts`) lädt
 die aktiven Häuser (Query-Key `houses-active`), wählt standardmäßig das erste
@@ -423,6 +436,17 @@ Wildkogel Höhen + schwarze km + Pistenplan-Link, KitzSki/Kitzsteinhorn/Zillerta
 Aufteilung nach Schwierigkeit, Saalbach Höhen, KitzSki Saison. Belvilla „Zillertal Arena 52 km“
 ist falsch (offiziell 150 km, 52 Lifte). Anfahrt km/min sind **Schätzungen** ab Neukirchen.
 
+## 5e. „Über uns“ (seit 20.09.2026)
+
+**Befund (Uli, 20.09.2026):** Menüpunkt „Über uns“ sprang zu `#about` — das ist die
+**Hausbeschreibung** („Über das Haus“, `About.tsx`). Einen Abschnitt über die Gastgeber gab es nicht.
+Footer-Link „Über uns“ ebenso.
+
+**Entscheidung Uli:** echtes „Über uns“ bauen. Menü (`Navigation.tsx`) und Footer zeigen jetzt auf
+`#ueber-uns` (`AboutUs.tsx`) und erscheinen nur, wenn `about_us` aktiv ist und Text hat.
+Überschrift: eigene aus der DB, sonst i18n `navigation.about` („Über uns“/„About us“).
+Mit Foto: Bild links, Text rechts; ohne Foto: Text zentriert. `#about` bleibt die Hausbeschreibung.
+
 ## 6. Admin-Bereich
 
 Anmelden über „Admin“ oben rechts (Seite `/auth`). Admin ist, wer in
@@ -437,6 +461,7 @@ Unter dem Titelbild erscheint das Panel **„Häuser auf der Website“**
 | Texte & Daten (Stift) | `HouseFormDialog.tsx` | `houses` (Name, Ort, Texte, Merkmale, Kennzahlen, Kalender-ID, Reihenfolge) |
 | Ausstattung | `HouseFeaturesDialog.tsx` | `house_features` des Hauses |
 | Anfahrt | `HouseDirectionsDialog.tsx` | `house_directions` des Hauses |
+| Über uns (oben, ganze Website) | `AboutUsDialog.tsx` | `about_us`, Storage `gallery/ueber-uns/` |
 | Skigebiete (oben, für alle Häuser) | `SkiAreasDialog.tsx` | `ski_areas`, Storage `gallery/skigebiete/` |
 | Umgebung | `HousePlacesDialog.tsx` | `house_places` des Hauses (Vorschläge aus OpenStreetMap) |
 | Vermietung | `HouseBookingInfoDialog.tsx` | `houses.direct_booking` + `house_booking_info` |
@@ -472,6 +497,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 | `20260919_texte_englisch.sql` | 19.09.2026 | `_en`-Spalten in `houses` und `house_features`, englische Startwerte |
 | `20260919_in_der_naehe.sql` | 19.09.2026 | Tabelle `house_places` + RLS (leer; Befüllung im Admin „Umgebung“) |
 | `20260919_skigebiete.sql` | 19.09.2026 | Tabelle `ski_areas` + RLS, 6 Skigebiete mit Startwerten (nur wenn leer) |
+| `20260920_ueber_uns.sql` | 20.09.2026 | Tabelle `about_us` (eine Zeile, leer, ausgeschaltet) + RLS |
 
 > Die Umzugs- und Zwischen-SQL-Dateien vom 18.09.2026 liegen nicht im Repo.
 > Das Tabellenschema von `house_features` ist oben in 3.2 festgehalten. Wer das
@@ -543,6 +569,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 20.09.2026 | „Über uns“ als eigener Abschnitt (3.4c, 5e) |
 | 19.09.2026 | Hauskarte: kein Sprung nach unten beim Klick (5) |
 | 19.09.2026 | Skigebiete als Liste statt Karten (5d) |
 | 19.09.2026 | Skigebiete (3.4b, 5d) |
