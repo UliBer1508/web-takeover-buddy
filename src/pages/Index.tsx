@@ -8,6 +8,7 @@ import About from "@/components/About";
 import Features from "@/components/Features";
 import NearbyPlaces from "@/components/NearbyPlaces";
 import SkiAreas from "@/components/SkiAreas";
+import AboutUs from "@/components/AboutUs";
 import Stats from "@/components/Stats";
 import BookingForm from "@/components/BookingForm";
 import Testimonials from "@/components/Testimonials";
@@ -225,6 +226,9 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
           defaultHouseId={selectedHouseId}
         />
       </div>
+
+      {/* Gastgeber - gilt für die ganze Website, deshalb außerhalb des Hausbereichs */}
+      {!startAtGallery && <AboutUs />}
 
       <Footer />
     </div>
