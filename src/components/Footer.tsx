@@ -1,9 +1,14 @@
 import { MapPin, Phone, Mail, Globe, MessageCircle, Instagram, Facebook } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { useAboutUs, aboutUsText } from "@/hooks/useAboutUs";
+import { useSprache } from "@/lib/sprache";
 
 const Footer = () => {
   const { t } = useTranslation();
+  const sprache = useSprache();
+  const { data: ueberUns } = useAboutUs();
+  const hatUeberUns = !!aboutUsText(ueberUns, sprache);
 
   // React Router behaelt die Scroll-Position beim Seitenwechsel. Da die Links
   // im Footer ganz unten stehen, landet man sonst auf der neuen Seite wieder
@@ -71,15 +76,18 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-bold mb-4">{t("footer.quickLinks")}</h3>
             <ul className="space-y-2">
-              <li>
-                <button
-                  onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
-                  aria-label={t("footer.aria.scrollAbout")}
-                  className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
-                >
-                  {t("footer.aboutUs")}
-                </button>
-              </li>
+              {/* „Über uns“ = Gastgeber-Abschnitt, nur wenn er Inhalt hat */}
+              {hatUeberUns && (
+                <li>
+                  <button
+                    onClick={() => document.getElementById("ueber-uns")?.scrollIntoView({ behavior: "smooth" })}
+                    aria-label={t("footer.aria.scrollAbout")}
+                    className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
+                  >
+                    {t("footer.aboutUs")}
+                  </button>
+                </li>
+              )}
               <li>
                 <button
                   onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}

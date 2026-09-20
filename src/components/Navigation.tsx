@@ -5,12 +5,18 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useAuth } from "@/hooks/useAuth";
+import { useAboutUs, aboutUsText } from "@/hooks/useAboutUs";
+import { useSprache } from "@/lib/sprache";
 
 const Navigation = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, signOut } = useAuth();
+  const sprache = useSprache();
+  // „Über uns“ nur, wenn der Abschnitt Inhalt hat (public.about_us)
+  const { data: ueberUns } = useAboutUs();
+  const hatUeberUns = !!aboutUsText(ueberUns, sprache);
   const [scrollPosition, setScrollPosition] = useState(false);
 
   // Auf der Startseite liegt oben ein dunkles Hero-Bild, dort ist die
@@ -40,10 +46,11 @@ const Navigation = () => {
   // Links mit `id` scrollen zu einem Abschnitt der Startseite, Links mit `path`
   // fuehren auf eine eigene Seite. "Unsere Chalets" gibt es nur, wenn der
   // Abschnitt existiert - bei einem Haus wird er nicht gerendert.
+  // „Über uns“ = Gastgeber-Abschnitt (#ueber-uns), NICHT die Hausbeschreibung (#about).
   const navLinks: { label: string; id?: string; path?: string }[] = [
     { label: t("navigation.home"), id: "hero" },
     { label: t("navigation.chalets", "Unsere Chalets"), id: "chalets" },
-    { label: t("navigation.about"), id: "about" },
+    ...(hatUeberUns ? [{ label: t("navigation.about"), id: "ueber-uns" }] : []),
     { label: t("navigation.features"), id: "features" },
     { label: t("navigation.gallery"), id: "galerie" },
     { label: t("navigation.directions"), path: "/anfahrt" },

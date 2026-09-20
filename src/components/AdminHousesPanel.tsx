@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned, MountainSnow,
+  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned, MountainSnow, Users,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import HouseDirectionsDialog from "./HouseDirectionsDialog";
 import HouseBookingInfoDialog from "./HouseBookingInfoDialog";
 import HousePlacesDialog from "./HousePlacesDialog";
 import SkiAreasDialog from "./SkiAreasDialog";
+import AboutUsDialog from "./AboutUsDialog";
 
 interface AdminHouse {
   id: string;
@@ -61,6 +62,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
   const [kachelnFuer, setKachelnFuer] = useState<{ id: string; name: string } | null>(null);
   const [anfahrtFuer, setAnfahrtFuer] = useState<{ id: string; name: string } | null>(null);
   const [skigebieteOffen, setSkigebieteOffen] = useState(false);
+  const [ueberUnsOffen, setUeberUnsOffen] = useState(false);
   const [umgebungFuer, setUmgebungFuer] = useState<{ id: string; name: string } | null>(null);
   const [vermietungFuer, setVermietungFuer] = useState<{ id: string; name: string; direkt: boolean } | null>(null);
 
@@ -188,6 +190,10 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => setUeberUnsOffen(true)} title="Gilt für die ganze Website">
+              <Users className="h-4 w-4 mr-2" />
+              Über uns
+            </Button>
             <Button variant="outline" onClick={() => setSkigebieteOffen(true)} title="Gilt für alle Häuser">
               <MountainSnow className="h-4 w-4 mr-2" />
               Skigebiete
@@ -396,6 +402,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
       />
 
       <SkiAreasDialog open={skigebieteOffen} onOpenChange={setSkigebieteOffen} />
+      <AboutUsDialog open={ueberUnsOffen} onOpenChange={setUeberUnsOffen} />
 
       <HousePlacesDialog
         open={!!umgebungFuer}
