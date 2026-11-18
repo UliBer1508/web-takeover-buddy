@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned, MountainSnow, Users, Settings, Inbox, Calculator,
+  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned, MountainSnow, Users, Settings,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -18,8 +18,7 @@ import HousePlacesDialog from "./HousePlacesDialog";
 import SkiAreasDialog from "./SkiAreasDialog";
 import AboutUsDialog from "./AboutUsDialog";
 import SiteSettingsDialog from "./SiteSettingsDialog";
-import LongTermInquiriesDialog, { useLongTermInquiries, useLongTermOffers } from "./LongTermInquiriesDialog";
-import LongTermCalculationDialog from "./LongTermCalculationDialog";
+
 
 interface AdminHouse {
   id: string;
@@ -73,16 +72,8 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
     id: string; name: string; direkt: boolean; kurz: boolean; lang: boolean;
   } | null>(null);
   const [einstellungenOffen, setEinstellungenOffen] = useState(false);
-  const [mietanfragenOffen, setMietanfragenOffen] = useState(false);
-  const { data: mietanfragen = [] } = useLongTermInquiries(isAdmin);
-  const neueMietanfragen = mietanfragen.filter(a => a.status === "new").length;
-  const { data: angebote = [] } = useLongTermOffers(isAdmin);
-  // Antworten von Kunden, um die sich Uli kümmern muss: Rückfrage, oder angenommen und Anfrage noch nicht erledigt.
-  const offeneAntworten = angebote.filter(o =>
-    o.status === "question" ||
-    (o.status === "accepted" && mietanfragen.find(a => a.id === o.inquiry_id)?.status !== "closed")
-  ).length;
-  const [kalkulationFuer, setKalkulationFuer] = useState<{ id: string; name: string } | null>(null);
+  // Mietanfragen, Kalkulation und Angebote „Wohnen auf Zeit“ laufen seit 18.11.2026 in der
+  // Hausverwaltung (Tab Mieter → Interessenten), nicht mehr hier.
 
   // Link, den Uli Gaesten nach der Buchung schickt (Booking, Airbnb, Belvilla).
   const gaesteLinkKopieren = async (house: AdminHouse) => {
@@ -208,16 +199,6 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant={neueMietanfragen + offeneAntworten > 0 ? "default" : "outline"} onClick={() => setMietanfragenOffen(true)}>
-              <Inbox className="h-4 w-4 mr-2" />
-              Mietanfragen
-              {neueMietanfragen + offeneAntworten > 0 && (
-                <> ({[
-                  neueMietanfragen > 0 ? `${neueMietanfragen} neu` : null,
-                  offeneAntworten > 0 ? `${offeneAntworten} Antwort${offeneAntworten > 1 ? "en" : ""}` : null,
-                ].filter(Boolean).join(" · ")})</>
-              )}
-            </Button>
             <Button variant="outline" onClick={() => setEinstellungenOffen(true)} title="Gilt für die ganze Website">
               <Settings className="h-4 w-4 mr-2" />
               Einstellungen
@@ -346,17 +327,6 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                     Vermietung
                   </Button>
 
-                  {house.offer_long_term && (
-                    <Button
-                      variant="outline" size="sm"
-                      title="Interne Kalkulation Wohnen auf Zeit"
-                      onClick={() => setKalkulationFuer({ id: house.id, name: house.name })}
-                    >
-                      <Calculator className="h-4 w-4 mr-2" />
-                      Kalkulation
-                    </Button>
-                  )}
-
                   <Button
                     variant="ghost" size="sm"
                     title={`https://steinbockchalets.com/anfahrt/${house.slug}`}
@@ -453,17 +423,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
       />
 
       <SiteSettingsDialog open={einstellungenOffen} onOpenChange={setEinstellungenOffen} />
-      <LongTermCalculationDialog
-        open={!!kalkulationFuer}
-        onOpenChange={offen => !offen && setKalkulationFuer(null)}
-        houseId={kalkulationFuer?.id ?? null}
-        houseName={kalkulationFuer?.name ?? ""}
-      />
-      <LongTermInquiriesDialog
-        open={mietanfragenOffen}
-        onOpenChange={setMietanfragenOffen}
-        houses={houses.map(h => ({ id: h.id, name: h.name }))}
-      />
+
 
       <SkiAreasDialog open={skigebieteOffen} onOpenChange={setSkigebieteOffen} />
       <AboutUsDialog open={ueberUnsOffen} onOpenChange={setUeberUnsOffen} />

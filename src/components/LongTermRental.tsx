@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { externalSupabase } from "@/integrations/external-supabase/client";
 import { SelectableHouse } from "@/hooks/useHouseSelection";
 import { useHouseLongTerm } from "@/hooks/useLongTerm";
 import { useSprache, lokal, lokalListe } from "@/lib/sprache";
@@ -41,6 +41,9 @@ const leer = (): Formular => ({
  * den Ablauf und die Mietanfrage. KEINE Preise: Miete und Konditionen gibt es
  * nach der Besichtigung als persönliches Angebot (Schritt 3).
  * Inhalte aus public.house_long_term; fehlt ein Wert, entfällt die Zeile.
+ * Die Mietanfrage geht in die HAUSVERWALTUNG (usblrulkcgucxtkhugck, Tabelle
+ * rental_inquiries, house_id = houses.external_house_id) — dort laufen Hinweis,
+ * Besichtigung, Kalkulation und Angebot (Tab Mieter → Interessenten). Seit 18.11.2026.
  */
 const LongTermRental = ({ house }: LongTermRentalProps) => {
   const { t } = useTranslation();
@@ -100,10 +103,16 @@ const LongTermRental = ({ house }: LongTermRentalProps) => {
   const absenden = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pruefen()) return;
+    if (!house.external_house_id) {
+      console.error("Mietanfrage: Haus ohne external_house_id", house.id);
+      toast({ title: t("longTerm.errorTitle"), description: t("longTerm.errorDesc"), variant: "destructive" });
+      return;
+    }
     setSendet(true);
     try {
-      const { error } = await (supabase as any).from("long_term_inquiries").insert({
-        house_id: house.id,
+      // Ohne .select(): Gäste dürfen in der Hausverwaltung nur anlegen, nicht lesen.
+      const { error } = await (externalSupabase as any).from("rental_inquiries").insert({
+        house_id: house.external_house_id,
         guest_name: werte.name.trim(),
         guest_email: werte.email.trim(),
         guest_phone: werte.phone.trim(),

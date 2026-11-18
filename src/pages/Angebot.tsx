@@ -13,9 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { externalSupabase } from "@/integrations/external-supabase/client";
 import { useSprache, lokal } from "@/lib/sprache";
-import { euro } from "@/lib/longTermCalc";
+import { euro } from "@/lib/euro";
 
 interface OeffentlichesAngebot {
   house_name: string;
@@ -39,7 +39,8 @@ interface OeffentlichesAngebot {
 
 /**
  * Persönliches Angebot „Wohnen auf Zeit“ unter /angebot/<token> bzw. /offer/<token>.
- * Daten nur über die Funktion get_long_term_offer (Token), nie direkt aus der Tabelle.
+ * Daten aus der HAUSVERWALTUNG (usblrulkcgucxtkhugck) über die Funktionen
+ * get_rental_offer / respond_rental_offer (SQL 72) — nie direkt aus der Tabelle.
  * Entwürfe und zurückgezogene Angebote liefern nichts → „nicht gefunden“.
  */
 const Angebot = () => {
@@ -56,7 +57,7 @@ const Angebot = () => {
   const { data: angebot, isLoading } = useQuery({
     queryKey: ["offer", token],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).rpc("get_long_term_offer", { p_token: token });
+      const { data, error } = await (externalSupabase as any).rpc("get_rental_offer", { p_token: token });
       if (error) throw error;
       return (data ?? null) as OeffentlichesAngebot | null;
     },
@@ -78,7 +79,7 @@ const Angebot = () => {
     if (art === "accept" && !bestaetigt) return;
     if (art === "question" && nachricht.trim().length < 3) return;
     setSendet(true);
-    const { data, error } = await (supabase as any).rpc("respond_long_term_offer", {
+    const { data, error } = await (externalSupabase as any).rpc("respond_rental_offer", {
       p_token: token, p_response: art, p_message: nachricht.trim(),
     });
     setSendet(false);

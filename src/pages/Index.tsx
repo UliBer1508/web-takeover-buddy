@@ -120,11 +120,16 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
 
   // Auf der Startseite steht oben die Marke, nicht ein einzelnes Haus.
   const heroTitle = hasMultipleHouses ? "Steinbock Chalets" : null;
+  // Unterzeile nennt „Wohnen auf Zeit“, sobald ein Haus es anbietet (Wunsch Uli, 18.11.2026).
   const heroSubtitle = hasMultipleHouses
-    ? t(
-        "hero.brandSubtitle",
-        "Zwei Ferienhäuser im Oberpinzgau — Neukirchen am Großvenediger und Wald im Pinzgau"
-      )
+    ? gibtLang && gibtKurz
+      ? t("hero.brandSubtitleBoth")
+      : gibtLang
+        ? t("hero.brandSubtitleLongTerm")
+        : t(
+            "hero.brandSubtitle",
+            "Zwei Ferienhäuser im Oberpinzgau — Neukirchen am Großvenediger und Wald im Pinzgau"
+          )
     : null;
 
   // Beide Häuser stehen direkt im Titelbild, damit Gäste sie ohne Scrollen

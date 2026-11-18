@@ -18,7 +18,8 @@
    Highlights, Ausstattung nur noch aus der DB; Kennzahlen-Leiste)
 3a. `docs/Session-2026-09-20-Ueber-uns.md` (Abschnitt „Über uns“)
 3b. `docs/Session-2026-11-18-Wohnen-auf-Zeit.md` (Vermietungsart „Wohnen auf Zeit“, Schritt 1+2)
-3c. `docs/Session-2026-11-18-Kalkulation-und-Angebot.md` (Wohnen auf Zeit, Schritt 3+4)
+3c. `docs/Session-2026-11-18-Kalkulation-und-Angebot.md` (Wohnen auf Zeit, Schritt 3+4 — **überholt** durch 3d)
+3d. `docs/Session-2026-11-18-Umzug-Hausverwaltung.md` (Anfragen, Kalkulation, Angebot laufen in der Hausverwaltung)
 4. Für das Gesamtsystem (Hausverwaltung, Max, Portale):
    `hausmanagement-selfhosted/docs/Steinbock-Chalets-Gesamtdokumentation-MASTER.md`
    sowie dort `PROJEKT-REGELN.md` und `ARBEITSWEISE-CLAUDE-LESSONS.md`.
@@ -97,7 +98,7 @@ Belvilla laufen soll (Schalter im Admin-Panel).
 | Region | West EU (Irland) | Central EU (Frankfurt) |
 | Tarif / Backups | Free, **keine Backups** | Free, **keine Backups** |
 | Code-Zugriff | `src/integrations/supabase/client.ts` (`supabase`), über Vercel-Variablen | `src/integrations/external-supabase/client.ts` (`externalSupabase`), URL und anon-Key **fest im Code** |
-| Was die Website dort tut | alles: Häuser, Texte, Bilder, Bewertungen, Aktionen, Anfragen, Login/Admin | **liest** Belegung (`public_availability`), **schreibt** Buchungsanfragen (`booking_inquiries`) |
+| Was die Website dort tut | alles: Häuser, Texte, Bilder, Bewertungen, Aktionen, Anfragen, Login/Admin | **liest** Belegung (`public_availability`), **schreibt** Buchungsanfragen (`booking_inquiries`) und Mietanfragen (`rental_inquiries`), **ruft** `get_rental_offer`/`respond_rental_offer` (Angebotsseite) |
 | SQL-Editor | https://supabase.com/dashboard/project/wlmdjljyzdwvpqefwdmy/sql/new | https://supabase.com/dashboard/project/usblrulkcgucxtkhugck/sql/new |
 
 **Stillgelegt:** `xcohqbdgzprkixeycdhk` — die ursprüngliche Lovable-Cloud-
@@ -264,23 +265,21 @@ RLS: lesen nur, wenn Haus sichtbar UND offer_long_term; Admins lesen/schreiben a
 
 **Grundsatz (Uli, 18.11.2026): Für Wohnen auf Zeit stehen keine Preise in öffentlich
 lesbaren Tabellen.** Miete und Konditionen erhält ein Interessent erst nach der Besichtigung
-als persönliches Angebot (3.4g Kalkulation, 3.4h Angebot). `houses` ist öffentlich lesbar — deshalb
+als persönliches Angebot (Hausverwaltung, siehe 3.4e). `houses` ist öffentlich lesbar — deshalb
 dürfen Langzeitpreise dort nie stehen.
 
-### 3.4e `long_term_inquiries` — Mietanfragen „Wohnen auf Zeit“ (seit 18.11.2026)
+### 3.4e Mietanfragen „Wohnen auf Zeit“ → Hausverwaltung (seit 18.11.2026)
 
-```
-id · house_id → houses · guest_name/_email/_phone · move_in date · duration_months (leer = offen)
-persons · purpose ('work','home_office','other') · purpose_detail · pets boolean
-registration_confirmed boolean (Anmeldung Gemeinde zugesagt) · message · language ('de','en')
-status ('new','contacted','viewing','offer','rejected','closed') default 'new' · admin_note · created_at
-RLS: Gäste nur INSERT (status 'new', admin_note leer, Haus sichtbar + offer_long_term), nicht lesen;
-     Admins alles
-```
+Mietanfragen, interne Kalkulation und persönliche Angebote liegen in der **Hausverwaltung**
+(`usblrulkcgucxtkhugck`, SQL `hausmanagement-selfhosted/supabase/SQL/72_mietinteressenten.sql`,
+Doku dort `docs/Konzept-Wohnen-auf-Zeit.md`): Tabellen `rental_inquiries`, `rental_calculations`,
+`rental_offers`. Gepflegt in der Hausverwaltung, Tab **Mieter → Interessenten**, Hinweis-Banner in
+der Übersicht. Die Website **schreibt** nur die Anfrage (anon INSERT, `house_id` =
+`houses.external_house_id`) und **liest** ein freigegebenes Angebot über `get_rental_offer(token)`.
 
-Bewusst **nicht** `booking_inquiries`: keine Nächte/Preise, und die Hausverwaltung (Max) darf
-sie nicht wie Urlaubsanfragen verarbeiten. **Sie gehen derzeit NICHT an die Hausverwaltung** —
-keine automatische Benachrichtigung; Uli sieht sie im Admin unter „Mietanfragen“ (siehe 9).
+Die kurzzeitig in der Website-DB angelegten Tabellen `long_term_inquiries`, `long_term_offers`,
+`long_term_calculation` und ihre Funktionen werden mit `20261118c_…umzug_hausverwaltung.sql`
+gelöscht.
 
 ### 3.4f `site_settings` — Einstellungen der ganzen Website (seit 18.11.2026)
 
@@ -288,40 +287,6 @@ keine automatische Benachrichtigung; Uli sieht sie im Admin unter „Mietanfrage
 id boolean pk default true check(id)  -- genau eine Zeile
 show_mode_switch boolean default false  -- Umschalter „Urlaub | Wohnen auf Zeit“ · updated_at
 RLS: lesen für alle; schreiben nur Admins
-```
-
-### 3.4g `long_term_calculation` — interne Mietkalkulation je Haus (seit 18.11.2026)
-
-```
-house_id uuid pk → houses
-Beträge € pro Jahr: insurance · property_tax · municipal_fees (NK) · internet (NK) · financing ·
-  depreciation (AfA) · electricity (NK) · heating (NK) · maintenance · furniture_wear · management · cleaning
-extra_costs jsonb [{ "name", "amount", "utility" (= Nebenkosten) }]
-vacancy_months (Leerstand/Jahr, Standard 1) · profit_target (€/Jahr) · deposit_months (Standard 2, max 3)
-final_cleaning_fee (€ einmalig) · utilities_mode ('flat' Pauschale | 'advance' Vorauszahlung) · note · updated_at
-RLS: NUR Admins (lesen und schreiben) — keine öffentliche Policy
-```
-
-Rechenweg in `src/lib/longTermCalc.ts` (`berechnen()`): Monatsmiete gesamt =
-(Kosten/Jahr + Gewinnziel) / (12 − Leerstand); Nebenkosten/Monat = NK-Posten/Jahr / 12 (auf 5 €);
-Grundmiete = Rest (auf 10 €); Kaution = Kaution-Monate × Gesamtmiete (auf 10 €). Ergebnis ist nur
-ein **Vorschlag** — das Angebot übernimmt ihn und ist frei änderbar.
-
-### 3.4h `long_term_offers` — persönliche Angebote (seit 18.11.2026)
-
-```
-id · inquiry_id → long_term_inquiries (on delete set null) · house_id → houses
-token text unique (64 Zeichen Zufall, Teil des Kunden-Links) · guest_name · guest_email · language
-rent_month · utilities_month · utilities_mode · deposit · final_cleaning_fee
-move_in · duration_months (leer = offen) · conditions_de/_en (eine Kondition je Zeile) · valid_until
-status: draft → released → viewed → accepted | question ; withdrawn
-released_at · viewed_at · responded_at · guest_message · created_at · updated_at
-RLS: NUR Admins. Kunden lesen/antworten ausschließlich über zwei Funktionen (security definer):
-  get_long_term_offer(p_token) → JSON nur bei released/viewed/accepted/question (Entwurf/zurückgezogen = null);
-      erster Aufruf eines Nicht-Admins setzt viewed_at und released → viewed
-  respond_long_term_offer(p_token, 'accept'|'question', p_message) → 'ok' | 'expired' | 'not_found' | 'invalid'
-      (annehmen nur bis valid_until; leere Nachricht überschreibt eine frühere Rückfrage nicht)
-EXECUTE für anon + authenticated
 ```
 
 ### 3.5 Weitere Tabellen
@@ -550,22 +515,23 @@ wählbar, frei kombinierbar mit „Urlaub“. Vorbild Ablauf: Mr. Lodge (Münche
   Übergabe mit Protokoll + Anmeldung Gemeinde).
 - Rechts: Mietanfrage (Name, E-Mail, Telefon, Einzug, Dauer 6/9/12/24/offen — gefiltert nach
   Mindest-/Höchstdauer, Personen, Anlass + Freitext, Haustier, Bestätigung Anmeldung Gemeinde
-  (Pflicht, wenn verlangt), Nachricht) → Insert in `long_term_inquiries`.
+  (Pflicht, wenn verlangt), Nachricht) → Insert in die **Hausverwaltung** `rental_inquiries` (3.4e).
 - Alle Texte i18n `longTerm.*`, `modeSwitch.*`, `chalets.longTerm` (de/en).
 
-**Kalkulation und Angebot (Schritt 3+4, seit 18.11.2026)**
+**Kalkulation und Angebot (seit 18.11.2026 in der Hausverwaltung)**
 
 | Wo | Was |
 |---|---|
-| Admin → Haus → **Kalkulation** (nur bei Häusern mit Wohnen auf Zeit) | `LongTermCalculationDialog.tsx`: Kostenposten pro Jahr, weitere Posten, Annahmen; rechts laufend Ergebnis + Vorschlag |
-| Admin → **Mietanfragen** → **Angebot erstellen / öffnen** | `LongTermOfferDialog.tsx`: vorbelegt aus Kalkulation (Grundmiete, NK, Kaution, Endreinigung) und Anfrage (Einzug, Dauer, Sprache); gültig bis = heute + 14 Tage; Konditionen-Vorlage de/en |
-| Knöpfe im Angebot | **Als Entwurf speichern** (Kunde sieht nichts) · **Freigeben** (Status released, Link wird kopiert, Anfrage → Status „Angebot“) · **Änderungen speichern** · **Zurückziehen** (Link zeigt nichts mehr). Angenommene Angebote sind gesperrt. |
-| Link | `https://steinbockchalets.com/angebot/<token>` (Englisch `/offer/<token>`), Knöpfe Kopieren / E-Mail (mailto mit Text de/en) / Ansehen |
-| Kundenseite | `pages/Angebot.tsx`, Route `/angebot/:token` + `/offer/:token`, `noindex`. Zeigt Haus, Grundmiete, NK, Gesamt, Kaution, Endreinigung, Einzug, Dauer, gültig bis, Konditionen; **Angebot annehmen** (mit Bestätigung „Vertrag erst mit Unterschrift beider Seiten“) oder **Rückfrage stellen**. Stellt beim ersten Laden die Sprache des Angebots ein. i18n `offer.*`. |
-| Admin-Zähler | Knopf „Mietanfragen (n neu · n Antworten)“ — Antworten = Rückfragen + angenommene Angebote, deren Anfrage nicht „erledigt“ ist |
+| Hausverwaltung → Mieter → **Interessenten** | Anfragen, Status, Kalkulation je Haus, „Angebot erstellen“ → „Freigeben“ (Link wird kopiert) |
+| Hausverwaltung → Übersicht | Banner „Wohnen auf Zeit“: neue Mietanfragen und Antworten auf Angebote, bis „Gesehen“ |
+| Website `/angebot/<token>` (engl. `/offer/<token>`) | `pages/Angebot.tsx`, `noindex`; liest über `externalSupabase.rpc("get_rental_offer")`, Antwort über `respond_rental_offer`. Zeigt Haus, Grundmiete, NK, Gesamt, Kaution, Endreinigung, Einzug, Dauer, gültig bis, Konditionen; **annehmen** oder **Rückfrage**. i18n `offer.*`. |
 
-**Noch nicht gebaut:** Benachrichtigung bei Anfrage/Antwort (E-Mail), Anbindung an die
-Hausverwaltung/Max, Mietvertrag, eigene Seite `/wohnen-auf-zeit`, SEO/strukturierte Daten.
+Unterzeile im Titelbild (`Index.tsx`): `hero.brandSubtitleBoth` („Ferienhäuser und Wohnen auf
+Zeit …“), wenn es Häuser mit Urlaub und mit Wohnen auf Zeit gibt; `hero.brandSubtitleLongTerm`,
+wenn nur Wohnen auf Zeit; sonst wie bisher `hero.brandSubtitle`.
+
+**Noch nicht gebaut:** Unterlagen-Upload, „Als Mieter übernehmen“, E-Mail an Uli, Max lesend,
+Mietvertrag, eigene Seite `/wohnen-auf-zeit`, SEO, Portale, Video.
 
 ## 6. Admin-Bereich
 
@@ -585,8 +551,6 @@ Unter dem Titelbild erscheint das Panel **„Häuser auf der Website“**
 | Skigebiete (oben, für alle Häuser) | `SkiAreasDialog.tsx` | `ski_areas`, Storage `gallery/skigebiete/` |
 | Umgebung | `HousePlacesDialog.tsx` | `house_places` des Hauses (Vorschläge aus OpenStreetMap) |
 | Vermietung | `HouseBookingInfoDialog.tsx` | Vermietungsarten `houses.offer_short_term/offer_long_term`, `house_long_term` (Wohnen auf Zeit), `houses.direct_booking` + `house_booking_info` (Urlaub) |
-| Mietanfragen (oben, alle Häuser) | `LongTermInquiriesDialog.tsx` → `LongTermOfferDialog.tsx` | `long_term_inquiries` (Status), `long_term_offers` (Angebot, Freigabe); Knopf zeigt „neu“ und „Antworten“ |
-| Kalkulation (je Haus mit Wohnen auf Zeit) | `LongTermCalculationDialog.tsx` | `long_term_calculation` |
 | Einstellungen (oben, ganze Website) | `SiteSettingsDialog.tsx` | `site_settings.show_mode_switch` |
 | Gäste-Link | — | kopiert `https://steinbockchalets.com/anfahrt/<slug>` |
 | Preise | `HouseSettingsDialog.tsx` | `houses` (Preise, Gebühren, Zeiten) |
@@ -621,7 +585,8 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 | `20260919_in_der_naehe.sql` | 19.09.2026 | Tabelle `house_places` + RLS (leer; Befüllung im Admin „Umgebung“) |
 | `20260919_skigebiete.sql` | 19.09.2026 | Tabelle `ski_areas` + RLS, 6 Skigebiete mit Startwerten (nur wenn leer) |
 | `20260920_ueber_uns.sql` | 20.09.2026 | Tabelle `about_us` (eine Zeile, leer, ausgeschaltet) + RLS |
-| `20261118b_wohnen_auf_zeit_kalkulation_angebot.sql` | 18.11.2026 | Tabellen `long_term_calculation` (Zeile je Haus), `long_term_offers`, Funktionen `get_long_term_offer`, `respond_long_term_offer` (anon darf ausführen). Lokal mit Postgres 16 getestet. |
+| `20261118c_wohnen_auf_zeit_umzug_hausverwaltung.sql` | 18.11.2026 | löscht `long_term_inquiries`, `long_term_offers`, `long_term_calculation` + Funktionen (bricht ab, wenn noch Zeilen da sind) |
+| `20261118b_wohnen_auf_zeit_kalkulation_angebot.sql` | 18.11.2026 | **überholt** (siehe 3.4e): Kalkulation/Angebote kurzzeitig in der Website-DB |
 | `20261118_wohnen_auf_zeit.sql` | 18.11.2026 | `houses.offer_short_term/offer_long_term`, Tabellen `house_long_term` (Zeile je Haus), `long_term_inquiries`, `site_settings` + RLS. Schaltet nichts ein. |
 
 > Die Umzugs- und Zwischen-SQL-Dateien vom 18.09.2026 liegen nicht im Repo.
@@ -687,10 +652,8 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 12. `hausmanagement-selfhosted/docs/Steinbock-Chalets-Gesamtdokumentation-MASTER.md`
     nennt noch die alte Website-DB → Einfügetext
     `MASTER-Einfuegetext-Website-2026-09-19.md` einarbeiten.
-15. **Wohnen auf Zeit:** Mietanfragen und Antworten auf Angebote lösen keine Benachrichtigung
-    aus und gehen nicht an die Hausverwaltung — nur sichtbar im Admin („Mietanfragen“). Vor einer
-    Anbindung klären, wie Max Anfragen verarbeitet (darf Mietanfragen nicht automatisch
-    annehmen/mit Preisen beantworten). Hausverwaltung hat `houses.rental_type` — prüfen.
+15. **Wohnen auf Zeit:** nächste Schritte in der Hausverwaltung (Unterlagen-Upload, „Als Mieter
+    übernehmen“, E-Mail an Uli, Max lesend) — siehe dort `docs/Konzept-Wohnen-auf-Zeit.md`.
 16. Menü „Buchen“/„Jetzt buchen“ springt zu `#booking` — fehlt, wenn nur Wohnen auf Zeit
     angezeigt wird (Haus ohne Urlaub bzw. Umschalter auf „Wohnen auf Zeit“). Ziel anpassen.
 
@@ -700,6 +663,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | Anfragen/Kalkulation/Angebot in die Hausverwaltung umgezogen; Unterzeile Titelbild (2.3, 3.4e, 5f, 6, 7, 9) |
 | 18.11.2026 | Wohnen auf Zeit, Schritt 3+4: Kalkulation und Angebot (3.4g–h, 5f, 6, 7, 9) |
 | 18.11.2026 | Wohnen auf Zeit, Schritt 1+2 (3.1, 3.4d–f, 5f, 6, 7, 9) |
 | 20.09.2026 | „Über uns“ als eigener Abschnitt (3.4c, 5e) |
