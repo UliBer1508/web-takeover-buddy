@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
-import { Loader2, Mail, Phone } from "lucide-react";
+import { Loader2, Mail, Phone, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import LongTermOfferDialog, { ANGEBOT_STATUS, LongTermOffer } from "./LongTermOfferDialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,6 +46,21 @@ export const useLongTermInquiries = (enabled: boolean) =>
     enabled,
   });
 
+/** Angebote (nur Status-Felder) für die Übersicht und den Zähler im Admin-Panel. */
+export const useLongTermOffers = (enabled: boolean) =>
+  useQuery({
+    queryKey: ["long-term-offers"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("long_term_offers")
+        .select("id, inquiry_id, status, responded_at, created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data || []) as Pick<LongTermOffer, "id" | "inquiry_id" | "status" | "responded_at" | "created_at">[];
+    },
+    enabled,
+  });
+
 const datum = (iso: string) => format(parseISO(iso), "dd.MM.yyyy");
 
 /**
@@ -52,6 +70,10 @@ const datum = (iso: string) => format(parseISO(iso), "dd.MM.yyyy");
 const LongTermInquiriesDialog = ({ open, onOpenChange, houses }: LongTermInquiriesDialogProps) => {
   const queryClient = useQueryClient();
   const { data: anfragen = [], isLoading } = useLongTermInquiries(open);
+  const { data: angebote = [] } = useLongTermOffers(open);
+  const [angebotFuer, setAngebotFuer] = useState<LongTermInquiry | null>(null);
+  // neuestes Angebot je Anfrage
+  const angebotZu = (id: string) => angebote.find(o => o.inquiry_id === id);
   const hausName = (id: string) => houses.find(h => h.id === id)?.name ?? "—";
 
   const status = useMutation({
@@ -68,7 +90,10 @@ const LongTermInquiriesDialog = ({ open, onOpenChange, houses }: LongTermInquiri
       <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Mietanfragen — Wohnen auf Zeit</DialogTitle>
-          <DialogDescription>Neueste zuerst. Diese Anfragen gehen (noch) nicht an die Hausverwaltung.</DialogDescription>
+          <DialogDescription>
+            Neueste zuerst. Nach der Besichtigung: „Angebot erstellen“ → „Freigeben“ → Link an den Kunden.
+            Diese Anfragen gehen (noch) nicht an die Hausverwaltung.
+          </DialogDescription>
         </DialogHeader>
 
         {isLoading ? (
@@ -110,11 +135,26 @@ const LongTermInquiriesDialog = ({ open, onOpenChange, houses }: LongTermInquiri
                   <span>Anmeldung Gemeinde: <strong>{a.registration_confirmed ? "zugesagt" : "nein"}</strong></span>
                 </div>
                 {a.message && <p className="text-sm whitespace-pre-line bg-muted/50 rounded p-2">{a.message}</p>}
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                  <span className={`text-xs ${["accepted", "question"].includes(angebotZu(a.id)?.status ?? "") ? "font-semibold text-primary" : "text-muted-foreground"}`}>
+                    {angebotZu(a.id) ? `Angebot: ${ANGEBOT_STATUS[angebotZu(a.id)!.status]}` : "Noch kein Angebot"}
+                  </span>
+                  <Button size="sm" variant={angebotZu(a.id) ? "outline" : "default"} onClick={() => setAngebotFuer(a)}>
+                    <FileText className="h-4 w-4 mr-1" />
+                    {angebotZu(a.id) ? "Angebot öffnen" : "Angebot erstellen"}
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
         )}
       </DialogContent>
+      <LongTermOfferDialog
+        open={!!angebotFuer}
+        onOpenChange={offen => !offen && setAngebotFuer(null)}
+        inquiry={angebotFuer}
+        houseName={angebotFuer ? hausName(angebotFuer.house_id) : ""}
+      />
     </Dialog>
   );
 };
