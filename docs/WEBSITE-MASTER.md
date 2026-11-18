@@ -532,8 +532,13 @@ Unterzeile im Titelbild (`Index.tsx`): `hero.brandSubtitleBoth` („Ferienhäuse
 Zeit …“), wenn es Häuser mit Urlaub und mit Wohnen auf Zeit gibt; `hero.brandSubtitleLongTerm`,
 wenn nur Wohnen auf Zeit; sonst wie bisher `hero.brandSubtitle`.
 
-**„Jetzt buchen“ / „Anfrage senden“ (18.11.2026, `src/lib/anfrageZiel.ts`):** Knopf oben rechts,
-Menüpunkt und Footer-Link richten sich nach den Häusern: mindestens ein Haus im Urlaub **direkt**
+**„Jetzt buchen“ / „Buchungsanfrage“ / „Anfrage senden“ (18.11.2026, `src/lib/anfrageZiel.ts`):**
+Auf der Startseite zählt das **gewählte Haus** und die sichtbare Vermietungsart (Index.tsx meldet
+sie über `setStartseitenKontext`): Urlaub + direkt buchbar → „Jetzt buchen“ → `#booking`; Urlaub über
+Plattform (Wald/Belvilla) → „Buchungsanfrage“ (`navigation.bookingRequest`) → `#booking` mit dem
+Plattform-Hinweis; nur Wohnen auf Zeit → „Anfrage senden“ → `#wohnen-auf-zeit`. (Fehler bis dahin:
+beim Wald Chalet unter „Urlaub“ sprang der Knopf zu Wohnen auf Zeit des Venediger Chalets.)
+Ohne Startseiten-Kontext (Unterseiten) gilt die Regel über alle Häuser: mindestens ein Haus im Urlaub **direkt**
 buchbar → „Jetzt buchen“/„Buchen“ → `#booking`; sonst mit Wohnen auf Zeit → „Anfrage senden“/„Anfragen“
 → `#wohnen-auf-zeit`; sonst (nur Plattform) → „Buchen“ → `#booking`. Der Klick schickt das Ereignis
 `steinbock:anfrage-ziel` an `Index.tsx`; die Startseite wählt ein passendes Haus (und beim Umschalter
@@ -716,6 +721,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | Buchen-Knopf folgt dem gewählten Haus; „Buchungsanfrage“ bei Plattform-Häusern (5f) |
 | 18.11.2026 | Hinweis: Mietvertrag (Paket D) liegt in der Hausverwaltung (5f) |
 | 18.11.2026 | Video-Rundgang aus Galerie-Bildern: Abschnitt auf der Website + Video-Generator im Admin (5, 5g, 6) |
 | 18.11.2026 | Selbstauskunft + Unterlagen auf der Angebotsseite (2.3, 5f, 9) |

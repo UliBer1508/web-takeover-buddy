@@ -23,7 +23,7 @@ import LongTermRental from "@/components/LongTermRental";
 import VirtualTour from "@/components/VirtualTour";
 import RentalModeSwitch from "@/components/RentalModeSwitch";
 import { useSiteSettings, Mietart } from "@/hooks/useLongTerm";
-import { ZIEL_EREIGNIS, AnfrageZielId } from "@/lib/anfrageZiel";
+import { ZIEL_EREIGNIS, AnfrageZielId, setStartseitenKontext } from "@/lib/anfrageZiel";
 
 interface IndexProps {
   initialGalleryView?: "photos" | "info";
@@ -96,6 +96,15 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
 
   const zeigeKurz = !!selectedHouse?.offer_short_term && (!zeigeUmschalter || mietart === "short");
   const zeigeLang = !!selectedHouse?.offer_long_term && (!zeigeUmschalter || mietart === "long");
+
+  // Knopf „Jetzt buchen / Buchungsanfrage / Anfrage senden“ richtet sich nach dem gewählten Haus
+  // und der sichtbaren Vermietungsart (lib/anfrageZiel.ts). Beim Verlassen der Startseite zurücksetzen.
+  useEffect(() => {
+    setStartseitenKontext(selectedHouse
+      ? { kurz: zeigeKurz, lang: zeigeLang, direkt: selectedHouse.direct_booking !== false }
+      : null);
+  }, [selectedHouse, zeigeKurz, zeigeLang]);
+  useEffect(() => () => setStartseitenKontext(null), []);
 
   const isInfo = initialGalleryView === "info";
   const isGalleryPhotos = initialGalleryView === "photos";
