@@ -85,7 +85,7 @@ const Hero = ({
               decoding="async"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-foreground/45 via-foreground/25 to-foreground/75" />
+            <div className="absolute inset-0 bg-gradient-to-b from-foreground/35 via-foreground/15 to-foreground/65" />
           </>
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/20">

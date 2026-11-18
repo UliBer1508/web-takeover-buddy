@@ -121,7 +121,7 @@ const text = (
 const karte = (ctx: CanvasRenderingContext2D, plan: TourPlan, w: number, h: number, art: "titel" | "schluss", p: number) => {
   const hinter = art === "titel" ? plan.bilder[0] : plan.bilder[plan.bilder.length - 1];
   if (hinter) bildZeichnen(ctx, hinter, w, h, p, art === "titel" ? 1 : 0);
-  ctx.fillStyle = "rgba(25,18,12,0.55)";
+  ctx.fillStyle = "rgba(18,30,24,0.55)";
   ctx.fillRect(0, 0, w, h);
   const basis = Math.min(w, h);
   const mitte = w / 2;
@@ -131,10 +131,10 @@ const karte = (ctx: CanvasRenderingContext2D, plan: TourPlan, w: number, h: numb
     text(ctx, plan.texte.marke.toUpperCase(), mitte, h * 0.38, basis * 0.035, 600, "rgba(255,255,255,0.85)", "center", w * 0.9);
     text(ctx, plan.texte.haus, mitte, h * 0.5, basis * 0.085, 700, "#fff", "center", w * 0.9);
     if (plan.texte.zeile) text(ctx, plan.texte.zeile, mitte, h * 0.58, basis * 0.04, 400, "#fff", "center", w * 0.9);
-    if (plan.texte.zusatz) text(ctx, plan.texte.zusatz, mitte, h * 0.66, basis * 0.04, 600, "#f3d9b8", "center", w * 0.9);
+    if (plan.texte.zusatz) text(ctx, plan.texte.zusatz, mitte, h * 0.66, basis * 0.04, 600, "#dcebc4", "center", w * 0.9);
   } else {
     text(ctx, plan.texte.haus, mitte, h * 0.45, basis * 0.07, 700, "#fff", "center", w * 0.9);
-    text(ctx, plan.texte.schluss, mitte, h * 0.56, basis * 0.045, 600, "#f3d9b8", "center", w * 0.9);
+    text(ctx, plan.texte.schluss, mitte, h * 0.56, basis * 0.045, 600, "#dcebc4", "center", w * 0.9);
     text(ctx, plan.texte.marke, mitte, h * 0.64, basis * 0.035, 400, "rgba(255,255,255,0.85)", "center", w * 0.9);
   }
 };
@@ -160,7 +160,7 @@ export const zeichneFrame = (ctx: CanvasRenderingContext2D, plan: TourPlan, t: n
   const { width: w, height: h } = ctx.canvas;
   ctx.save();
   ctx.globalAlpha = 1;
-  ctx.fillStyle = "#1b140e";
+  ctx.fillStyle = "#1e2a23";
   ctx.fillRect(0, 0, w, h);
 
   // Abschnitte: [Titel][Bild 1]…[Bild n][Schluss], jeweils mit Überblendung in den nächsten

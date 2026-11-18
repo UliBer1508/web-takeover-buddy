@@ -108,7 +108,7 @@ const TourVideoDialog = ({ open, onOpenChange, house }: TourVideoDialogProps) =>
           </div>
         </div>
 
-        <div className={`mx-auto rounded-lg overflow-hidden bg-[#1b140e] ${format === "quer" ? "w-full aspect-video" : "w-48 aspect-[9/16]"}`}>
+        <div className={`mx-auto rounded-lg overflow-hidden bg-[#1e2a23] ${format === "quer" ? "w-full aspect-video" : "w-48 aspect-[9/16]"}`}>
           {isLoading ? (
             <div className="w-full h-full flex items-center justify-center text-white/80 py-10">
               <Loader2 className="h-5 w-5 animate-spin" />

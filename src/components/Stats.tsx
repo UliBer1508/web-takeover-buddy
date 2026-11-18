@@ -67,7 +67,7 @@ const Stats = ({ house }: StatsProps) => {
   if (stats.length === 0) return null;
 
   return (
-    <section ref={sectionRef} className="py-16 md:py-20 bg-primary text-primary-foreground">
+    <section ref={sectionRef} className="py-16 md:py-20 bg-band text-primary-foreground">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className={`grid gap-8 md:gap-12 grid-cols-2 ${stats.length >= 4 ? "md:grid-cols-4" : "md:grid-cols-3"}`}>
           {stats.map((stat, index) => (

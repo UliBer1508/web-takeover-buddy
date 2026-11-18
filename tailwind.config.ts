@@ -62,6 +62,10 @@ export default {
         stone: "hsl(var(--stone))",
         snow: "hsl(var(--snow))",
         "mountain-blue": "hsl(var(--mountain-blue))",
+        leaf: "hsl(var(--leaf))",
+        brick: "hsl(var(--brick))",
+        footer: "hsl(var(--footer))",
+        band: "hsl(var(--band))",
       },
       borderRadius: {
         lg: "var(--radius)",

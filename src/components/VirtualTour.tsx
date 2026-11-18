@@ -111,7 +111,7 @@ const VirtualTour = ({ house }: { house: SelectableHouse | null }) => {
           <h2 className="text-3xl md:text-4xl font-bold mb-3">{t("tour.title")}</h2>
           <p className="text-muted-foreground">{t("tour.subtitle", { house: house.name })}</p>
         </div>
-        <div ref={rahmenRef} className="relative rounded-2xl overflow-hidden shadow-xl bg-[#1b140e] aspect-video">
+        <div ref={rahmenRef} className="relative rounded-2xl overflow-hidden shadow-xl bg-[#1e2a23] aspect-video">
           {isLoading ? (
             <div className="absolute inset-0 flex items-center justify-center text-white/80">
               <Loader2 className="h-6 w-6 animate-spin" />

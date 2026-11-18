@@ -344,6 +344,36 @@ siehe Abschnitt 9):
 
 ---
 
+## 4a. Farben „Blattgrün“ (seit 18.11.2026)
+
+Wunsch Uli: weg vom Holzbraun, helle Farben wie auf zwei Aquarell-Bildern (kalkweiße Häuser, frisches
+Grün, blaue Pflastersteine). Mockup mit Variante A (gewählt) und B: claude.ai Design-Canvas
+„Steinbock Chalets – neue Farben (Mockup)“.
+
+**Alle Farben stehen zentral in `src/index.css` (`:root`)**, Tailwind liest sie über `tailwind.config.ts`.
+
+| Rolle | Variable / Klasse | Farbe |
+|---|---|---|
+| Hintergrund | `--background` | Kalkweiß #F6F3EA |
+| Text | `--foreground` | Tusche #2A2E2B |
+| Knöpfe, Rahmen, Links | `--primary` (`bg-primary`) | Waldgrün #2F6B3A |
+| Kacheln, Flächen | `--secondary` | Zartgrün #EAF2DD |
+| Akzent (Ortszeile, Punkte) | `--accent` | Steinblau #3C6E8F |
+| Fußzeile | `--footer` (`bg-footer`, neu) | Pflaster-Dunkelblau #24445C |
+| Kennzahlen-Leiste | `--band` (`bg-band`, neu) | #3F7F2E |
+| Symbole | `--leaf` (`bg-leaf`/`text-leaf`, neu) | Blattgrün #5E9E3A |
+| sparsamer Hinweis | `--brick` (`text-brick`, neu) | Ziegelrot #B5532F |
+| Hausfarben (Karten, Kalender) | `lib/houseColors.ts` | Waldgrün, Steinblau, Ziegelrot, Violett |
+
+`--wood`/`--wood-light` behalten ihren Namen (Klassen `wood`), zeigen aber Grün. Fest im Code geänderte
+Stellen: `Gallery.tsx` (Knopf), `VirtualTour.tsx`/`TourVideoDialog.tsx` (dunkler Rahmen), `lib/tour.ts`
+(Schrift- und Hintergrundfarben im Video), `index.html` (theme-color), `vite.config.ts` (PWA-Manifest).
+Titelbild: Schleier etwas heller (`Hero.tsx`). Weißer Text auf Grün/Blau erfüllt den Kontrast 4,5:1.
+Bewusst nicht geändert: Farben der Orts-Kategorien (`placeCategories.ts`) und Pistenfarben (`SkiAreas.tsx`),
+Warnhinweise im Admin (amber).
+
+---
+
 ## 5. Aufbau der Startseite (`src/pages/Index.tsx`)
 
 Reihenfolge von oben nach unten und woher die Daten kommen:
@@ -721,6 +751,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | Neue Farbwelt „Blattgrün“ statt Holzbraun (4a) |
 | 18.11.2026 | Buchen-Knopf folgt dem gewählten Haus; „Buchungsanfrage“ bei Plattform-Häusern (5f) |
 | 18.11.2026 | Hinweis: Mietvertrag (Paket D) liegt in der Hausverwaltung (5f) |
 | 18.11.2026 | Video-Rundgang aus Galerie-Bildern: Abschnitt auf der Website + Video-Generator im Admin (5, 5g, 6) |

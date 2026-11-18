@@ -373,20 +373,20 @@ const Gallery = ({ houseId, initialView = "photos" }: GalleryProps) => {
             <Button
               size="sm"
               onClick={() => setView("info")}
-              className="gap-2 relative bg-[#c87f2a] hover:bg-[#b3701f] text-white font-medium"
+              className="gap-2 relative bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
             >
               <Map className="h-4 w-4" />
               {t("gallery.viewToggle.info")}
               {view !== "info" && (
                 <span
                   aria-hidden="true"
-                  className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#2f6b4f] ring-2 ring-background"
+                  className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-leaf ring-2 ring-background"
                 />
               )}
             </Button>
           </div>
           {view !== "info" && (
-            <p className="text-center text-sm font-medium text-[#2f6b4f] mt-3 max-w-md mx-auto">
+            <p className="text-center text-sm font-medium text-primary mt-3 max-w-md mx-auto">
               {t("gallery.viewToggle.infoHint")}
             </p>
           )}
