@@ -16,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import { externalSupabase } from "@/integrations/external-supabase/client";
 import { useSprache, lokal } from "@/lib/sprache";
 import { euro } from "@/lib/euro";
+import OfferApplication from "@/components/OfferApplication";
 
 interface OeffentlichesAngebot {
   house_name: string;
@@ -35,6 +36,9 @@ interface OeffentlichesAngebot {
   expired: boolean;
   status: "released" | "viewed" | "accepted" | "question";
   responded_at: string | null;
+  /** seit SQL 73: Selbstauskunft da? hochgeladene Unterlagen (nur Namen) */
+  application_submitted?: boolean;
+  documents?: { name: string; at: string }[];
 }
 
 /**
@@ -151,6 +155,15 @@ const Angebot = () => {
                   {t("offer.acceptedInfo", { date: angebot.responded_at ? datum(angebot.responded_at) : "" })}
                 </span>
               </div>
+            )}
+            {angebot.status === "accepted" && (
+              <OfferApplication
+                token={token}
+                guestName={angebot.guest_name}
+                applicationSubmitted={!!angebot.application_submitted}
+                documents={angebot.documents ?? []}
+                onChanged={() => queryClient.invalidateQueries({ queryKey: ["offer", token] })}
+              />
             )}
             {angebot.status === "question" && (
               <div className="flex gap-2 rounded-lg border bg-muted/50 p-4 text-sm">

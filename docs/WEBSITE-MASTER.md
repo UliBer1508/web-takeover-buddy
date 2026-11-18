@@ -98,7 +98,7 @@ Belvilla laufen soll (Schalter im Admin-Panel).
 | Region | West EU (Irland) | Central EU (Frankfurt) |
 | Tarif / Backups | Free, **keine Backups** | Free, **keine Backups** |
 | Code-Zugriff | `src/integrations/supabase/client.ts` (`supabase`), über Vercel-Variablen | `src/integrations/external-supabase/client.ts` (`externalSupabase`), URL und anon-Key **fest im Code** |
-| Was die Website dort tut | alles: Häuser, Texte, Bilder, Bewertungen, Aktionen, Anfragen, Login/Admin | **liest** Belegung (`public_availability`), **schreibt** Buchungsanfragen (`booking_inquiries`) und Mietanfragen (`rental_inquiries`), **ruft** `get_rental_offer`/`respond_rental_offer` (Angebotsseite) |
+| Was die Website dort tut | alles: Häuser, Texte, Bilder, Bewertungen, Aktionen, Anfragen, Login/Admin | **liest** Belegung (`public_availability`), **schreibt** Buchungsanfragen (`booking_inquiries`) und Mietanfragen (`rental_inquiries`), **ruft** `get_rental_offer`/`respond_rental_offer` (Angebotsseite) und die Edge Function `rental-portal` (Selbstauskunft, Unterlagen-Upload) |
 | SQL-Editor | https://supabase.com/dashboard/project/wlmdjljyzdwvpqefwdmy/sql/new | https://supabase.com/dashboard/project/usblrulkcgucxtkhugck/sql/new |
 
 **Stillgelegt:** `xcohqbdgzprkixeycdhk` — die ursprüngliche Lovable-Cloud-
@@ -538,7 +538,14 @@ buchbar → „Jetzt buchen“/„Buchen“ → `#booking`; sonst mit Wohnen auf
 die Vermietungsart) und scrollt dann. Von Unterseiten: `navigate("/", { state: { anfrageZiel } })`.
 i18n `navigation.requestNow`, `navigation.request`.
 
-**Noch nicht gebaut:** Unterlagen-Upload, „Als Mieter übernehmen“, E-Mail an Uli, Max lesend,
+**Nach der Zusage (seit 18.11.2026, `components/OfferApplication.tsx`):** Die Angebotsseite zeigt
+„Nächster Schritt: Selbstauskunft und Unterlagen“ — Formular Selbstauskunft (Einwilligung
+Datenschutz Pflicht) und Upload Ausweis/Einkommensnachweis/Sonstiges (PDF/Bild, ≤ 20 MB).
+Beides über `externalSupabase.functions.invoke("rental-portal")` (Hausverwaltung, Token-Prüfung);
+Dateien gehen in Blöcken direkt zu OneDrive. E-Mail an Uli, Anzeige und „Als Mieter übernehmen“
+liegen in der Hausverwaltung (`docs/Konzept-Wohnen-auf-Zeit.md` dort). i18n `offer.app.*`.
+
+**Noch nicht gebaut:** Max lesend,
 Mietvertrag, eigene Seite `/wohnen-auf-zeit`, SEO, Portale, Video.
 
 ## 6. Admin-Bereich
@@ -660,8 +667,11 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 12. `hausmanagement-selfhosted/docs/Steinbock-Chalets-Gesamtdokumentation-MASTER.md`
     nennt noch die alte Website-DB → Einfügetext
     `MASTER-Einfuegetext-Website-2026-09-19.md` einarbeiten.
-15. **Wohnen auf Zeit:** nächste Schritte in der Hausverwaltung (Unterlagen-Upload, „Als Mieter
-    übernehmen“, E-Mail an Uli, Max lesend) — siehe dort `docs/Konzept-Wohnen-auf-Zeit.md`.
+15. **Wohnen auf Zeit:** Unterlagen-Upload, „Als Mieter übernehmen“ und E-Mail an Uli erledigt
+    18.11.2026. Offen: Max lesend — siehe Hausverwaltung `docs/Konzept-Wohnen-auf-Zeit.md`.
+17. **Datenschutzerklärung** um Mietinteressenten ergänzen (Selbstauskunft, Ausweis,
+    Einkommensnachweis: Zweck, Speicherort OneDrive/Supabase, Speicherdauer, Löschung bei Absage).
+    Text von Uli freigeben lassen.
 16. ~~Menü „Buchen“/„Jetzt buchen“ ins Leere~~ — erledigt 18.11.2026 (5f, `lib/anfrageZiel.ts`).
 
 ---
@@ -670,6 +680,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | Selbstauskunft + Unterlagen auf der Angebotsseite (2.3, 5f, 9) |
 | 18.11.2026 | „Jetzt buchen“ → „Anfrage senden“, wenn nichts direkt buchbar ist (5f, 9) |
 | 18.11.2026 | Anfragen/Kalkulation/Angebot in die Hausverwaltung umgezogen; Unterzeile Titelbild (2.3, 3.4e, 5f, 6, 7, 9) |
 | 18.11.2026 | Wohnen auf Zeit, Schritt 3+4: Kalkulation und Angebot (3.4g–h, 5f, 6, 7, 9) |
