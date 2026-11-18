@@ -547,8 +547,9 @@ Beides über `externalSupabase.functions.invoke("rental-portal")` (Hausverwaltun
 Dateien gehen in Blöcken direkt zu OneDrive. E-Mail an Uli, Anzeige und „Als Mieter übernehmen“
 liegen in der Hausverwaltung (`docs/Konzept-Wohnen-auf-Zeit.md` dort). i18n `offer.app.*`.
 
-**Noch nicht gebaut:** Max lesend,
-Mietvertrag, eigene Seite `/wohnen-auf-zeit`, SEO, Portale. (Video: erledigt, 5g.)
+**Noch nicht gebaut:** Max lesend, eigene Seite `/wohnen-auf-zeit`, SEO, Portale. (Video: erledigt, 5g.
+Mietvertrag + Übergabeprotokoll + Inventarliste: erledigt 18.11.2026 in der Hausverwaltung, SQL 74 —
+siehe dort `docs/Konzept-Wohnen-auf-Zeit.md`, Abschnitt Paket D. Die Website ist davon nicht betroffen.)
 
 ## 5g. Video-Rundgang (seit 18.11.2026)
 
@@ -715,6 +716,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | Hinweis: Mietvertrag (Paket D) liegt in der Hausverwaltung (5f) |
 | 18.11.2026 | Video-Rundgang aus Galerie-Bildern: Abschnitt auf der Website + Video-Generator im Admin (5, 5g, 6) |
 | 18.11.2026 | Selbstauskunft + Unterlagen auf der Angebotsseite (2.3, 5f, 9) |
 | 18.11.2026 | „Jetzt buchen“ → „Anfrage senden“, wenn nichts direkt buchbar ist (5f, 9) |
