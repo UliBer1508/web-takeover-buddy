@@ -20,6 +20,7 @@ import ChaletCards from "@/components/ChaletCards";
 import AdminHousesPanel from "@/components/AdminHousesPanel";
 import { useHouseSelection } from "@/hooks/useHouseSelection";
 import LongTermRental from "@/components/LongTermRental";
+import VirtualTour from "@/components/VirtualTour";
 import RentalModeSwitch from "@/components/RentalModeSwitch";
 import { useSiteSettings, Mietart } from "@/hooks/useLongTerm";
 import { ZIEL_EREIGNIS, AnfrageZielId } from "@/lib/anfrageZiel";
@@ -272,6 +273,8 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
             <Testimonials />
           </>
         )}
+        {/* Video-Rundgang aus den Galerie-Bildern (lib/tour.ts), nicht in der Admin-Bildvorschau */}
+        {!startAtGallery && !vorschauHausId && <VirtualTour house={selectedHouse} />}
         <Gallery houseId={galerieHausId} initialView={initialGalleryView} />
         {zeigeKurz && (
         <section className="py-12 md:py-16 bg-muted/30">

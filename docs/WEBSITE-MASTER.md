@@ -20,6 +20,7 @@
 3b. `docs/Session-2026-11-18-Wohnen-auf-Zeit.md` (Vermietungsart „Wohnen auf Zeit“, Schritt 1+2)
 3c. `docs/Session-2026-11-18-Kalkulation-und-Angebot.md` (Wohnen auf Zeit, Schritt 3+4 — **überholt** durch 3d)
 3d. `docs/Session-2026-11-18-Umzug-Hausverwaltung.md` (Anfragen, Kalkulation, Angebot laufen in der Hausverwaltung)
+3e. `docs/Session-2026-11-18-Video-Rundgang.md` (Video-Rundgang aus den Galerie-Bildern)
 4. Für das Gesamtsystem (Hausverwaltung, Max, Portale):
    `hausmanagement-selfhosted/docs/Steinbock-Chalets-Gesamtdokumentation-MASTER.md`
    sowie dort `PROJEKT-REGELN.md` und `ARBEITSWEISE-CLAUDE-LESSONS.md`.
@@ -359,6 +360,7 @@ Reihenfolge von oben nach unten und woher die Daten kommen:
 | In der Nähe | `NearbyPlaces.tsx` | `house_places` des Hauses, Mittelpunkt aus `house_directions`; fehlt ganz, wenn keine Orte eingetragen sind |
 | Skigebiete | `SkiAreas.tsx` | `ski_areas` (für alle Häuser gleich); fehlt, wenn keines aktiv ist |
 | Bewertungen | `Testimonials.tsx` | `reviews` (**alle Häuser, ohne Hausfilter**) |
+| Rundgang (`#rundgang`, seit 18.11.2026) | `VirtualTour.tsx` | `gallery_images` + `categories` des Hauses (5g); fehlt bei weniger als 3 Bildern |
 | Galerie | `Gallery.tsx` | `gallery_images` des Hauses |
 | Verfügbarkeit | `AvailabilityCalendar.tsx` | **Hausverwaltung**: View `public_availability`, gefiltert über `external_house_id` aller aktiven Häuser |
 | Anfrage | `BookingForm.tsx` | `houses`, `booking_statuses`, `promotions`; schreibt `booking_inquiries` in **beide** Datenbanken |
@@ -546,7 +548,39 @@ Dateien gehen in Blöcken direkt zu OneDrive. E-Mail an Uli, Anzeige und „Als 
 liegen in der Hausverwaltung (`docs/Konzept-Wohnen-auf-Zeit.md` dort). i18n `offer.app.*`.
 
 **Noch nicht gebaut:** Max lesend,
-Mietvertrag, eigene Seite `/wohnen-auf-zeit`, SEO, Portale, Video.
+Mietvertrag, eigene Seite `/wohnen-auf-zeit`, SEO, Portale. (Video: erledigt, 5g.)
+
+## 5g. Video-Rundgang (seit 18.11.2026)
+
+Ein Rundgang aus den **vorhandenen Galerie-Bildern** – keine eigene Tabelle, kein SQL, kein Upload.
+Eine Zeichenfunktion (`src/lib/tour.ts`) wird zweimal genutzt:
+
+| Wo | Komponente | Was |
+|---|---|---|
+| Website, vor der Galerie | `VirtualTour.tsx`, Anker `#rundgang` | Canvas 1280×720 spielt live im Browser (Start, Pause, nochmal, Vollbild). Wird auf `/galerie` und in der Admin-Vorschau eines Hauses nicht gezeigt. Fehlt, wenn das Haus weniger als 3 Bilder hat |
+| Admin, Knopf „Video“ je Haus | `TourVideoDialog.tsx` | Format Querformat 16:9 (1920×1080, Website/YouTube/Portale) oder Hochformat 9:16 (1080×1920, Instagram/Reels/Stories); „Höchstens Bilder“ 12/18/24/30; Vorschau, „Video erzeugen“ mit Fortschritt + Abbrechen, Download `rundgang-<slug>-<sprache>-<format>.mp4` |
+
+**Bildauswahl (`ladeTourBilder`)**: `gallery_images` des Hauses, Titelbild (`is_hero`) zuerst, dann nach
+`categories.sort_order`, innerhalb der Kategorie nach `sort_order`; höchstens n Bilder (Website 24).
+Titel aus `title`/`title_en`, Kategorie übersetzt nach Website-Sprache.
+
+**Ablauf des Videos (`planErstellen`, `zeichneFrame`)**: Titelkarte 3,5 s (Marke, Hausname, Ort,
+Zusatz) → je Bild 4,5 s mit langsamem Zoom/Schwenk („Ken Burns“), unten Kategorie + Bildtitel,
+oben links „Steinbock Chalets“ → Schlusskarte 4 s. Überblendung 1 s. Bei 24 Bildern ca. 1:50 Min.
+Zusatzzeile je nach Vermietungsart: nur Wohnen auf Zeit → `tour.longTerm`, beides → `tour.both`;
+Schluss: Wohnen auf Zeit → `tour.endInquiry` („Mietanfrage: steinbockchalets.com“), sonst `tour.endBook`.
+
+**Aufnahme (`aufnehmen`)**: `canvas.captureStream(30)` + `MediaRecorder`; MP4 (H.264), wenn der Browser
+es kann (Chrome/Edge aktuell, Safari), sonst WebM. Die Aufnahme läuft **in Echtzeit** – Fenster offen
+und sichtbar lassen (Hintergrund-Tabs drosseln die Bildrate). Sprache des Videos = aktuelle
+Website-Sprache: für die englische Fassung oben auf EN umschalten und neu erzeugen.
+
+**Voraussetzung**: Bilder werden mit `crossOrigin="anonymous"` geladen (Supabase-Storage liefert CORS) –
+sonst wäre das Canvas „tainted“ und die Aufnahme schlägt fehl.
+
+i18n: `tour.*` (title, subtitle, play, resume, again, pause, fullscreen, longTerm, both, endInquiry, endBook).
+
+---
 
 ## 6. Admin-Bereich
 
@@ -565,6 +599,7 @@ Unter dem Titelbild erscheint das Panel **„Häuser auf der Website“**
 | Über uns (oben, ganze Website) | `AboutUsDialog.tsx` | `about_us`, Storage `gallery/ueber-uns/` |
 | Skigebiete (oben, für alle Häuser) | `SkiAreasDialog.tsx` | `ski_areas`, Storage `gallery/skigebiete/` |
 | Umgebung | `HousePlacesDialog.tsx` | `house_places` des Hauses (Vorschläge aus OpenStreetMap) |
+| Video (seit 18.11.2026) | `TourVideoDialog.tsx` | **schreibt nichts** — erzeugt im Browser ein MP4/WebM zum Herunterladen (5g) |
 | Vermietung | `HouseBookingInfoDialog.tsx` | Vermietungsarten `houses.offer_short_term/offer_long_term`, `house_long_term` (Wohnen auf Zeit), `houses.direct_booking` + `house_booking_info` (Urlaub) |
 | Einstellungen (oben, ganze Website) | `SiteSettingsDialog.tsx` | `site_settings.show_mode_switch` |
 | Gäste-Link | — | kopiert `https://steinbockchalets.com/anfahrt/<slug>` |
@@ -680,6 +715,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | Video-Rundgang aus Galerie-Bildern: Abschnitt auf der Website + Video-Generator im Admin (5, 5g, 6) |
 | 18.11.2026 | Selbstauskunft + Unterlagen auf der Angebotsseite (2.3, 5f, 9) |
 | 18.11.2026 | „Jetzt buchen“ → „Anfrage senden“, wenn nichts direkt buchbar ist (5f, 9) |
 | 18.11.2026 | Anfragen/Kalkulation/Angebot in die Hausverwaltung umgezogen; Unterzeile Titelbild (2.3, 3.4e, 5f, 6, 7, 9) |

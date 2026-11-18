@@ -830,5 +830,18 @@
       "uploadError": "Hochladen fehlgeschlagen",
       "tooMany": "Es wurden bereits zu viele Dateien hochgeladen. Bitte kontaktieren Sie uns."
     }
+  },
+  "tour": {
+    "title": "Rundgang",
+    "subtitle": "{{house}} in Bildern – Raum für Raum",
+    "play": "Rundgang starten",
+    "resume": "Weiter",
+    "again": "Nochmal ansehen",
+    "pause": "Pause",
+    "fullscreen": "Vollbild",
+    "longTerm": "Wohnen auf Zeit · ab 6 Monaten",
+    "both": "Ferienhaus · auch Wohnen auf Zeit",
+    "endInquiry": "Mietanfrage: steinbockchalets.com",
+    "endBook": "Jetzt buchen: steinbockchalets.com"
   }
 }

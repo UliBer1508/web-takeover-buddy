@@ -830,5 +830,18 @@
       "uploadError": "Upload failed",
       "tooMany": "Too many files have already been uploaded. Please contact us."
     }
+  },
+  "tour": {
+    "title": "Tour",
+    "subtitle": "{{house}} in pictures – room by room",
+    "play": "Start tour",
+    "resume": "Continue",
+    "again": "Watch again",
+    "pause": "Pause",
+    "fullscreen": "Full screen",
+    "longTerm": "Long-term rental · from 6 months",
+    "both": "Holiday home · also long-term rental",
+    "endInquiry": "Rental inquiry: steinbockchalets.com",
+    "endBook": "Book now: steinbockchalets.com"
   }
 }

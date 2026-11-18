@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned, MountainSnow, Users, Settings,
+  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned, MountainSnow, Users, Settings, Video,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ import HousePlacesDialog from "./HousePlacesDialog";
 import SkiAreasDialog from "./SkiAreasDialog";
 import AboutUsDialog from "./AboutUsDialog";
 import SiteSettingsDialog from "./SiteSettingsDialog";
+import TourVideoDialog from "./TourVideoDialog";
+import type { SelectableHouse } from "@/hooks/useHouseSelection";
 
 
 interface AdminHouse {
@@ -72,6 +74,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
     id: string; name: string; direkt: boolean; kurz: boolean; lang: boolean;
   } | null>(null);
   const [einstellungenOffen, setEinstellungenOffen] = useState(false);
+  const [videoFuer, setVideoFuer] = useState<SelectableHouse | null>(null);
   // Mietanfragen, Kalkulation und Angebote „Wohnen auf Zeit“ laufen seit 18.11.2026 in der
   // Hausverwaltung (Tab Mieter → Interessenten), nicht mehr hier.
 
@@ -328,6 +331,20 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                   </Button>
 
                   <Button
+                    variant="outline" size="sm"
+                    title="Video-Rundgang aus den Galerie-Bildern erzeugen"
+                    onClick={() => setVideoFuer({
+                      ...(house as any),
+                      offer_short_term: house.offer_short_term !== false,
+                      offer_long_term: !!house.offer_long_term,
+                      color: houseColor(index),
+                    } as SelectableHouse)}
+                  >
+                    <Video className="h-4 w-4 mr-2" />
+                    Video
+                  </Button>
+
+                  <Button
                     variant="ghost" size="sm"
                     title={`https://steinbockchalets.com/anfahrt/${house.slug}`}
                     onClick={() => gaesteLinkKopieren(house)}
@@ -423,6 +440,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
       />
 
       <SiteSettingsDialog open={einstellungenOffen} onOpenChange={setEinstellungenOffen} />
+      <TourVideoDialog open={!!videoFuer} onOpenChange={o => !o && setVideoFuer(null)} house={videoFuer} />
 
 
       <SkiAreasDialog open={skigebieteOffen} onOpenChange={setSkigebieteOffen} />
