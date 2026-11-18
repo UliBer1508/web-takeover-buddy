@@ -58,8 +58,8 @@
     "bookNow": "Jetzt Buchen",
     "altImage": "Steinbock Chalet in den Alpen",
     "brandSubtitle": "Zwei Ferienhäuser im Oberpinzgau — Neukirchen am Großvenediger und Wald im Pinzgau",
-    "brandSubtitleBoth": "Ferienhäuser und Wohnen auf Zeit im Oberpinzgau — Neukirchen am Großvenediger und Wald im Pinzgau",
-    "brandSubtitleLongTerm": "Chalets zum Wohnen auf Zeit im Oberpinzgau — Neukirchen am Großvenediger und Wald im Pinzgau",
+    "brandSubtitleBoth": "Ferienhäuser und Chalets auf Zeit im Oberpinzgau — Neukirchen am Großvenediger und Wald im Pinzgau",
+    "brandSubtitleLongTerm": "Chalets auf Zeit im Oberpinzgau — Neukirchen am Großvenediger und Wald im Pinzgau",
     "scrollNext": "Zur nächsten Sektion scrollen"
   },
   "about": {
@@ -664,7 +664,7 @@
     "guests": "Gäste",
     "noImage": "Noch keine Bilder",
     "view": "Chalet ansehen",
-    "longTerm": "Wohnen auf Zeit"
+    "longTerm": "Chalet auf Zeit"
   },
   "pwa": {
     "title": "App installieren",
@@ -677,11 +677,11 @@
   "modeSwitch": {
     "label": "Vermietungsart",
     "short": "Urlaub",
-    "long": "Wohnen auf Zeit"
+    "long": "Chalets auf Zeit"
   },
   "longTerm": {
-    "badge": "Wohnen auf Zeit",
-    "title": "Wohnen auf Zeit",
+    "badge": "Chalets auf Zeit",
+    "title": "Chalets auf Zeit",
     "subtitle": "{{house}} – möbliert ab mehreren Monaten mieten, zum Arbeiten und Leben in den Bergen.",
     "duration": "Mietdauer",
     "durationFrom": "ab {{min}} Monaten",
@@ -840,8 +840,8 @@
     "again": "Nochmal ansehen",
     "pause": "Pause",
     "fullscreen": "Vollbild",
-    "longTerm": "Wohnen auf Zeit · ab 6 Monaten",
-    "both": "Ferienhaus · auch Wohnen auf Zeit",
+    "longTerm": "Chalet auf Zeit · ab 6 Monaten",
+    "both": "Ferienhaus · auch Chalet auf Zeit",
     "endInquiry": "Mietanfrage: steinbockchalets.com",
     "endBook": "Jetzt buchen: steinbockchalets.com"
   }

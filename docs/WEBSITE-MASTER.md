@@ -527,6 +527,12 @@ Anlass: Venedigersiedlung 316 darf nicht mehr kurzzeitig touristisch vermietet w
 Vermietungsart „Wohnen auf Zeit“ (möbliert, ab 6 Monaten, Anmeldung bei der Gemeinde), je Haus
 wählbar, frei kombinierbar mit „Urlaub“. Vorbild Ablauf: Mr. Lodge (München).
 
+**Name auf der Website (Uli, 18.11.2026): „Chalets auf Zeit“** (Umschalter, Überschrift, Titelbild-Unterzeile;
+auf der einzelnen Hauskarte und im Video „Chalet auf Zeit“; englisch „Long-stay chalets“). Gemeint sind
+Bergchalets für längere Zeit, Dauer offen (ab Mindestdauer), nicht „Wohnen auf Zeit“ wie in der Stadt.
+Intern (Code, Tabellen, Hausverwaltung) heißt es weiter „Wohnen auf Zeit“ / `long_term`.
+Hinweis bleibt neutral „Anmeldung bei der Gemeinde notwendig“.
+
 **Welche Bereiche ein Haus zeigt**
 
 | Umschalter (`site_settings.show_mode_switch`) | Hauskarten im Titelbild | Hausbereich |
@@ -751,6 +757,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | „Wohnen auf Zeit“ heißt auf der Website „Chalets auf Zeit“ (5f) |
 | 18.11.2026 | Neue Farbwelt „Blattgrün“ statt Holzbraun (4a) |
 | 18.11.2026 | Buchen-Knopf folgt dem gewählten Haus; „Buchungsanfrage“ bei Plattform-Häusern (5f) |
 | 18.11.2026 | Hinweis: Mietvertrag (Paket D) liegt in der Hausverwaltung (5f) |

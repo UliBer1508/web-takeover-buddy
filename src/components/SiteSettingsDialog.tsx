@@ -61,14 +61,14 @@ const SiteSettingsDialog = ({ open, onOpenChange }: SiteSettingsDialogProps) => 
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
               <Label htmlFor="einst-umschalter" className="font-medium">
-                Umschalter „Urlaub | Wohnen auf Zeit“ über den Hauskarten
+                Umschalter „Urlaub | Chalets auf Zeit“ über den Hauskarten
               </Label>
               <Switch id="einst-umschalter" checked={umschalter} onCheckedChange={setUmschalter} />
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               An: Gäste wählen oben die Vermietungsart; Hauskarten und Bereich darunter zeigen nur diese.
-              Erscheint nur, wenn es Häuser mit Urlaub UND Häuser mit Wohnen auf Zeit gibt.
-              Aus: jedes Haus zeigt alles, was es anbietet (Urlaub und darunter Wohnen auf Zeit).
+              Erscheint nur, wenn es Häuser mit Urlaub UND Häuser mit Chalets auf Zeit gibt.
+              Aus: jedes Haus zeigt alles, was es anbietet (Urlaub und darunter Chalets auf Zeit).
             </p>
           </div>
         )}

@@ -62,7 +62,7 @@ const ChaletCards = ({ houses, selectedHouseId, onSelectHouse, variant = "overla
     zeigtLang(haus) ? (
       <span className="inline-flex items-center gap-1 font-semibold text-primary">
         <Home className="h-3 w-3" />
-        {t('chalets.longTerm', 'Wohnen auf Zeit')}
+        {t('chalets.longTerm', 'Chalet auf Zeit')}
       </span>
     ) : null;
 
@@ -218,7 +218,7 @@ const ChaletCards = ({ houses, selectedHouseId, onSelectHouse, variant = "overla
                     {zeigtLang(haus) && (
                       <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-primary/10 text-primary font-semibold">
                         <Home className="h-3.5 w-3.5" />
-                        {t('chalets.longTerm', 'Wohnen auf Zeit')}
+                        {t('chalets.longTerm', 'Chalet auf Zeit')}
                       </span>
                     )}
                     {lokalListe(haus.highlights, haus.highlights_en, sprache).slice(0, 3).map(merkmal => (

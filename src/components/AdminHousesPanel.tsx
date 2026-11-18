@@ -271,7 +271,7 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                         house.offer_short_term !== false
                           ? (house.direct_booking === false ? "Urlaub über Plattform" : "Urlaub direkt buchbar")
                           : null,
-                        house.offer_long_term ? "Wohnen auf Zeit" : null,
+                        house.offer_long_term ? "Chalets auf Zeit" : null,
                       ].filter(Boolean).join(" + ") || "keine Vermietungsart"}
                       {" · "}{house.max_guests} Gäste
                       {fehlt.length > 0 && (

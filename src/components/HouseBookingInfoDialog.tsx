@@ -179,7 +179,7 @@ const HouseBookingInfoDialog = ({
         title: "Gespeichert",
         description: [
           kurz ? (direkt ? "Urlaub: direkt buchbar" : "Urlaub: Hinweis auf Plattform") : "kein Urlaub",
-          lang ? "Wohnen auf Zeit: an" : "Wohnen auf Zeit: aus",
+          lang ? "Chalets auf Zeit: an" : "Chalets auf Zeit: aus",
         ].join(" · "),
       });
       onOpenChange(false);
@@ -210,7 +210,7 @@ const HouseBookingInfoDialog = ({
           <DialogTitle>Vermietung — {houseName}</DialogTitle>
           <DialogDescription>
             Vermietungsarten frei kombinierbar. Urlaub: Kalender und Anfrage (oder Hinweis auf
-            Plattform). Wohnen auf Zeit: Angaben und Mietanfrage, keine Preise.
+            Plattform). Chalets auf Zeit: Angaben und Mietanfrage, keine Preise.
           </DialogDescription>
         </DialogHeader>
 
@@ -229,7 +229,7 @@ const HouseBookingInfoDialog = ({
                   <Switch id="vermietung-kurz" checked={kurz} onCheckedChange={setKurz} />
                 </div>
                 <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
-                  <Label htmlFor="vermietung-lang" className="font-medium">Wohnen auf Zeit</Label>
+                  <Label htmlFor="vermietung-lang" className="font-medium">Chalets auf Zeit</Label>
                   <Switch id="vermietung-lang" checked={lang} onCheckedChange={setLang} />
                 </div>
               </div>
@@ -241,7 +241,7 @@ const HouseBookingInfoDialog = ({
             </section>
 
             <section className={`space-y-4 rounded-lg border p-3 ${lang ? "" : "opacity-60"}`}>
-              <h3 className="font-semibold">Wohnen auf Zeit</h3>
+              <h3 className="font-semibold">Chalets auf Zeit</h3>
               <p className="text-xs text-muted-foreground">
                 Keine Preise auf der Website. Miete und Konditionen bekommt der Interessent nach der Besichtigung.
               </p>
