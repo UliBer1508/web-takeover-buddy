@@ -6,7 +6,7 @@
 > `docs/`. Grund: Am 18.09.2026 ging über eine Stunde verloren, weil nirgends
 > stand, welche Datenbank die Website benutzt.
 >
-> **Stand:** 20.09.2026 · **Repo:** github.com/UliBer1508/web-takeover-buddy ·
+> **Stand:** 18.11.2026 · **Repo:** github.com/UliBer1508/web-takeover-buddy ·
 > **Live:** https://steinbockchalets.com
 
 **Lesereihenfolge**
@@ -17,6 +17,7 @@
 3. `docs/Session-2026-09-19-Hausinhalte-aus-Datenbank.md` (Beschreibung,
    Highlights, Ausstattung nur noch aus der DB; Kennzahlen-Leiste)
 3a. `docs/Session-2026-09-20-Ueber-uns.md` (Abschnitt „Über uns“)
+3b. `docs/Session-2026-11-18-Wohnen-auf-Zeit.md` (Vermietungsart „Wohnen auf Zeit“, Schritt 1+2)
 4. Für das Gesamtsystem (Hausverwaltung, Max, Portale):
    `hausmanagement-selfhosted/docs/Steinbock-Chalets-Gesamtdokumentation-MASTER.md`
    sowie dort `PROJEKT-REGELN.md` und `ARBEITSWEISE-CLAUDE-LESSONS.md`.
@@ -127,7 +128,9 @@ TypeScript-Warnungen, siehe Abschnitt 8).
 | `max_guests` | Maximalbelegung (Kennzahl + Anfrageformular) | Texte & Daten |
 | `external_house_id` | ID des Hauses in der Hausverwaltung (Kalender + Anfragen) | Texte & Daten |
 | `is_active` | für Gäste sichtbar | Schalter im Admin-Panel |
-| `direct_booking` | direkt über die Website buchbar (seit 19.09.2026, Standard `true`) | Vermietung |
+| `direct_booking` | Urlaub: direkt über die Website buchbar (seit 19.09.2026, Standard `true`) | Vermietung |
+| `offer_short_term` | Vermietungsart **Urlaub** (kurzzeitig) angeboten (seit 18.11.2026, Standard `true`) | Vermietung |
+| `offer_long_term` | Vermietungsart **Wohnen auf Zeit** angeboten (seit 18.11.2026, Standard `false`) | Vermietung |
 | `sort_order` | Reihenfolge; bestimmt auch die Hausfarbe | Texte & Daten |
 | `price_winter`, `price_summer`, `price_offseason`, `min_nights`, `cleaning_fee`, `service_fee`, `bed_linen_fee`, `tourist_tax`, `check_in_time`, `check_out_time` | Preise und Gebühren | Preise |
 
@@ -246,6 +249,45 @@ RLS: öffentlich nur is_active; Admins lesen/schreiben alles
 
 Gilt für die ganze Website (nicht je Haus). Kein Startinhalt. Ohne Text oder
 ausgeschaltet fehlen Abschnitt, Menüpunkt und Footer-Link „Über uns“.
+
+### 3.4d `house_long_term` — „Wohnen auf Zeit“ je Haus, OHNE Preise (seit 18.11.2026)
+
+```
+house_id uuid pk → houses(id) on delete cascade
+min_months int not null default 6 · max_months int (leer = offen)
+available_from date (leer = „nach Vereinbarung“; heute oder früher = „sofort“)
+registration_required boolean default true   -- „Anmeldung bei der Gemeinde notwendig“
+text_de/_en (Einleitung) · included_de/_en text[] („Inklusive“, ohne Beträge) · updated_at
+RLS: lesen nur, wenn Haus sichtbar UND offer_long_term; Admins lesen/schreiben alles
+```
+
+**Grundsatz (Uli, 18.11.2026): Für Wohnen auf Zeit stehen keine Preise in öffentlich
+lesbaren Tabellen.** Miete und Konditionen erhält ein Interessent erst nach der Besichtigung
+als persönliches Angebot (Schritt 3, noch offen). `houses` ist öffentlich lesbar — deshalb
+dürfen Langzeitpreise dort nie stehen.
+
+### 3.4e `long_term_inquiries` — Mietanfragen „Wohnen auf Zeit“ (seit 18.11.2026)
+
+```
+id · house_id → houses · guest_name/_email/_phone · move_in date · duration_months (leer = offen)
+persons · purpose ('work','home_office','other') · purpose_detail · pets boolean
+registration_confirmed boolean (Anmeldung Gemeinde zugesagt) · message · language ('de','en')
+status ('new','contacted','viewing','offer','rejected','closed') default 'new' · admin_note · created_at
+RLS: Gäste nur INSERT (status 'new', admin_note leer, Haus sichtbar + offer_long_term), nicht lesen;
+     Admins alles
+```
+
+Bewusst **nicht** `booking_inquiries`: keine Nächte/Preise, und die Hausverwaltung (Max) darf
+sie nicht wie Urlaubsanfragen verarbeiten. **Sie gehen derzeit NICHT an die Hausverwaltung** —
+keine automatische Benachrichtigung; Uli sieht sie im Admin unter „Mietanfragen“ (siehe 9).
+
+### 3.4f `site_settings` — Einstellungen der ganzen Website (seit 18.11.2026)
+
+```
+id boolean pk default true check(id)  -- genau eine Zeile
+show_mode_switch boolean default false  -- Umschalter „Urlaub | Wohnen auf Zeit“ · updated_at
+RLS: lesen für alle; schreiben nur Admins
+```
 
 ### 3.5 Weitere Tabellen
 
@@ -447,6 +489,38 @@ Footer-Link „Über uns“ ebenso.
 Überschrift: eigene aus der DB, sonst i18n `navigation.about` („Über uns“/„About us“).
 Mit Foto: Bild links, Text rechts; ohne Foto: Text zentriert. `#about` bleibt die Hausbeschreibung.
 
+## 5f. Wohnen auf Zeit (seit 18.11.2026)
+
+Anlass: Venedigersiedlung 316 darf nicht mehr kurzzeitig touristisch vermietet werden. Zweite
+Vermietungsart „Wohnen auf Zeit“ (möbliert, ab 6 Monaten, Anmeldung bei der Gemeinde), je Haus
+wählbar, frei kombinierbar mit „Urlaub“. Vorbild Ablauf: Mr. Lodge (München).
+
+**Welche Bereiche ein Haus zeigt**
+
+| Umschalter (`site_settings.show_mode_switch`) | Hauskarten im Titelbild | Hausbereich |
+|---|---|---|
+| aus (Standard) | alle Häuser; Karte zeigt „ab … €“ (nur bei Urlaub + direkt buchbar) und ggf. „Wohnen auf Zeit“ | Urlaub an → Kalender + Anfrage/Plattform-Hinweis; Wohnen auf Zeit an → Abschnitt `#wohnen-auf-zeit` darunter; beides an → beides |
+| an, **und** es gibt Häuser mit Urlaub **und** Häuser mit Wohnen auf Zeit | Umschalter „Urlaub \| Wohnen auf Zeit“ über den Karten; nur Häuser der gewählten Art (auch eine einzelne Karte); bei „Wohnen auf Zeit“ kein Preis | nur der Bereich der gewählten Art |
+
+- Passt das gewählte Haus nicht zur gewählten Art, springt die Auswahl auf das erste passende.
+- Kalender zeigt nur Häuser mit Urlaub (`kurzHaeuser` in `Index.tsx`).
+- `abPreis()` liefert `null`, wenn ein Haus keinen Urlaub anbietet.
+- Ein Haus ohne Vermietungsart zeigt weder Kalender noch Anfrage (Admin warnt).
+
+**Abschnitt „Wohnen auf Zeit“ (`LongTermRental.tsx`, `#wohnen-auf-zeit`)**
+- Links: Einleitung (`text_de/_en`), Angaben Mietdauer („ab 6 Monaten“ bzw. „6 bis 12 Monate“),
+  Frei ab, Personen höchstens (`houses.max_guests`), „Anmeldung bei der Gemeinde notwendig“
+  (wenn `registration_required`), „Miete: … nach der Besichtigung“, Liste „Inklusive“, Ablauf in
+  5 Schritten (Anfrage → Besichtigung vor Ort/Video → persönliches Angebot → Vertrag + Kaution →
+  Übergabe mit Protokoll + Anmeldung Gemeinde).
+- Rechts: Mietanfrage (Name, E-Mail, Telefon, Einzug, Dauer 6/9/12/24/offen — gefiltert nach
+  Mindest-/Höchstdauer, Personen, Anlass + Freitext, Haustier, Bestätigung Anmeldung Gemeinde
+  (Pflicht, wenn verlangt), Nachricht) → Insert in `long_term_inquiries`.
+- Alle Texte i18n `longTerm.*`, `modeSwitch.*`, `chalets.longTerm` (de/en).
+
+**Noch nicht gebaut (Schritt 3 ff.):** interne Preiskalkulation, persönliches Angebot per Link,
+Anbindung an die Hausverwaltung/Max, eigene Seite `/wohnen-auf-zeit`, SEO/strukturierte Daten.
+
 ## 6. Admin-Bereich
 
 Anmelden über „Admin“ oben rechts (Seite `/auth`). Admin ist, wer in
@@ -464,7 +538,9 @@ Unter dem Titelbild erscheint das Panel **„Häuser auf der Website“**
 | Über uns (oben, ganze Website) | `AboutUsDialog.tsx` | `about_us`, Storage `gallery/ueber-uns/` |
 | Skigebiete (oben, für alle Häuser) | `SkiAreasDialog.tsx` | `ski_areas`, Storage `gallery/skigebiete/` |
 | Umgebung | `HousePlacesDialog.tsx` | `house_places` des Hauses (Vorschläge aus OpenStreetMap) |
-| Vermietung | `HouseBookingInfoDialog.tsx` | `houses.direct_booking` + `house_booking_info` |
+| Vermietung | `HouseBookingInfoDialog.tsx` | Vermietungsarten `houses.offer_short_term/offer_long_term`, `house_long_term` (Wohnen auf Zeit), `houses.direct_booking` + `house_booking_info` (Urlaub) |
+| Mietanfragen (oben, alle Häuser) | `LongTermInquiriesDialog.tsx` | liest `long_term_inquiries`, setzt `status`; Knopf zeigt Anzahl „neu“ |
+| Einstellungen (oben, ganze Website) | `SiteSettingsDialog.tsx` | `site_settings.show_mode_switch` |
 | Gäste-Link | — | kopiert `https://steinbockchalets.com/anfahrt/<slug>` |
 | Preise | `HouseSettingsDialog.tsx` | `houses` (Preise, Gebühren, Zeiten) |
 | Schalter | — | `houses.is_active` |
@@ -498,6 +574,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 | `20260919_in_der_naehe.sql` | 19.09.2026 | Tabelle `house_places` + RLS (leer; Befüllung im Admin „Umgebung“) |
 | `20260919_skigebiete.sql` | 19.09.2026 | Tabelle `ski_areas` + RLS, 6 Skigebiete mit Startwerten (nur wenn leer) |
 | `20260920_ueber_uns.sql` | 20.09.2026 | Tabelle `about_us` (eine Zeile, leer, ausgeschaltet) + RLS |
+| `20261118_wohnen_auf_zeit.sql` | 18.11.2026 | `houses.offer_short_term/offer_long_term`, Tabellen `house_long_term` (Zeile je Haus), `long_term_inquiries`, `site_settings` + RLS. Schaltet nichts ein. |
 
 > Die Umzugs- und Zwischen-SQL-Dateien vom 18.09.2026 liegen nicht im Repo.
 > Das Tabellenschema von `house_features` ist oben in 3.2 festgehalten. Wer das
@@ -562,6 +639,11 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 12. `hausmanagement-selfhosted/docs/Steinbock-Chalets-Gesamtdokumentation-MASTER.md`
     nennt noch die alte Website-DB → Einfügetext
     `MASTER-Einfuegetext-Website-2026-09-19.md` einarbeiten.
+15. **Wohnen auf Zeit:** Mietanfragen lösen keine Benachrichtigung aus und gehen nicht an die
+    Hausverwaltung. Vorher klären, wie Max Anfragen verarbeitet (darf Mietanfragen nicht
+    automatisch annehmen/mit Preisen beantworten). Schritt 3: interne Kalkulation + Angebot.
+16. Menü „Buchen“/„Jetzt buchen“ springt zu `#booking` — fehlt, wenn nur Wohnen auf Zeit
+    angezeigt wird (Haus ohne Urlaub bzw. Umschalter auf „Wohnen auf Zeit“). Ziel anpassen.
 
 ---
 
@@ -569,6 +651,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | Wohnen auf Zeit, Schritt 1+2 (3.1, 3.4d–f, 5f, 6, 7, 9) |
 | 20.09.2026 | „Über uns“ als eigener Abschnitt (3.4c, 5e) |
 | 19.09.2026 | Hauskarte: kein Sprung nach unten beim Klick (5) |
 | 19.09.2026 | Skigebiete als Liste statt Karten (5d) |

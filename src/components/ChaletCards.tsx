@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Users, ArrowRight, Image as ImageIcon } from "lucide-react";
+import { Users, ArrowRight, Image as ImageIcon, Home } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { SelectableHouse, abPreis } from "@/hooks/useHouseSelection";
@@ -15,6 +15,13 @@ interface ChaletCardsProps {
    * "section" = grosse Karten als eigener Abschnitt weiter unten.
    */
   variant?: "overlay" | "section";
+  /**
+   * Vom Umschalter gewählte Vermietungsart. null = kein Umschalter: Karte zeigt
+   * Preis (Urlaub) und ggf. den Hinweis „Wohnen auf Zeit“.
+   */
+  mietart?: "short" | "long" | null;
+  /** Auch eine einzelne Karte zeigen (mit Umschalter: Gast soll sehen, welches Haus passt). */
+  auchEinzeln?: boolean;
 }
 
 /** Ein Titelbild je Haus, in einer Abfrage fuer alle. */
@@ -41,23 +48,35 @@ const useCoverBilder = (houseIds: string[]) =>
     enabled: houseIds.length > 0,
   });
 
-const ChaletCards = ({ houses, selectedHouseId, onSelectHouse, variant = "overlay" }: ChaletCardsProps) => {
+const ChaletCards = ({ houses, selectedHouseId, onSelectHouse, variant = "overlay", mietart = null, auchEinzeln = false }: ChaletCardsProps) => {
   const { t } = useTranslation();
   const sprache = useSprache();
   const houseIds = houses.map(h => h.id);
   const { data: bilder = {} } = useCoverBilder(houseIds);
 
+  // Preis nur in der Urlaubsansicht; „Wohnen auf Zeit“ ohne Preis (nach Besichtigung).
+  const preisFuer = (haus: SelectableHouse) => (mietart === "long" ? null : abPreis(haus));
+  const zeigtLang = (haus: SelectableHouse) =>
+    mietart === "long" || (mietart === null && haus.offer_long_term);
+  const langHinweis = (haus: SelectableHouse) =>
+    zeigtLang(haus) ? (
+      <span className="inline-flex items-center gap-1 font-semibold text-primary">
+        <Home className="h-3 w-3" />
+        {t('chalets.longTerm', 'Wohnen auf Zeit')}
+      </span>
+    ) : null;
+
   // Bei einem Haus gibt es nichts zu wählen — dann sieht die Seite aus wie vorher.
-  if (houses.length <= 1) return null;
+  if (houses.length === 0 || (houses.length === 1 && !auchEinzeln)) return null;
 
   // ---------------------------------------------------------------- overlay
   if (variant === "overlay") {
     return (
       <div id="chalets" className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid sm:grid-cols-2 gap-3 md:gap-4 max-w-4xl mx-auto">
+        <div className={`grid gap-3 md:gap-4 mx-auto ${houses.length === 1 ? "max-w-md" : "sm:grid-cols-2 max-w-4xl"}`}>
           {houses.map(haus => {
             const bild = bilder[haus.id];
-            const preis = abPreis(haus);
+            const preis = preisFuer(haus);
             const gewaehlt = haus.id === selectedHouseId;
             return (
               <button
@@ -108,6 +127,7 @@ const ChaletCards = ({ houses, selectedHouseId, onSelectHouse, variant = "overla
                         {t('chalets.from', 'ab')} {preis} €
                       </span>
                     )}
+                    {langHinweis(haus)}
                   </div>
                 </div>
 
@@ -140,7 +160,7 @@ const ChaletCards = ({ houses, selectedHouseId, onSelectHouse, variant = "overla
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {houses.map(haus => {
             const bild = bilder[haus.id];
-            const preis = abPreis(haus);
+            const preis = preisFuer(haus);
             return (
               <button
                 key={haus.id}
@@ -195,6 +215,12 @@ const ChaletCards = ({ houses, selectedHouseId, onSelectHouse, variant = "overla
                       <Users className="h-3.5 w-3.5" />
                       {haus.max_guests} {t('chalets.guests', 'Gäste')}
                     </span>
+                    {zeigtLang(haus) && (
+                      <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md bg-primary/10 text-primary font-semibold">
+                        <Home className="h-3.5 w-3.5" />
+                        {t('chalets.longTerm', 'Wohnen auf Zeit')}
+                      </span>
+                    )}
                     {lokalListe(haus.highlights, haus.highlights_en, sprache).slice(0, 3).map(merkmal => (
                       <span
                         key={merkmal}

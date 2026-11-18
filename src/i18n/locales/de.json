@@ -658,7 +658,8 @@
     "night": "Nacht",
     "guests": "Gäste",
     "noImage": "Noch keine Bilder",
-    "view": "Chalet ansehen"
+    "view": "Chalet ansehen",
+    "longTerm": "Wohnen auf Zeit"
   },
   "pwa": {
     "title": "App installieren",
@@ -667,5 +668,86 @@
     "install": "Installieren",
     "later": "Später",
     "dismiss": "Schließen"
+  },
+  "modeSwitch": {
+    "label": "Vermietungsart",
+    "short": "Urlaub",
+    "long": "Wohnen auf Zeit"
+  },
+  "longTerm": {
+    "badge": "Wohnen auf Zeit",
+    "title": "Wohnen auf Zeit",
+    "subtitle": "{{house}} – möbliert ab mehreren Monaten mieten, zum Arbeiten und Leben in den Bergen.",
+    "duration": "Mietdauer",
+    "durationFrom": "ab {{min}} Monaten",
+    "durationRange": "{{min}} bis {{max}} Monate",
+    "availableFrom": "Frei ab",
+    "immediately": "sofort",
+    "byArrangement": "nach Vereinbarung",
+    "maxPersons": "Personen höchstens",
+    "registration": "Gemeinde",
+    "registrationRequired": "Anmeldung bei der Gemeinde notwendig",
+    "rent": "Miete",
+    "rentAfterViewing": "Miete und Konditionen erhalten Sie persönlich nach der Besichtigung.",
+    "included": "Inklusive",
+    "processTitle": "So läuft es ab",
+    "steps": {
+      "inquiry": {
+        "title": "Mietanfrage senden",
+        "text": "Unverbindlich – mit Einzugstermin, Dauer und Anlass."
+      },
+      "viewing": {
+        "title": "Besichtigung",
+        "text": "Vor Ort im Haus oder per Videogespräch."
+      },
+      "offer": {
+        "title": "Persönliches Angebot",
+        "text": "Miete, Nebenkosten, Kaution und Konditionen für Sie."
+      },
+      "contract": {
+        "title": "Mietvertrag und Kaution",
+        "text": "Vertrag unterschreiben, Kaution vor dem Einzug überweisen."
+      },
+      "handover": {
+        "title": "Übergabe und Anmeldung",
+        "text": "Übergabe mit Protokoll, danach Anmeldung bei der Gemeinde."
+      }
+    },
+    "formTitle": "Mietanfrage",
+    "formDescription": "Wir melden uns persönlich und vereinbaren eine Besichtigung.",
+    "moveIn": "Gewünschter Einzug",
+    "desiredDuration": "Gewünschte Dauer",
+    "choose": "Bitte wählen",
+    "months_one": "{{count}} Monat",
+    "months_other": "{{count}} Monate",
+    "durationOpen": "länger / offen",
+    "persons": "Personen",
+    "purpose": "Anlass",
+    "purposes": {
+      "work": "Arbeit in der Region",
+      "home_office": "Homeoffice / Auszeit",
+      "other": "Sonstiges"
+    },
+    "purposeDetail": "Arbeitgeber, Projekt oder kurze Beschreibung (optional)",
+    "purposeDetailPlaceholder": "z. B. Saisonstelle Wildkogel-Arena",
+    "pets": "Ich möchte ein Haustier mitbringen",
+    "registrationConfirm": "Mir ist bekannt, dass eine Anmeldung bei der Gemeinde notwendig ist, und ich werde mich anmelden.",
+    "submit": "Mietanfrage senden",
+    "noObligation": "Unverbindlich. Preise nennen wir nach der Besichtigung.",
+    "another": "Weitere Anfrage",
+    "successTitle": "Anfrage gesendet",
+    "successDesc": "Vielen Dank! Wir melden uns in Kürze, um eine Besichtigung zu vereinbaren.",
+    "errorTitle": "Anfrage konnte nicht gesendet werden",
+    "errorDesc": "Bitte versuchen Sie es erneut oder schreiben Sie an steinbockchalets@gmail.com.",
+    "validation": {
+      "name": "Bitte Ihren Namen angeben.",
+      "email": "Bitte eine gültige E-Mail-Adresse angeben.",
+      "phone": "Bitte eine Telefonnummer angeben.",
+      "moveIn": "Bitte ein Einzugsdatum ab heute wählen.",
+      "duration": "Bitte die gewünschte Dauer wählen.",
+      "persons": "Bitte 1 bis {{max}} Personen angeben.",
+      "purpose": "Bitte den Anlass wählen.",
+      "registration": "Bitte bestätigen Sie die Anmeldung bei der Gemeinde."
+    }
   }
 }

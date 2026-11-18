@@ -19,6 +19,9 @@ import HouseSelector from "@/components/HouseSelector";
 import ChaletCards from "@/components/ChaletCards";
 import AdminHousesPanel from "@/components/AdminHousesPanel";
 import { useHouseSelection } from "@/hooks/useHouseSelection";
+import LongTermRental from "@/components/LongTermRental";
+import RentalModeSwitch from "@/components/RentalModeSwitch";
+import { useSiteSettings, Mietart } from "@/hooks/useLongTerm";
 
 interface IndexProps {
   initialGalleryView?: "photos" | "info";
@@ -40,6 +43,29 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
   const [vorschauHausName, setVorschauHausName] = useState<string | null>(null);
 
   const location = useLocation();
+
+  // Vermietungsarten (seit 18.11.2026): je Haus "Urlaub" und/oder "Wohnen auf Zeit".
+  // Der Umschalter erscheint nur, wenn er in den Einstellungen an ist UND es
+  // Häuser in beiden Arten gibt. Ohne Umschalter zeigt jedes Haus alles, was es anbietet.
+  const { data: einstellungen } = useSiteSettings();
+  const [mietart, setMietart] = useState<Mietart>("short");
+  const gibtKurz = houses.some(h => h.offer_short_term);
+  const gibtLang = houses.some(h => h.offer_long_term);
+  const zeigeUmschalter = !!einstellungen?.show_mode_switch && gibtKurz && gibtLang;
+  const kartenHaeuser = zeigeUmschalter
+    ? houses.filter(h => (mietart === "short" ? h.offer_short_term : h.offer_long_term))
+    : houses;
+  const kurzHaeuser = houses.filter(h => h.offer_short_term);
+
+  // Passt das gewählte Haus nicht zur gewählten Vermietungsart, auf das erste passende springen.
+  useEffect(() => {
+    if (!zeigeUmschalter || kartenHaeuser.length === 0) return;
+    if (!kartenHaeuser.some(h => h.id === selectedHouseId)) setSelectedHouseId(kartenHaeuser[0].id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zeigeUmschalter, mietart, kartenHaeuser.map(h => h.id).join(","), selectedHouseId]);
+
+  const zeigeKurz = !!selectedHouse?.offer_short_term && (!zeigeUmschalter || mietart === "short");
+  const zeigeLang = !!selectedHouse?.offer_long_term && (!zeigeUmschalter || mietart === "long");
 
   const isInfo = initialGalleryView === "info";
   const isGalleryPhotos = initialGalleryView === "photos";
@@ -104,6 +130,7 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
   // Beide Häuser stehen direkt im Titelbild, damit Gäste sie ohne Scrollen
   // sehen. In der Admin-Bildvorschau bleiben sie weg: dort geht es um ein Haus.
   const zeigeKartenImHero = hasMultipleHouses && !startAtGallery && !vorschauHausId;
+  const zeigeUmschalterImHero = zeigeUmschalter && !startAtGallery && !vorschauHausId;
 
   return (
     <div className="min-h-screen">
@@ -154,13 +181,22 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
           subtitle={vorschauHausName ? null : heroSubtitle}
           scrollTarget="haus"
           bottomSlot={
-            zeigeKartenImHero ? (
-              <ChaletCards
-                houses={houses}
-                selectedHouseId={selectedHouseId}
-                onSelectHouse={handleChaletSelect}
-                variant="overlay"
-              />
+            zeigeKartenImHero || zeigeUmschalterImHero ? (
+              <>
+                {zeigeUmschalterImHero && (
+                  <RentalModeSwitch value={mietart} onChange={setMietart} />
+                )}
+                {(zeigeKartenImHero || zeigeUmschalterImHero) && (
+                  <ChaletCards
+                    houses={kartenHaeuser}
+                    selectedHouseId={selectedHouseId}
+                    onSelectHouse={handleChaletSelect}
+                    variant="overlay"
+                    mietart={zeigeUmschalter ? mietart : null}
+                    auchEinzeln={zeigeUmschalterImHero}
+                  />
+                )}
+              </>
             ) : null
           }
         />
@@ -203,6 +239,7 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
           </>
         )}
         <Gallery houseId={galerieHausId} initialView={initialGalleryView} />
+        {zeigeKurz && (
         <section className="py-12 md:py-16 bg-muted/30">
           <div className="container mx-auto px-4 max-w-4xl">
             <div className="text-center mb-8">
@@ -214,17 +251,21 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
               </p>
             </div>
             <AvailabilityCalendar
-              houses={houses}
+              houses={kurzHaeuser}
               selectedHouseId={selectedHouseId}
               onDateRangeSelect={handleDateSelection}
             />
           </div>
         </section>
-        <BookingForm
-          initialCheckIn={selectedDates.checkIn}
-          initialCheckOut={selectedDates.checkOut}
-          defaultHouseId={selectedHouseId}
-        />
+        )}
+        {zeigeKurz && (
+          <BookingForm
+            initialCheckIn={selectedDates.checkIn}
+            initialCheckOut={selectedDates.checkOut}
+            defaultHouseId={selectedHouseId}
+          />
+        )}
+        {zeigeLang && <LongTermRental house={selectedHouse} />}
       </div>
 
       {/* Gastgeber - gilt für die ganze Website, deshalb außerhalb des Hausbereichs */}

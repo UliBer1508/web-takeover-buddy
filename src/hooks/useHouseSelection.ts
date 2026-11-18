@@ -25,6 +25,10 @@ export interface SelectableHouse {
   is_active: boolean;
   /** false = wird ueber eine Plattform vermietet (z. B. Belvilla): keine Preise, kein Anfrageformular. */
   direct_booking: boolean;
+  /** Urlaub / kurzzeitig (Kalender, Preise, Buchungsanfrage bzw. Plattform-Hinweis). */
+  offer_short_term: boolean;
+  /** Wohnen auf Zeit ab 6 Monaten (ohne Preise auf der Website). */
+  offer_long_term: boolean;
   sort_order: number;
   external_house_id: string | null;
   /** Aus sort_order abgeleitet, nicht aus der Datenbank. */
@@ -32,9 +36,10 @@ export interface SelectableHouse {
 }
 
 /** Niedrigster hinterlegter Saisonpreis, fuer "ab X € / Nacht".
- *  Nicht direkt buchbare Haeuser zeigen keinen Preis. */
+ *  Nicht direkt buchbare Haeuser und Haeuser ohne Urlaubsvermietung zeigen keinen Preis. */
 export const abPreis = (haus: SelectableHouse): number | null => {
   if (haus.direct_booking === false) return null;
+  if (haus.offer_short_term === false) return null;
   const preise = [haus.price_winter, haus.price_summer, haus.price_offseason]
     .filter((p): p is number => typeof p === 'number' && p > 0);
   return preise.length > 0 ? Math.min(...preise) : null;
@@ -48,7 +53,7 @@ export const useHouseSelection = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('houses')
-        .select('id, name, slug, description, description_en, short_description, short_description_en, location, highlights, highlights_en, bedrooms, bathrooms, square_meters, max_guests, price_winter, price_summer, price_offseason, min_nights, is_active, direct_booking, sort_order, external_house_id')
+        .select('id, name, slug, description, description_en, short_description, short_description_en, location, highlights, highlights_en, bedrooms, bathrooms, square_meters, max_guests, price_winter, price_summer, price_offseason, min_nights, is_active, direct_booking, offer_short_term, offer_long_term, sort_order, external_house_id')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
@@ -58,7 +63,13 @@ export const useHouseSelection = () => {
   });
 
   const houses: SelectableHouse[] = useMemo(
-    () => (data || []).map((h: any, i: number) => ({ ...h, color: houseColor(i) })),
+    () => (data || []).map((h: any, i: number) => ({
+      ...h,
+      // Vor dem SQL vom 18.11.2026 fehlen die Spalten: dann wie bisher nur Urlaub.
+      offer_short_term: h.offer_short_term ?? true,
+      offer_long_term: h.offer_long_term ?? false,
+      color: houseColor(i),
+    })),
     [data]
   );
 

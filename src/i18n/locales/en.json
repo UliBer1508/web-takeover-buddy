@@ -658,7 +658,8 @@
     "night": "night",
     "guests": "guests",
     "noImage": "No photos yet",
-    "view": "View chalet"
+    "view": "View chalet",
+    "longTerm": "Long-term rental"
   },
   "pwa": {
     "title": "Install app",
@@ -667,5 +668,86 @@
     "install": "Install",
     "later": "Later",
     "dismiss": "Close"
+  },
+  "modeSwitch": {
+    "label": "Type of stay",
+    "short": "Holiday",
+    "long": "Long-term rental"
+  },
+  "longTerm": {
+    "badge": "Long-term rental",
+    "title": "Long-term rental",
+    "subtitle": "{{house}} – furnished, for several months, to live and work in the mountains.",
+    "duration": "Rental period",
+    "durationFrom": "from {{min}} months",
+    "durationRange": "{{min}} to {{max}} months",
+    "availableFrom": "Available from",
+    "immediately": "now",
+    "byArrangement": "by arrangement",
+    "maxPersons": "Maximum persons",
+    "registration": "Municipality",
+    "registrationRequired": "Registration with the municipality required",
+    "rent": "Rent",
+    "rentAfterViewing": "You will receive rent and terms personally after the viewing.",
+    "included": "Included",
+    "processTitle": "How it works",
+    "steps": {
+      "inquiry": {
+        "title": "Send a rental inquiry",
+        "text": "Non-binding – with move-in date, duration and purpose."
+      },
+      "viewing": {
+        "title": "Viewing",
+        "text": "On site or via video call."
+      },
+      "offer": {
+        "title": "Personal offer",
+        "text": "Rent, utilities, deposit and terms for you."
+      },
+      "contract": {
+        "title": "Lease and deposit",
+        "text": "Sign the lease, transfer the deposit before moving in."
+      },
+      "handover": {
+        "title": "Handover and registration",
+        "text": "Handover with a written report, then registration with the municipality."
+      }
+    },
+    "formTitle": "Rental inquiry",
+    "formDescription": "We will get back to you personally to arrange a viewing.",
+    "moveIn": "Preferred move-in date",
+    "desiredDuration": "Preferred duration",
+    "choose": "Please choose",
+    "months_one": "{{count}} month",
+    "months_other": "{{count}} months",
+    "durationOpen": "longer / open-ended",
+    "persons": "Persons",
+    "purpose": "Purpose",
+    "purposes": {
+      "work": "Working in the region",
+      "home_office": "Remote work / time out",
+      "other": "Other"
+    },
+    "purposeDetail": "Employer, project or short description (optional)",
+    "purposeDetailPlaceholder": "e.g. seasonal job at Wildkogel-Arena",
+    "pets": "I would like to bring a pet",
+    "registrationConfirm": "I understand that registration with the municipality is required and I will register.",
+    "submit": "Send rental inquiry",
+    "noObligation": "Non-binding. We share prices after the viewing.",
+    "another": "Another inquiry",
+    "successTitle": "Inquiry sent",
+    "successDesc": "Thank you! We will contact you shortly to arrange a viewing.",
+    "errorTitle": "Inquiry could not be sent",
+    "errorDesc": "Please try again or write to steinbockchalets@gmail.com.",
+    "validation": {
+      "name": "Please enter your name.",
+      "email": "Please enter a valid email address.",
+      "phone": "Please enter a phone number.",
+      "moveIn": "Please choose a move-in date from today.",
+      "duration": "Please choose the duration.",
+      "persons": "Please enter 1 to {{max}} persons.",
+      "purpose": "Please choose the purpose.",
+      "registration": "Please confirm registration with the municipality."
+    }
   }
 }

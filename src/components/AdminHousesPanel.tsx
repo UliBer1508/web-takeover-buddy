@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned, MountainSnow, Users,
+  Loader2, AlertTriangle, Plus, Pencil, EyeOff, Image as ImageIcon, X, Euro, LayoutGrid, MapPin, Link2, Store, MapPinned, MountainSnow, Users, Settings, Inbox,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import HouseBookingInfoDialog from "./HouseBookingInfoDialog";
 import HousePlacesDialog from "./HousePlacesDialog";
 import SkiAreasDialog from "./SkiAreasDialog";
 import AboutUsDialog from "./AboutUsDialog";
+import SiteSettingsDialog from "./SiteSettingsDialog";
+import LongTermInquiriesDialog, { useLongTermInquiries } from "./LongTermInquiriesDialog";
 
 interface AdminHouse {
   id: string;
@@ -34,6 +36,8 @@ interface AdminHouse {
   square_meters: number | null;
   is_active: boolean;
   direct_booking: boolean;
+  offer_short_term?: boolean;
+  offer_long_term?: boolean;
   sort_order: number;
   max_guests: number;
   external_house_id: string | null;
@@ -64,7 +68,13 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
   const [skigebieteOffen, setSkigebieteOffen] = useState(false);
   const [ueberUnsOffen, setUeberUnsOffen] = useState(false);
   const [umgebungFuer, setUmgebungFuer] = useState<{ id: string; name: string } | null>(null);
-  const [vermietungFuer, setVermietungFuer] = useState<{ id: string; name: string; direkt: boolean } | null>(null);
+  const [vermietungFuer, setVermietungFuer] = useState<{
+    id: string; name: string; direkt: boolean; kurz: boolean; lang: boolean;
+  } | null>(null);
+  const [einstellungenOffen, setEinstellungenOffen] = useState(false);
+  const [mietanfragenOffen, setMietanfragenOffen] = useState(false);
+  const { data: mietanfragen = [] } = useLongTermInquiries(isAdmin);
+  const neueMietanfragen = mietanfragen.filter(a => a.status === "new").length;
 
   // Link, den Uli Gaesten nach der Buchung schickt (Booking, Airbnb, Belvilla).
   const gaesteLinkKopieren = async (house: AdminHouse) => {
@@ -190,6 +200,14 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Button variant={neueMietanfragen > 0 ? "default" : "outline"} onClick={() => setMietanfragenOffen(true)}>
+              <Inbox className="h-4 w-4 mr-2" />
+              Mietanfragen{neueMietanfragen > 0 ? ` (${neueMietanfragen} neu)` : ""}
+            </Button>
+            <Button variant="outline" onClick={() => setEinstellungenOffen(true)} title="Gilt für die ganze Website">
+              <Settings className="h-4 w-4 mr-2" />
+              Einstellungen
+            </Button>
             <Button variant="outline" onClick={() => setUeberUnsOffen(true)} title="Gilt für die ganze Website">
               <Users className="h-4 w-4 mr-2" />
               Über uns
@@ -249,11 +267,14 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
                   <div className="flex-grow min-w-[10rem]">
                     <div className="font-semibold">{house.name}</div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      {!house.is_active
-                        ? "ausgeblendet"
-                        : house.direct_booking === false
-                          ? "sichtbar · nicht direkt buchbar (Plattform)"
-                          : "sichtbar und buchbar"}
+                      {!house.is_active ? "ausgeblendet" : "sichtbar"}
+                      {" · "}
+                      {[
+                        house.offer_short_term !== false
+                          ? (house.direct_booking === false ? "Urlaub über Plattform" : "Urlaub direkt buchbar")
+                          : null,
+                        house.offer_long_term ? "Wohnen auf Zeit" : null,
+                      ].filter(Boolean).join(" + ") || "keine Vermietungsart"}
                       {" · "}{house.max_guests} Gäste
                       {fehlt.length > 0 && (
                         <span className="text-amber-700 dark:text-amber-500">
@@ -302,7 +323,10 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
 
                   <Button
                     variant="outline" size="sm"
-                    onClick={() => setVermietungFuer({ id: house.id, name: house.name, direkt: house.direct_booking !== false })}
+                    onClick={() => setVermietungFuer({
+                      id: house.id, name: house.name, direkt: house.direct_booking !== false,
+                      kurz: house.offer_short_term !== false, lang: !!house.offer_long_term,
+                    })}
                   >
                     <Store className="h-4 w-4 mr-2" />
                     Vermietung
@@ -399,6 +423,15 @@ const AdminHousesPanel = ({ vorschauHausId, onVorschau }: AdminHousesPanelProps)
         houseId={vermietungFuer?.id ?? null}
         houseName={vermietungFuer?.name ?? ""}
         directBooking={vermietungFuer?.direkt ?? true}
+        offerShortTerm={vermietungFuer?.kurz ?? true}
+        offerLongTerm={vermietungFuer?.lang ?? false}
+      />
+
+      <SiteSettingsDialog open={einstellungenOffen} onOpenChange={setEinstellungenOffen} />
+      <LongTermInquiriesDialog
+        open={mietanfragenOffen}
+        onOpenChange={setMietanfragenOffen}
+        houses={houses.map(h => ({ id: h.id, name: h.name }))}
       />
 
       <SkiAreasDialog open={skigebieteOffen} onOpenChange={setSkigebieteOffen} />
