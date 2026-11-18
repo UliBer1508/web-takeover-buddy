@@ -530,6 +530,14 @@ Unterzeile im Titelbild (`Index.tsx`): `hero.brandSubtitleBoth` („Ferienhäuse
 Zeit …“), wenn es Häuser mit Urlaub und mit Wohnen auf Zeit gibt; `hero.brandSubtitleLongTerm`,
 wenn nur Wohnen auf Zeit; sonst wie bisher `hero.brandSubtitle`.
 
+**„Jetzt buchen“ / „Anfrage senden“ (18.11.2026, `src/lib/anfrageZiel.ts`):** Knopf oben rechts,
+Menüpunkt und Footer-Link richten sich nach den Häusern: mindestens ein Haus im Urlaub **direkt**
+buchbar → „Jetzt buchen“/„Buchen“ → `#booking`; sonst mit Wohnen auf Zeit → „Anfrage senden“/„Anfragen“
+→ `#wohnen-auf-zeit`; sonst (nur Plattform) → „Buchen“ → `#booking`. Der Klick schickt das Ereignis
+`steinbock:anfrage-ziel` an `Index.tsx`; die Startseite wählt ein passendes Haus (und beim Umschalter
+die Vermietungsart) und scrollt dann. Von Unterseiten: `navigate("/", { state: { anfrageZiel } })`.
+i18n `navigation.requestNow`, `navigation.request`.
+
 **Noch nicht gebaut:** Unterlagen-Upload, „Als Mieter übernehmen“, E-Mail an Uli, Max lesend,
 Mietvertrag, eigene Seite `/wohnen-auf-zeit`, SEO, Portale, Video.
 
@@ -654,8 +662,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
     `MASTER-Einfuegetext-Website-2026-09-19.md` einarbeiten.
 15. **Wohnen auf Zeit:** nächste Schritte in der Hausverwaltung (Unterlagen-Upload, „Als Mieter
     übernehmen“, E-Mail an Uli, Max lesend) — siehe dort `docs/Konzept-Wohnen-auf-Zeit.md`.
-16. Menü „Buchen“/„Jetzt buchen“ springt zu `#booking` — fehlt, wenn nur Wohnen auf Zeit
-    angezeigt wird (Haus ohne Urlaub bzw. Umschalter auf „Wohnen auf Zeit“). Ziel anpassen.
+16. ~~Menü „Buchen“/„Jetzt buchen“ ins Leere~~ — erledigt 18.11.2026 (5f, `lib/anfrageZiel.ts`).
 
 ---
 
@@ -663,6 +670,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | „Jetzt buchen“ → „Anfrage senden“, wenn nichts direkt buchbar ist (5f, 9) |
 | 18.11.2026 | Anfragen/Kalkulation/Angebot in die Hausverwaltung umgezogen; Unterzeile Titelbild (2.3, 3.4e, 5f, 6, 7, 9) |
 | 18.11.2026 | Wohnen auf Zeit, Schritt 3+4: Kalkulation und Angebot (3.4g–h, 5f, 6, 7, 9) |
 | 18.11.2026 | Wohnen auf Zeit, Schritt 1+2 (3.1, 3.4d–f, 5f, 6, 7, 9) |

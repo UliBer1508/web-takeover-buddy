@@ -1,11 +1,15 @@
 import { MapPin, Phone, Mail, Globe, MessageCircle, Instagram, Facebook } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useHouseSelection } from "@/hooks/useHouseSelection";
+import { useAnfrageBeschriftung, zumAnfrageZiel } from "@/lib/anfrageZiel";
 import { Link } from "react-router-dom";
 import { useAboutUs, aboutUsText } from "@/hooks/useAboutUs";
 import { useSprache } from "@/lib/sprache";
 
 const Footer = () => {
   const { t } = useTranslation();
+  const { houses } = useHouseSelection();
+  const anfrage = useAnfrageBeschriftung(houses);
   const sprache = useSprache();
   const { data: ueberUns } = useAboutUs();
   const hatUeberUns = !!aboutUsText(ueberUns, sprache);
@@ -99,11 +103,11 @@ const Footer = () => {
               </li>
               <li>
                 <button
-                  onClick={() => document.getElementById("booking")?.scrollIntoView({ behavior: "smooth" })}
+                  onClick={() => zumAnfrageZiel(anfrage.ziel)}
                   aria-label={t("footer.aria.scrollBooking")}
                   className="text-sm text-primary-foreground/90 hover:text-primary-foreground transition-colors"
                 >
-                  {t("footer.booking")}
+                  {anfrage.ziel === "booking" ? t("footer.booking") : anfrage.menue}
                 </button>
               </li>
               <li>

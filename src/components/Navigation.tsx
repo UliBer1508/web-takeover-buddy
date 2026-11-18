@@ -7,6 +7,8 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import { useAuth } from "@/hooks/useAuth";
 import { useAboutUs, aboutUsText } from "@/hooks/useAboutUs";
 import { useSprache } from "@/lib/sprache";
+import { useHouseSelection } from "@/hooks/useHouseSelection";
+import { useAnfrageBeschriftung, zumAnfrageZiel, AnfrageZielId } from "@/lib/anfrageZiel";
 
 const Navigation = () => {
   const { t } = useTranslation();
@@ -18,6 +20,9 @@ const Navigation = () => {
   const { data: ueberUns } = useAboutUs();
   const hatUeberUns = !!aboutUsText(ueberUns, sprache);
   const [scrollPosition, setScrollPosition] = useState(false);
+  // „Jetzt buchen“ oder „Anfrage senden“ — je nachdem, was die Häuser anbieten (lib/anfrageZiel.ts)
+  const { houses } = useHouseSelection();
+  const anfrage = useAnfrageBeschriftung(houses);
 
   // Auf der Startseite liegt oben ein dunkles Hero-Bild, dort ist die
   // Navigation zunaechst transparent mit weisser Schrift. Unterseiten haben
@@ -54,7 +59,7 @@ const Navigation = () => {
     { label: t("navigation.features"), id: "features" },
     { label: t("navigation.gallery"), id: "galerie" },
     { label: t("navigation.directions"), path: "/anfahrt" },
-    { label: t("navigation.booking"), id: "booking" },
+    { label: anfrage.menue, id: anfrage.ziel },
     { label: t("navigation.contact"), id: "footer" },
   ];
 
@@ -69,6 +74,15 @@ const Navigation = () => {
       return;
     }
     if (!link.id) return;
+    // Buchen / Anfrage: die Startseite wählt ein passendes Haus und scrollt selbst.
+    if (link.id === "booking" || link.id === "wohnen-auf-zeit") {
+      if (window.location.pathname !== "/") {
+        navigate("/", { state: { anfrageZiel: link.id } });
+      } else {
+        zumAnfrageZiel(link.id as AnfrageZielId);
+      }
+      return;
+    }
     if (window.location.pathname !== "/") {
       navigate("/#" + link.id);
       return;
@@ -139,10 +153,10 @@ const Navigation = () => {
                 </Button>
               )}
               <Button
-                onClick={() => handleNavClick({ id: "booking" })}
+                onClick={() => handleNavClick({ id: anfrage.ziel })}
                 className="bg-primary hover:bg-primary/90"
               >
-                {t("navigation.bookNow")}
+                {anfrage.knopf}
               </Button>
             </div>
 
@@ -175,11 +189,11 @@ const Navigation = () => {
               </button>
             ))}
             <Button
-              onClick={() => handleNavClick({ id: "booking" })}
+              onClick={() => handleNavClick({ id: anfrage.ziel })}
               size="lg"
               className="bg-primary hover:bg-primary/90 mt-4"
             >
-              {t("navigation.bookNow")}
+              {anfrage.knopf}
             </Button>
             {isAuthenticated ? (
               <Button

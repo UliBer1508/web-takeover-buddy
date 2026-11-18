@@ -22,6 +22,7 @@ import { useHouseSelection } from "@/hooks/useHouseSelection";
 import LongTermRental from "@/components/LongTermRental";
 import RentalModeSwitch from "@/components/RentalModeSwitch";
 import { useSiteSettings, Mietart } from "@/hooks/useLongTerm";
+import { ZIEL_EREIGNIS, AnfrageZielId } from "@/lib/anfrageZiel";
 
 interface IndexProps {
   initialGalleryView?: "photos" | "info";
@@ -63,6 +64,34 @@ const Index = ({ initialGalleryView, startAtGallery = false }: IndexProps = {}) 
     if (!kartenHaeuser.some(h => h.id === selectedHouseId)) setSelectedHouseId(kartenHaeuser[0].id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zeigeUmschalter, mietart, kartenHaeuser.map(h => h.id).join(","), selectedHouseId]);
+
+  // Menü/Footer „Jetzt buchen“ bzw. „Anfrage senden“ (lib/anfrageZiel.ts): passendes Haus
+  // wählen (der Abschnitt existiert nur für das gewählte Haus), dann hinscrollen.
+  const [zielWunsch, setZielWunsch] = useState<AnfrageZielId | null>(
+    (location.state as { anfrageZiel?: AnfrageZielId } | null)?.anfrageZiel ?? null
+  );
+  useEffect(() => {
+    const auf = (e: Event) => setZielWunsch((e as CustomEvent<AnfrageZielId>).detail);
+    window.addEventListener(ZIEL_EREIGNIS, auf);
+    return () => window.removeEventListener(ZIEL_EREIGNIS, auf);
+  }, []);
+  useEffect(() => {
+    if (!zielWunsch || houses.length === 0) return;
+    const lang = zielWunsch === "wohnen-auf-zeit";
+    const passt = (h: typeof houses[number]) => (lang ? h.offer_long_term : h.offer_short_term);
+    if (selectedHouse && !passt(selectedHouse)) {
+      const anderes = houses.find(passt);
+      if (anderes) setSelectedHouseId(anderes.id);
+    }
+    if (zeigeUmschalter) setMietart(lang ? "long" : "short");
+    const timer = setTimeout(() => {
+      const el = document.getElementById(zielWunsch) ?? document.getElementById(lang ? "booking" : "wohnen-auf-zeit");
+      el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setZielWunsch(null);
+    }, 350);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zielWunsch, houses.length]);
 
   const zeigeKurz = !!selectedHouse?.offer_short_term && (!zeigeUmschalter || mietart === "short");
   const zeigeLang = !!selectedHouse?.offer_long_term && (!zeigeUmschalter || mietart === "long");
