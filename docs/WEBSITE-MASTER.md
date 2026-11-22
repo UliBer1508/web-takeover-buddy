@@ -594,7 +594,7 @@ Dateien gehen in Blöcken direkt zu OneDrive. E-Mail an Uli, Anzeige und „Als 
 liegen in der Hausverwaltung (`docs/Konzept-Wohnen-auf-Zeit.md` dort). i18n `offer.app.*`.
 
 **Eigene Seite „Chalets auf Zeit“ (seit 22.11.2026, `pages/ChaletsAufZeit.tsx`):** `/chalets-auf-zeit`
-(Alias `/long-stay-chalets`, kanonisch immer `/chalets-auf-zeit`, steht in `public/sitemap.xml`). Zeigt nur
+(Alias `/long-stay-chalets`, kanonisch immer `/chalets-auf-zeit`, steht in `scripts/generate-sitemap.ts` — die Sitemap wird bei jedem Build daraus neu erzeugt, `public/sitemap.xml` nie von Hand ändern). Zeigt nur
 Häuser mit `offer_long_term` (Umschaltleiste bei mehreren): Titelbild des Hauses, Mietanfrage
 (`LongTermRental`, Anker `#wohnen-auf-zeit`), Über das Haus, Kennzahlen, Ausstattung, Rundgang, Galerie,
 Über uns. Alle Hausinhalte aus der DB wie auf der Startseite. Titel/Beschreibung für Google und
