@@ -66,6 +66,11 @@ Belvilla laufen soll (Schalter im Admin-Panel).
   zwischen zwei Commits in einem halben Zustand.
 - Wenn eine Änderung Datenbank-Spalten oder -Tabellen braucht: **zuerst das
   SQL ausführen, dann den Code hochladen.**
+- **`vercel.json` (seit 22.11.2026, NICHT löschen):** leitet alle Pfade, für die es keine Datei gibt,
+  auf `/index.html`. Ohne sie lieferte Vercel für jede Unterseite (`/galerie`, `/anfahrt`, `/region/…`)
+  HTTP 404 — Browser zeigten die Seite trotzdem (React), aber Google indexierte nur die Startseite.
+- **`public/BingSiteAuth.xml`** (seit 22.11.2026, NICHT löschen): Bestätigung für Bing Webmaster Tools
+  (Microsoft-Konto Uli). `public/google9efc3aafe444fc31.html` = Bestätigung Google Search Console.
 - Domain bei IONOS: `A @ → 216.198.79.1`, `CNAME www → Vercel`, `www` leitet
   per 308 auf die Hauptdomain um (Details: `docs/Session-2026-08-04-…`).
 
@@ -588,7 +593,17 @@ Beides über `externalSupabase.functions.invoke("rental-portal")` (Hausverwaltun
 Dateien gehen in Blöcken direkt zu OneDrive. E-Mail an Uli, Anzeige und „Als Mieter übernehmen“
 liegen in der Hausverwaltung (`docs/Konzept-Wohnen-auf-Zeit.md` dort). i18n `offer.app.*`.
 
-**Noch nicht gebaut:** Max lesend, eigene Seite `/wohnen-auf-zeit`, SEO, Portale. (Video: erledigt, 5g.
+**Eigene Seite „Chalets auf Zeit“ (seit 22.11.2026, `pages/ChaletsAufZeit.tsx`):** `/chalets-auf-zeit`
+(Alias `/long-stay-chalets`, kanonisch immer `/chalets-auf-zeit`, steht in `public/sitemap.xml`). Zeigt nur
+Häuser mit `offer_long_term` (Umschaltleiste bei mehreren): Titelbild des Hauses, Mietanfrage
+(`LongTermRental`, Anker `#wohnen-auf-zeit`), Über das Haus, Kennzahlen, Ausstattung, Rundgang, Galerie,
+Über uns. Alle Hausinhalte aus der DB wie auf der Startseite. Titel/Beschreibung für Google und
+Titelbild-Text: i18n `longTermPage.*` (Markentexte, keine Hausdaten). Menüpunkt „Chalets auf Zeit“
+(`navigation.longTerm`) nur, wenn ein sichtbares Haus Wohnen auf Zeit anbietet. „Anfrage senden“ im Menü
+scrollt auf dieser Seite zur Anfrage statt zur Startseite. Anlass: Google fand die Langzeitmiete nicht,
+weil sie nur ein Abschnitt der Startseite war. Diesen Link in Portal-Inseraten (ImmoScout24, HousingAnywhere) verwenden.
+
+**Noch nicht gebaut:** Max lesend, weitere Portale. (Video: erledigt, 5g.
 Mietvertrag + Übergabeprotokoll + Inventarliste: erledigt 18.11.2026 in der Hausverwaltung, SQL 74 —
 siehe dort `docs/Konzept-Wohnen-auf-Zeit.md`, Abschnitt Paket D. Die Website ist davon nicht betroffen.)
 
@@ -757,6 +772,7 @@ im SQL-Editor von `wlmdjljyzdwvpqefwdmy`. Die Dateien unter
 
 | Datum | Änderung |
 |---|---|
+| 22.11.2026 | `vercel.json` (Unterseiten lieferten 404), Bing Webmaster Tools, eigene Seite `/chalets-auf-zeit` (2.1, 5f) |
 | 18.11.2026 | „Wohnen auf Zeit“ heißt auf der Website „Chalets auf Zeit“ (5f) |
 | 18.11.2026 | Neue Farbwelt „Blattgrün“ statt Holzbraun (4a) |
 | 18.11.2026 | Buchen-Knopf folgt dem gewählten Haus; „Buchungsanfrage“ bei Plattform-Häusern (5f) |

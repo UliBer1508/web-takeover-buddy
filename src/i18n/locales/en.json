@@ -13,7 +13,8 @@
     "directions": "Directions",
     "chalets": "Our chalets",
     "openMenu": "Open menu",
-    "chooseHouse": "Choose house"
+    "chooseHouse": "Choose house",
+    "longTerm": "Long-stay chalets"
   },
   "directions": {
     "title": "Directions",
@@ -844,5 +845,12 @@
     "both": "Holiday home · also long-stay",
     "endInquiry": "Rental inquiry: steinbockchalets.com",
     "endBook": "Book now: steinbockchalets.com"
+  },
+  "longTermPage": {
+    "metaTitle": "Rent a chalet long-term near the Großvenediger – Long-stay chalets | Steinbock Chalets",
+    "metaDescription": "Rent a furnished mountain chalet in Neukirchen am Großvenediger, Austria, for a whole ski season or a year. Wildkogel ski area, Kitzbühel Alps and Hohe Tauern on your doorstep. Inquire now.",
+    "heroTitle": "Long-stay chalets",
+    "heroSubtitle": "A mountain chalet near the Großvenediger for the ski season or a whole year – rent instead of buying.",
+    "none": "No chalet is currently available for a longer stay."
   }
 }

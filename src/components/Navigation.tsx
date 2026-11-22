@@ -58,6 +58,9 @@ const Navigation = () => {
     ...(hatUeberUns ? [{ label: t("navigation.about"), id: "ueber-uns" }] : []),
     { label: t("navigation.features"), id: "features" },
     { label: t("navigation.gallery"), id: "galerie" },
+    ...(houses.some(h => h.offer_long_term)
+      ? [{ label: t("navigation.longTerm"), path: "/chalets-auf-zeit" }]
+      : []),
     { label: t("navigation.directions"), path: "/anfahrt" },
     { label: anfrage.menue, id: anfrage.ziel },
     { label: t("navigation.contact"), id: "footer" },
@@ -76,6 +79,12 @@ const Navigation = () => {
     if (!link.id) return;
     // Buchen / Anfrage: die Startseite wählt ein passendes Haus und scrollt selbst.
     if (link.id === "booking" || link.id === "wohnen-auf-zeit") {
+      // Auf /chalets-auf-zeit steht die Mietanfrage auf der Seite selbst.
+      const hier = link.id === "wohnen-auf-zeit" ? document.getElementById(link.id) : null;
+      if (hier && window.location.pathname !== "/") {
+        hier.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
       if (window.location.pathname !== "/") {
         navigate("/", { state: { anfrageZiel: link.id } });
       } else {

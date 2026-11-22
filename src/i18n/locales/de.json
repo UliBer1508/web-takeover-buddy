@@ -13,7 +13,8 @@
     "directions": "Anfahrt",
     "chalets": "Unsere Chalets",
     "openMenu": "Menü öffnen",
-    "chooseHouse": "Haus auswählen"
+    "chooseHouse": "Haus auswählen",
+    "longTerm": "Chalets auf Zeit"
   },
   "directions": {
     "title": "Anfahrt",
@@ -844,5 +845,12 @@
     "both": "Ferienhaus · auch Chalet auf Zeit",
     "endInquiry": "Mietanfrage: steinbockchalets.com",
     "endBook": "Jetzt buchen: steinbockchalets.com"
+  },
+  "longTermPage": {
+    "metaTitle": "Chalet langfristig mieten am Großvenediger – Chalets auf Zeit | Steinbock Chalets",
+    "metaDescription": "Möbliertes Bergchalet in Neukirchen am Großvenediger für längere Zeit mieten – für die ganze Wintersaison oder ein Jahr. Skigebiet Wildkogel, Kitzbüheler Alpen und Hohe Tauern vor der Tür. Jetzt anfragen.",
+    "heroTitle": "Chalets auf Zeit",
+    "heroSubtitle": "Ein Bergchalet am Großvenediger für die Wintersaison oder ein ganzes Jahr – mieten statt kaufen.",
+    "none": "Derzeit ist kein Chalet für längere Zeit verfügbar."
   }
 }
